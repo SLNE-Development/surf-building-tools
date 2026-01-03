@@ -1,6 +1,7 @@
 package dev.slne.surf.building.paper
 
 import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
+import dev.slne.surf.building.paper.command.buildingWorldCommand
 import dev.slne.surf.building.paper.config.BuildingConfigHolder
 import dev.slne.surf.building.paper.database.table.BuildingWorldsTable
 import dev.slne.surf.building.paper.listener.ConnectionListener
@@ -19,6 +20,8 @@ class PaperMain : SuspendingJavaPlugin() {
 
     override suspend fun onEnableAsync() {
         ConnectionListener.register()
+
+        buildingWorldCommand()
 
         suspendTransaction {
             SchemaUtils.create(BuildingWorldsTable)
