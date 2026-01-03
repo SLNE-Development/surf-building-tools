@@ -10,7 +10,3 @@ surfPaperPluginApi {
     generateLibraryLoader(false)
     foliaSupported(false)
 }
-
-dependencies {
-    api("dev.slne.surf:surf-database-r2dbc:1.0.0-SNAPSHOT")
-}

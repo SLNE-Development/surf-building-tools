@@ -1,12 +1,14 @@
 package dev.slne.surf.building.paper.service
 
-import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.building.paper.buildingConfig
-import dev.slne.surf.building.paper.database.repository.buildingWorldRepository
+import dev.slne.surf.building.paper.config.BuildingWorldConfig
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.util.generateBuildingWorldId
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator
+import dev.slne.surf.surfapi.core.api.config.manager.SpongeConfigManager
+import dev.slne.surf.surfapi.core.api.config.surfConfigApi
+import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,13 +17,17 @@ import org.bukkit.GameRules
 import org.bukkit.WorldCreator
 import org.bukkit.block.BlockType
 import org.bukkit.entity.Player
+import java.nio.file.Files
 import java.util.*
 import java.util.concurrent.CompletableFuture
+import kotlin.io.path.isDirectory
 
 val buildingWorldService = BuildingWorldService()
 
 class BuildingWorldService {
     val buildingWorlds = mutableObjectSetOf<BuildingWorld>()
+    val buildingWorldConfigManagers =
+        mutableObject2ObjectMapOf<String, SpongeConfigManager<BuildingWorldConfig>>()
 
     fun createBuildingWorld(
         buildingWorldName: String,
@@ -59,13 +65,17 @@ class BuildingWorldService {
 
         buildingWorlds.add(bWorld)
 
-        plugin.launch {
-            withContext(Dispatchers.IO) {
-                world.save()
+        surfConfigApi.createSpongeYmlConfig(
+            BuildingWorldConfig::class.java,
+            world.worldPath,
+            "building-world-config.yml"
+        )
 
-                buildingWorldRepository.saveBuildingWorld(bWorld)
-            }
-        }
+        buildingWorldConfigManagers[id] = surfConfigApi.createSpongeYmlConfigManager(
+            BuildingWorldConfig::class.java,
+            world.worldPath,
+            "building-world-config.yml"
+        )
 
         return true
     }
@@ -75,6 +85,19 @@ class BuildingWorldService {
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
         val world = Bukkit.getWorld(buildingWorld.worldName) ?: return false
+
+        player.teleportAsync(world.spawnLocation)
+
+        return true
+    }
+
+    fun joinAndOrLoadBuildingWorld(player: Player, buildingWorldId: String): Boolean {
+        val buildingWorld = buildingWorlds
+            .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
+
+        val world = Bukkit.getWorld(buildingWorld.worldName) ?: Bukkit.createWorld(
+            WorldCreator.name(buildingWorld.worldName)
+        ) ?: return false
 
         player.teleportAsync(world.spawnLocation)
 
@@ -124,6 +147,47 @@ class BuildingWorldService {
 
                 file.deleteRecursively()
             }
+
+
+            buildingWorldConfigManagers.remove(buildingWorldId)
             return@withContext true
         }
+
+    fun cacheAllBuildingWorlds() {
+        plugin.logger.info("Loading Building Worlds...")
+
+        Files.walk(Bukkit.getWorldContainer().toPath()).filter {
+            it.isDirectory()
+        }.forEach {
+            if (Files.exists(it.resolve("building-world-config.yml"))) {
+                val worldName = it.fileName.toString()
+                val world = Bukkit.getWorld(worldName) ?: return@forEach
+
+                val configManager = surfConfigApi.createSpongeYmlConfigManager(
+                    BuildingWorldConfig::class.java,
+                    world.worldPath,
+                    "building-world-config.yml"
+                )
+
+                val config = configManager.config
+
+                val bWorld = BuildingWorld(
+                    buildingWorldName = config.buildingWorldName,
+                    buildingWorldId = config.buildingWorldId,
+                    worldName = world.name,
+                    worldUuid = world.uid,
+                    authorName = config.authorName,
+                    authorUuid = config.authorUuid,
+                    createdAt = config.createdAt
+                )
+
+                buildingWorlds.add(bWorld)
+                buildingWorldConfigManagers[config.buildingWorldId] = configManager
+
+                plugin.logger.info("Loaded Building World ${bWorld.buildingWorldName} (#${bWorld.buildingWorldId}) by ${bWorld.authorName}")
+            }
+        }
+
+        plugin.logger.info("Finished loading Building Worlds. Total: ${buildingWorlds.size}")
+    }
 }
