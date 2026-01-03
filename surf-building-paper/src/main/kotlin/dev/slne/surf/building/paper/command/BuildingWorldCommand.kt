@@ -89,7 +89,10 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                 val bWorld: BuildingWorld by args
 
                 plugin.launch {
-                    val success = buildingWorldService.loadBuildingWorld(bWorld.buildingWorldId)
+                    val success = buildingWorldService.joinAndOrLoadBuildingWorld(
+                        player,
+                        bWorld.buildingWorldId
+                    )
 
                     if (success) {
                         player.sendText {

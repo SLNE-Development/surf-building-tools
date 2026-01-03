@@ -5,11 +5,11 @@ import java.util.*
 
 @ConfigSerializable
 data class BuildingWorldConfig(
-    val buildingWorldName: String,
-    val buildingWorldId: String,
-    val worldName: String,
-    val worldUuid: UUID,
-    val authorName: String,
-    val authorUuid: UUID,
-    val createdAt: Long
+    var buildingWorldName: String = "???",
+    var buildingWorldId: String = "????????",
+    var worldName: String = "???",
+    var worldUuid: UUID = UUID.randomUUID(),
+    var authorName: String = "???",
+    var authorUuid: UUID = UUID.randomUUID(),
+    var createdAt: Long = System.currentTimeMillis()
 )

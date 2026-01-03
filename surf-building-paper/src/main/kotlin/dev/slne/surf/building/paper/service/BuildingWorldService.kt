@@ -77,6 +77,18 @@ class BuildingWorldService {
             "building-world-config.yml"
         )
 
+        buildingWorldConfigManagers[id]?.apply {
+            config.buildingWorldName = bWorld.buildingWorldName
+            config.buildingWorldId = bWorld.buildingWorldId
+            config.worldName = bWorld.worldName
+            config.worldUuid = bWorld.worldUuid
+            config.authorName = bWorld.authorName
+            config.authorUuid = bWorld.authorUuid
+            config.createdAt = bWorld.createdAt
+
+            this.save()
+        }
+
         return true
     }
 
@@ -104,14 +116,12 @@ class BuildingWorldService {
         return true
     }
 
-    suspend fun loadBuildingWorld(buildingWorldId: String): Boolean {
+    fun loadBuildingWorld(buildingWorldId: String): Boolean {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
-        withContext(Dispatchers.IO) {
-            Bukkit.createWorld(WorldCreator.name(buildingWorld.worldName))
-                ?: return@withContext false
-        }
+        Bukkit.createWorld(WorldCreator.name(buildingWorld.worldName))
+            ?: return false
 
         return true
     }
@@ -160,12 +170,9 @@ class BuildingWorldService {
             it.isDirectory()
         }.forEach {
             if (Files.exists(it.resolve("building-world-config.yml"))) {
-                val worldName = it.fileName.toString()
-                val world = Bukkit.getWorld(worldName) ?: return@forEach
-
                 val configManager = surfConfigApi.createSpongeYmlConfigManager(
                     BuildingWorldConfig::class.java,
-                    world.worldPath,
+                    it,
                     "building-world-config.yml"
                 )
 
@@ -174,8 +181,8 @@ class BuildingWorldService {
                 val bWorld = BuildingWorld(
                     buildingWorldName = config.buildingWorldName,
                     buildingWorldId = config.buildingWorldId,
-                    worldName = world.name,
-                    worldUuid = world.uid,
+                    worldName = config.worldName,
+                    worldUuid = config.worldUuid,
                     authorName = config.authorName,
                     authorUuid = config.authorUuid,
                     createdAt = config.createdAt
