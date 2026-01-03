@@ -16,20 +16,18 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
             playerExecutor { player, args ->
                 val name: String by args
 
-                plugin.launch {
-                    val success =
-                        buildingWorldService.createBuildingWorld(name, player.name, player.uniqueId)
+                val success =
+                    buildingWorldService.createBuildingWorld(name, player.name, player.uniqueId)
 
-                    if (success) {
-                        player.sendText {
-                            appendPrefix()
-                            success("Die Bau-Welt wurde erfolgreich erstellt!")
-                        }
-                    } else {
-                        player.sendText {
-                            appendPrefix()
-                            error("Es ist ein Fehler bei der Erstellung der Bau-Welt aufgetreten!")
-                        }
+                if (success) {
+                    player.sendText {
+                        appendPrefix()
+                        success("Die Bau-Welt wurde erfolgreich erstellt!")
+                    }
+                } else {
+                    player.sendText {
+                        appendPrefix()
+                        error("Es ist ein Fehler bei der Erstellung der Bau-Welt aufgetreten!")
                     }
                 }
             }

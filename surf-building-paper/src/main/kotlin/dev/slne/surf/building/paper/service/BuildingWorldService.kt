@@ -1,7 +1,9 @@
 package dev.slne.surf.building.paper.service
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.building.paper.buildingConfig
 import dev.slne.surf.building.paper.database.repository.buildingWorldRepository
+import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.util.generateBuildingWorldId
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator
@@ -21,7 +23,7 @@ val buildingWorldService = BuildingWorldService()
 class BuildingWorldService {
     val buildingWorlds = mutableObjectSetOf<BuildingWorld>()
 
-    suspend fun createBuildingWorld(
+    fun createBuildingWorld(
         buildingWorldName: String,
         authorName: String,
         authorUuid: UUID
@@ -45,10 +47,6 @@ class BuildingWorldService {
         world.setGameRule<Boolean>(GameRules.SPAWNER_BLOCKS_WORK, false)
         world.setGameRule<Int>(GameRules.RANDOM_TICK_SPEED, 0)
 
-        withContext(Dispatchers.IO) {
-            world.save()
-        }
-
         val bWorld = BuildingWorld(
             buildingWorldName = buildingWorldName,
             buildingWorldId = id,
@@ -60,7 +58,14 @@ class BuildingWorldService {
         )
 
         buildingWorlds.add(bWorld)
-        buildingWorldRepository.saveBuildingWorld(bWorld)
+
+        plugin.launch {
+            withContext(Dispatchers.IO) {
+                world.save()
+
+                buildingWorldRepository.saveBuildingWorld(bWorld)
+            }
+        }
 
         return true
     }
