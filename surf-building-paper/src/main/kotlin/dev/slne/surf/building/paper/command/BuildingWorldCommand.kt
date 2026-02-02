@@ -21,12 +21,12 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
 
                 if (success) {
                     player.sendText {
-                        appendPrefix()
+                        appendSuccessPrefix()
                         success("Die Bau-Welt wurde erfolgreich erstellt!")
                     }
                 } else {
                     player.sendText {
-                        appendPrefix()
+                        appendErrorPrefix()
                         error("Es ist ein Fehler bei der Erstellung der Bau-Welt aufgetreten!")
                     }
                 }
@@ -39,20 +39,18 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
             playerExecutor { player, args ->
                 val bWorld: BuildingWorld by args
 
-                plugin.launch {
-                    val success =
-                        buildingWorldService.joinBuildingWorld(player, bWorld.buildingWorldId)
+                val success =
+                    buildingWorldService.joinAndOrLoadBuildingWorld(player, bWorld.buildingWorldId)
 
-                    if (success) {
-                        player.sendText {
-                            appendPrefix()
-                            success("Du wurdest erfolgreich in die Bau-Welt teleportiert!")
-                        }
-                    } else {
-                        player.sendText {
-                            appendPrefix()
-                            error("Es ist ein Fehler bei der Teleportation in die Bau-Welt aufgetreten!")
-                        }
+                if (success) {
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Du wurdest erfolgreich in die Bau-Welt teleportiert!")
+                    }
+                } else {
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Es ist ein Fehler bei der Teleportation in die Bau-Welt aufgetreten!")
                     }
                 }
             }
@@ -69,12 +67,12 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
 
                     if (success) {
                         player.sendText {
-                            appendPrefix()
+                            appendSuccessPrefix()
                             success("Die Bau-Welt wurde erfolgreich gelöscht!")
                         }
                     } else {
                         player.sendText {
-                            appendPrefix()
+                            appendErrorPrefix()
                             error("Es ist ein Fehler bei der Löschung der Bau-Welt aufgetreten!")
                         }
                     }
@@ -88,22 +86,19 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
             playerExecutor { player, args ->
                 val bWorld: BuildingWorld by args
 
-                plugin.launch {
-                    val success = buildingWorldService.joinAndOrLoadBuildingWorld(
-                        player,
-                        bWorld.buildingWorldId
-                    )
+                val success = buildingWorldService.loadBuildingWorld(
+                    bWorld.buildingWorldId
+                )
 
-                    if (success) {
-                        player.sendText {
-                            appendPrefix()
-                            success("Die Bau-Welt wurde erfolgreich geladen!")
-                        }
-                    } else {
-                        player.sendText {
-                            appendPrefix()
-                            error("Es ist ein Fehler beim Laden der Bau-Welt aufgetreten!")
-                        }
+                if (success) {
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Die Bau-Welt wurde erfolgreich geladen!")
+                    }
+                } else {
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Es ist ein Fehler beim Laden der Bau-Welt aufgetreten!")
                     }
                 }
             }

@@ -15,7 +15,7 @@ class BuildingWorldArgument(nodeName: String) :
         buildingWorldService.buildingWorlds.find { it.buildingWorldName == info.input }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
-                    appendPrefix()
+                    appendErrorPrefix()
                     error("Die Bau-Welt wurde nicht gefunden!")
                 }
             }

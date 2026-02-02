@@ -18,6 +18,7 @@ import org.bukkit.WorldCreator
 import org.bukkit.block.BlockType
 import org.bukkit.entity.Player
 import java.nio.file.Files
+import java.time.OffsetDateTime
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.io.path.isDirectory
@@ -60,7 +61,8 @@ class BuildingWorldService {
             worldUuid = world.uid,
             authorName = authorName,
             authorUuid = authorUuid,
-            createdAt = System.currentTimeMillis()
+            status = BuildingWorld.Status.EDITING,
+            createdAt = OffsetDateTime.now()
         )
 
         buildingWorlds.add(bWorld)
@@ -84,6 +86,7 @@ class BuildingWorldService {
             config.worldUuid = bWorld.worldUuid
             config.authorName = bWorld.authorName
             config.authorUuid = bWorld.authorUuid
+            config.status = bWorld.status
             config.createdAt = bWorld.createdAt
 
             this.save()
@@ -185,6 +188,7 @@ class BuildingWorldService {
                     worldUuid = config.worldUuid,
                     authorName = config.authorName,
                     authorUuid = config.authorUuid,
+                    status = BuildingWorld.Status.EDITING,
                     createdAt = config.createdAt
                 )
 

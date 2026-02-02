@@ -1,6 +1,8 @@
 package dev.slne.surf.building.paper.util
 
 import dev.slne.surf.building.paper.service.buildingWorldService
+import org.bukkit.World
+import org.bukkit.entity.Player
 
 fun generateBuildingWorldId(): String {
     val charset = ('a'..'z') + ('0'..'9')
@@ -18,3 +20,11 @@ fun generateBuildingWorldId(): String {
         }
     }
 }
+
+fun World.isBuildingWorld(): Boolean {
+    return buildingWorldService.buildingWorlds.any { it.worldUuid == this.uid }
+}
+
+fun Player.currentBuildingWorld() =
+    buildingWorldService.buildingWorlds.find { it.currentPlayers.contains(this.uniqueId) }
+

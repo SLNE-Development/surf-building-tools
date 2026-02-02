@@ -1,5 +1,7 @@
 package dev.slne.surf.building.paper.world
 
+import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
+import java.time.OffsetDateTime
 import java.util.*
 
 data class BuildingWorld(
@@ -9,5 +11,15 @@ data class BuildingWorld(
     val worldUuid: UUID,
     val authorName: String,
     val authorUuid: UUID,
-    val createdAt: Long
-)
+    val status: Status,
+    val createdAt: OffsetDateTime
+) {
+    val currentPlayers = mutableObjectSetOf<UUID>()
+
+    enum class Status(val displayName: String) {
+        UNKNOWN("Unbekannt"),
+        EDITING("Bearbeitung"),
+        DONE("Fertiggestellt"),
+        PUBLISHED("Veröffentlicht"),
+    }
+}

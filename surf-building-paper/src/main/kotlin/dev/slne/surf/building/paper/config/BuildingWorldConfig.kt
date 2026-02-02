@@ -1,6 +1,8 @@
 package dev.slne.surf.building.paper.config
 
+import dev.slne.surf.building.paper.world.BuildingWorld
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
+import java.time.OffsetDateTime
 import java.util.*
 
 @ConfigSerializable
@@ -11,5 +13,6 @@ data class BuildingWorldConfig(
     var worldUuid: UUID = UUID.randomUUID(),
     var authorName: String = "???",
     var authorUuid: UUID = UUID.randomUUID(),
-    var createdAt: Long = System.currentTimeMillis()
+    var status: BuildingWorld.Status = BuildingWorld.Status.UNKNOWN,
+    var createdAt: OffsetDateTime = OffsetDateTime.MIN,
 )
