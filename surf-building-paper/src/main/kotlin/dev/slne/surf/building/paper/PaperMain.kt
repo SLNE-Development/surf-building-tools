@@ -3,10 +3,7 @@ package dev.slne.surf.building.paper
 import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
 import dev.slne.surf.building.paper.command.buildingWorldCommand
 import dev.slne.surf.building.paper.config.BuildingConfigHolder
-import dev.slne.surf.building.paper.listener.ConnectionListener
-import dev.slne.surf.building.paper.listener.MenuItemListener
-import dev.slne.surf.building.paper.listener.PlayerMoveListener
-import dev.slne.surf.building.paper.listener.PlayerWorldListener
+import dev.slne.surf.building.paper.listener.*
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
@@ -22,6 +19,7 @@ class PaperMain : SuspendingJavaPlugin() {
         PlayerWorldListener.register()
         MenuItemListener.register()
         PlayerMoveListener.register()
+        PlayerWorldStatusListener.register()
 
         buildingWorldCommand()
 

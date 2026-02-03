@@ -23,10 +23,10 @@ data class BuildingWorld(
     val world get() = Bukkit.getWorld(worldUuid)
 
     @ConfigSerializable
-    enum class Status(val displayName: String, val material: Material) {
-        UNKNOWN("Unbekannt", Material.LIGHT_GRAY_DYE),
-        EDITING("In Bearbeitung", Material.YELLOW_DYE),
-        DONE("Fertiggestellt", Material.LIME_DYE),
-        PUBLISHED("Veröffentlicht", Material.LIGHT_BLUE_DYE),
+    enum class Status(val displayName: String, val material: Material, val allowBuild: Boolean) {
+        UNKNOWN("Unbekannt", Material.LIGHT_GRAY_DYE, false),
+        EDITING("In Bearbeitung", Material.YELLOW_DYE, true),
+        DONE("Fertiggestellt", Material.LIME_DYE, false),
+        PUBLISHED("Veröffentlicht", Material.LIGHT_BLUE_DYE, false),
     }
 }

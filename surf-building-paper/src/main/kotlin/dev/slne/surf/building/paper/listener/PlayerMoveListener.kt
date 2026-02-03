@@ -17,8 +17,8 @@ object PlayerMoveListener : Listener {
         if (event.to.y < -70) {
             event.to.world.teleportToHighestSpawn(event.player).thenRun {
                 event.player.sendText {
-                    appendSuccessPrefix()
-                    success("Du wurdest zum Spawn teleportiert, da du aus der Welt gefallen bist.")
+                    appendInfoPrefix()
+                    info("Du wurdest zum Spawn teleportiert, da du aus der Welt gefallen bist.")
                 }
             }
         }
