@@ -38,6 +38,17 @@ fun showBuildingWorldNameDialog(
 
         type {
             confirmation(actionButton {
+                label { error("Abbrechen") }
+                tooltip { info("Klicke, um zurück zu gelangen.") }
+                width(200)
+
+                action {
+                    customPlayerClick { _, player ->
+                        player.closeDialog()
+                        showBuildingWorldCreateMenu(player, name, type)
+                    }
+                }
+            }, actionButton {
                 label { success("Bestätigen") }
                 tooltip { info("Klicke, um den Namen zu bestätigen.") }
                 width(200)
@@ -46,17 +57,6 @@ fun showBuildingWorldNameDialog(
                     customPlayerClick { response, player ->
                         val name = response.getText("bworld_name")?.trim()?.replace(" ", "-")
 
-                        player.closeDialog()
-                        showBuildingWorldCreateMenu(player, name, type)
-                    }
-                }
-            }, actionButton {
-                label { error("Abbrechen") }
-                tooltip { info("Klicke, um zurück zu gelangen.") }
-                width(200)
-
-                action {
-                    customPlayerClick { _, player ->
                         player.closeDialog()
                         showBuildingWorldCreateMenu(player, name, type)
                     }
