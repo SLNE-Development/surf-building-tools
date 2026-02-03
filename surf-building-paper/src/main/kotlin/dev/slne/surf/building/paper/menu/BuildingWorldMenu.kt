@@ -23,7 +23,13 @@ fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwel
     withOutClicks()
 
     val contentPane = PaginatedPane(1, 1, width - 2, height - 2).apply {
-        populateWithGuiItems(buildingWorldService.buildingWorlds.map { buildBuildingWorldItem(it) })
+        populateWithGuiItems(
+            buildingWorldService.buildingWorlds
+                .sortedWith(compareBy<BuildingWorld> { it.status }.thenBy { it.authorName })
+                .map { buildBuildingWorldItem(it) }
+        )
+
+
     }
 
     addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST).apply {
