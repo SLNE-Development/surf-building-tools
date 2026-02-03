@@ -1,6 +1,5 @@
 package dev.slne.surf.building.paper.listener
 
-import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldPlayerDataService
 import dev.slne.surf.building.paper.service.buildingWorldService
@@ -14,7 +13,6 @@ import dev.slne.surf.surfapi.bukkit.api.surfBukkitApi
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
-import kotlinx.coroutines.delay
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -22,7 +20,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.world.WorldSaveEvent
 import java.util.*
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ObsoleteScoreboardApi::class)
 object PlayerWorldListener : Listener {
@@ -70,42 +67,39 @@ object PlayerWorldListener : Listener {
     }
 
     private fun showScoreboard(player: Player) {
-        plugin.launch {
-            delay(2.seconds)
-            _scoreboards[player.uniqueId] = surfBukkitApi.createScoreboard(buildText {
-                primaryColored("     Bau Server     ".toSmallCaps(), TextDecoration.BOLD)
+        _scoreboards[player.uniqueId] = surfBukkitApi.createScoreboard(buildText {
+            primaryColored("     Bau Server     ".toSmallCaps(), TextDecoration.BOLD)
+        })
+            .addEmptyLine()
+            .addLine(buildText {
+                infoColored("Welt: ".toSmallCaps())
             })
-                .addEmptyLine()
-                .addLine(buildText {
-                    infoColored("Welt: ".toSmallCaps())
-                })
-                .addLine(buildText {
-                    variableValue(player.currentBuildingWorld()?.buildingWorldName ?: "Unbekannt")
-                })
-                .addEmptyLine()
-                .addLine(buildText {
-                    infoColored("Besitzer: ".toSmallCaps())
-                })
-                .addUpdatableLine {
-                    buildText {
-                        variableValue(player.currentBuildingWorld()?.authorName ?: "/")
-                    }
+            .addLine(buildText {
+                variableValue(player.currentBuildingWorld()?.buildingWorldName ?: "Unbekannt")
+            })
+            .addEmptyLine()
+            .addLine(buildText {
+                infoColored("Besitzer: ".toSmallCaps())
+            })
+            .addUpdatableLine {
+                buildText {
+                    variableValue(player.currentBuildingWorld()?.authorName ?: "/")
                 }
-                .addEmptyLine()
-                .addLine(buildText {
-                    infoColored("Status: ".toSmallCaps())
-                })
-                .addUpdatableLine {
-                    buildText {
-                        variableValue(player.currentBuildingWorld()?.status?.displayName ?: "/")
-                    }
+            }
+            .addEmptyLine()
+            .addLine(buildText {
+                infoColored("Status: ".toSmallCaps())
+            })
+            .addUpdatableLine {
+                buildText {
+                    variableValue(player.currentBuildingWorld()?.status?.displayName ?: "/")
                 }
-                .addEmptyLine()
-                .build()
+            }
+            .addEmptyLine()
+            .build()
 
-            _scoreboards[player.uniqueId]?.enable()
-            _scoreboards[player.uniqueId]?.addViewer(player)
-        }
+        _scoreboards[player.uniqueId]?.enable()
+        _scoreboards[player.uniqueId]?.addViewer(player)
     }
 
     private fun hideScoreboard(player: Player) {

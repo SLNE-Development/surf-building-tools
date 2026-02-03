@@ -23,7 +23,7 @@ fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwel
     withOutClicks()
 
     val contentPane = PaginatedPane(1, 1, width - 2, height - 2).apply {
-        populateWithItemStacks(buildingWorldService.buildingWorlds.map { buildBuildingWorldItem(it) })
+        populateWithGuiItems(buildingWorldService.buildingWorlds.map { buildBuildingWorldItem(it) })
     }
 
     addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST).apply {
@@ -64,7 +64,7 @@ fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwel
     show(player)
 }
 
-private fun buildBuildingWorldItem(buildingWorld: BuildingWorld) =
+private fun buildBuildingWorldItem(buildingWorld: BuildingWorld) = GuiItem(
     buildItem(buildingWorld.status.material) {
         displayName {
             primary(buildingWorld.buildingWorldName)
@@ -84,6 +84,9 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld) =
             }
             emptyLine()
         }
-
-
-    }
+    }) {
+    buildingWorldService.joinAndOrLoadBuildingWorld(
+        it.whoClicked,
+        buildingWorld.buildingWorldId
+    )
+}

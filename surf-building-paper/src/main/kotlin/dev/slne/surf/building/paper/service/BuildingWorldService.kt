@@ -16,6 +16,7 @@ import org.bukkit.GameRules
 import org.bukkit.World
 import org.bukkit.WorldCreator
 import org.bukkit.block.BlockType
+import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import java.nio.file.Files
 import java.time.OffsetDateTime
@@ -172,7 +173,7 @@ class BuildingWorldService {
         return true
     }
 
-    fun joinAndOrLoadBuildingWorld(player: Player, buildingWorldId: String): Boolean {
+    fun joinAndOrLoadBuildingWorld(player: HumanEntity, buildingWorldId: String): Boolean {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
