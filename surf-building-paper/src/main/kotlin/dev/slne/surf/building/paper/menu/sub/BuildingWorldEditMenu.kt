@@ -84,9 +84,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         }
 
         setOnClose {
-            if (previousState != currentState) {
-                buildingWorldService.saveBuildingWorld(buildingWorld.copy(status = if (currentState) BuildingWorld.Status.EDITING else BuildingWorld.Status.DONE))
-            }
+            buildingWorldService.saveBuildingWorld(buildingWorld.copy(status = if (currentState) BuildingWorld.Status.EDITING else BuildingWorld.Status.DONE))
         }
 
         addPane(editNameButton)
