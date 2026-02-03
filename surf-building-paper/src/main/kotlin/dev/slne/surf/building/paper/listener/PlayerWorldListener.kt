@@ -96,7 +96,7 @@ object PlayerWorldListener : Listener {
                 }
             }
             .addEmptyLine()
-            .build()
+            .buildAutoUpdatable()
 
         _scoreboards[player.uniqueId]?.enable()
         _scoreboards[player.uniqueId]?.addViewer(player)
