@@ -20,7 +20,7 @@ data class BuildingWorld(
 ) {
     val currentPlayers = mutableObjectSetOf<UUID>()
     val folder = plugin.server.worldContainer.resolve(worldName)
-    val world = Bukkit.getWorld(worldUuid) ?: error("World with UUID $worldUuid not found")
+    val world get() = Bukkit.getWorld(worldUuid) ?: error("World with UUID $worldUuid not found")
 
     @ConfigSerializable
     enum class Status(val displayName: String, val material: Material) {

@@ -30,8 +30,19 @@ object PlayerWorldListener : Listener {
 
         if (toWorld.isBuildingWorld()) {
             showScoreboard(player)
-            player.currentBuildingWorld()?.currentPlayers?.add(player.uniqueId)
+
+            player.currentBuildingWorld()?.let {
+                it.currentPlayers.add(player.uniqueId)
+
+                buildingWorldItemsService.loadPlayerData(player, it)
+            }
         } else {
+            if (event.from.isBuildingWorld()) {
+                buildingWorldService.getBuildingWorldByWorld(event.from)?.let {
+                    buildingWorldItemsService.savePlayerData(player, it)
+                }
+            }
+
             buildingWorldService.buildingWorlds.forEach { it.currentPlayers.remove(player.uniqueId) }
         }
     }

@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.GameRules
+import org.bukkit.World
 import org.bukkit.WorldCreator
 import org.bukkit.block.BlockType
 import org.bukkit.entity.Player
@@ -110,6 +111,45 @@ class BuildingWorldService {
         }
     }
 
+    fun cacheAllBuildingWorlds() {
+        plugin.logger.info("Loading Building Worlds...")
+
+        Files.walk(Bukkit.getWorldContainer().toPath()).filter {
+            it.isDirectory()
+        }.forEach {
+            if (Files.exists(it.resolve("building-world-config.yml"))) {
+                val configManager = surfConfigApi.createSpongeYmlConfigManager(
+                    BuildingWorldConfig::class.java,
+                    it,
+                    "building-world-config.yml"
+                )
+
+                val config = configManager.config
+
+                val bWorld = BuildingWorld(
+                    buildingWorldName = config.buildingWorldName,
+                    buildingWorldId = config.buildingWorldId,
+                    worldName = config.worldName,
+                    worldUuid = config.worldUuid,
+                    authorName = config.authorName,
+                    authorUuid = config.authorUuid,
+                    status = BuildingWorld.Status.valueOf(config.status),
+                    createdAt = OffsetDateTime.parse(config.createdAtString)
+                )
+
+                buildingWorlds.add(bWorld)
+                buildingWorldConfigManagers[config.buildingWorldId] = configManager
+
+                plugin.logger.info("Loaded Building World '${bWorld.buildingWorldName}' (#${bWorld.buildingWorldId}) by ${bWorld.authorName} !")
+            }
+        }
+
+        plugin.logger.info("Finished loading Building Worlds. Total: ${buildingWorlds.size}")
+    }
+
+    fun getBuildingWorldByWorld(world: World) = buildingWorlds
+        .firstOrNull { it.worldUuid == world.uid }
+
     fun joinBuildingWorld(player: Player, buildingWorldId: String): Boolean {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
@@ -178,42 +218,7 @@ class BuildingWorldService {
 
 
             buildingWorldConfigManagers.remove(buildingWorldId)
+            buildingWorlds.removeIf { it.buildingWorldId == buildingWorldId }
             return@withContext true
         }
-
-    fun cacheAllBuildingWorlds() {
-        plugin.logger.info("Loading Building Worlds...")
-
-        Files.walk(Bukkit.getWorldContainer().toPath()).filter {
-            it.isDirectory()
-        }.forEach {
-            if (Files.exists(it.resolve("building-world-config.yml"))) {
-                val configManager = surfConfigApi.createSpongeYmlConfigManager(
-                    BuildingWorldConfig::class.java,
-                    it,
-                    "building-world-config.yml"
-                )
-
-                val config = configManager.config
-
-                val bWorld = BuildingWorld(
-                    buildingWorldName = config.buildingWorldName,
-                    buildingWorldId = config.buildingWorldId,
-                    worldName = config.worldName,
-                    worldUuid = config.worldUuid,
-                    authorName = config.authorName,
-                    authorUuid = config.authorUuid,
-                    status = BuildingWorld.Status.valueOf(config.status),
-                    createdAt = OffsetDateTime.parse(config.createdAtString)
-                )
-
-                buildingWorlds.add(bWorld)
-                buildingWorldConfigManagers[config.buildingWorldId] = configManager
-
-                plugin.logger.info("Loaded Building World ${bWorld.buildingWorldName} (#${bWorld.buildingWorldId}) by ${bWorld.authorName}")
-            }
-        }
-
-        plugin.logger.info("Finished loading Building Worlds. Total: ${buildingWorlds.size}")
-    }
 }
