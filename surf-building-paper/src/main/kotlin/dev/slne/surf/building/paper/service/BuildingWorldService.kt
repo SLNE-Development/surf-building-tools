@@ -86,13 +86,28 @@ class BuildingWorldService {
             config.worldUuid = bWorld.worldUuid
             config.authorName = bWorld.authorName
             config.authorUuid = bWorld.authorUuid
-            config.status = bWorld.status
-            config.createdAt = bWorld.createdAt
+            config.status = bWorld.status.name
+            config.createdAtString = bWorld.createdAt.toString()
 
             this.save()
         }
 
         return true
+    }
+
+    fun saveBuildingWorld(buildingWorld: BuildingWorld) {
+        buildingWorldConfigManagers[buildingWorld.buildingWorldId]?.apply {
+            config.buildingWorldName = buildingWorld.buildingWorldName
+            config.buildingWorldId = buildingWorld.buildingWorldId
+            config.worldName = buildingWorld.worldName
+            config.worldUuid = buildingWorld.worldUuid
+            config.authorName = buildingWorld.authorName
+            config.authorUuid = buildingWorld.authorUuid
+            config.status = buildingWorld.status.name
+            config.createdAtString = buildingWorld.createdAt.toString()
+
+            this.save()
+        }
     }
 
     fun joinBuildingWorld(player: Player, buildingWorldId: String): Boolean {
@@ -188,8 +203,8 @@ class BuildingWorldService {
                     worldUuid = config.worldUuid,
                     authorName = config.authorName,
                     authorUuid = config.authorUuid,
-                    status = BuildingWorld.Status.EDITING,
-                    createdAt = config.createdAt
+                    status = BuildingWorld.Status.valueOf(config.status),
+                    createdAt = OffsetDateTime.parse(config.createdAtString)
                 )
 
                 buildingWorlds.add(bWorld)

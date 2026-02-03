@@ -2,6 +2,7 @@ package dev.slne.surf.building.paper.menu
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
+import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.world.BuildingWorld
@@ -15,7 +16,7 @@ import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
 
 private const val width = 9
-private const val height = 4
+private const val height = 6
 
 fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwelten") }, height) {
     withOutline(width, height)
@@ -25,7 +26,7 @@ fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwel
         populateWithItemStacks(buildingWorldService.buildingWorlds.map { buildBuildingWorldItem(it) })
     }
 
-    addPane(StaticPane(0, height - 1, 7, 1).apply {
+    addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST).apply {
         if (contentPane.page > 1) {
             addItem(
                 GuiItem(buildItem(Material.ARROW) {
@@ -37,13 +38,13 @@ fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwel
                     update()
                 }, 0, 0
             )
-
-            addItem(GuiItem(MenuHeads.CREATE_BUTTON.apply {
-                displayName {
-                    primary("Neue Bauwelt erstellen")
-                }
-            }), 3, 0)
         }
+
+        addItem(GuiItem(MenuHeads.CREATE_BUTTON.apply {
+            displayName {
+                primary("Neue Bauwelt erstellen")
+            }
+        }), 3, 0)
 
         if (contentPane.page < contentPane.pages - 1) {
             addItem(

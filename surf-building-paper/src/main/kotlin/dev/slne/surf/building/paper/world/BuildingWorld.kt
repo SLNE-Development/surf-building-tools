@@ -2,7 +2,9 @@ package dev.slne.surf.building.paper.world
 
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -18,7 +20,9 @@ data class BuildingWorld(
 ) {
     val currentPlayers = mutableObjectSetOf<UUID>()
     val folder = plugin.server.worldContainer.resolve(worldName)
+    val world = Bukkit.getWorld(worldUuid) ?: error("World with UUID $worldUuid not found")
 
+    @ConfigSerializable
     enum class Status(val displayName: String, val material: Material) {
         UNKNOWN("Unbekannt", Material.LIGHT_GRAY_DYE),
         EDITING("Bearbeitung", Material.YELLOW_DYE),

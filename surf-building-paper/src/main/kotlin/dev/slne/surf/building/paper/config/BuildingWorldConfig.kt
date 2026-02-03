@@ -13,6 +13,6 @@ data class BuildingWorldConfig(
     var worldUuid: UUID = UUID.randomUUID(),
     var authorName: String = "???",
     var authorUuid: UUID = UUID.randomUUID(),
-    var status: BuildingWorld.Status = BuildingWorld.Status.UNKNOWN,
-    var createdAt: OffsetDateTime = OffsetDateTime.MIN,
+    var status: String = BuildingWorld.Status.UNKNOWN.name,
+    var createdAtString: String = OffsetDateTime.MIN.toString()
 )

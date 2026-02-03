@@ -1,6 +1,7 @@
 package dev.slne.surf.building.paper.listener
 
 import dev.slne.surf.building.paper.service.buildingWorldItemsService
+import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.currentBuildingWorld
 import dev.slne.surf.building.paper.util.isBuildingWorld
 import dev.slne.surf.surfapi.bukkit.api.scoreboard.ObsoleteScoreboardApi
@@ -29,7 +30,9 @@ object PlayerWorldListener : Listener {
 
         if (toWorld.isBuildingWorld()) {
             showScoreboard(player)
-
+            player.currentBuildingWorld()?.currentPlayers?.add(player.uniqueId)
+        } else {
+            buildingWorldService.buildingWorlds.forEach { it.currentPlayers.remove(player.uniqueId) }
         }
     }
 
@@ -38,6 +41,10 @@ object PlayerWorldListener : Listener {
         event.world.players.forEach {
             val buildingWorld = it.currentBuildingWorld() ?: return@forEach
             buildingWorldItemsService.savePlayerData(it, buildingWorld)
+        }
+
+        buildingWorldService.buildingWorlds.forEach {
+            buildingWorldService.saveBuildingWorld(it)
         }
     }
 

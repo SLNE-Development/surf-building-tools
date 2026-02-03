@@ -10,6 +10,7 @@ import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 fun buildingWorldCommand() = commandTree("buildingworld") {
+    withAliases("bWorld", "bw")
     withPermission(PermissionRegistry.COMMAND)
     literalArgument("create") {
         stringArgument("name") {
