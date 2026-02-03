@@ -10,6 +10,7 @@ import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Bukkit
 
 fun buildingWorldCommand() = commandTree("buildingworld") {
@@ -28,10 +29,21 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                 val success =
                     buildingWorldService.createBuildingWorld(name, player.name, player.uniqueId)
 
-                if (success) {
+                if (success != null) {
                     player.sendText {
                         appendSuccessPrefix()
                         success("Die Bau-Welt wurde erfolgreich erstellt!")
+                        append {
+                            spacer(" [")
+                            success("Beitreten")
+                            spacer("]")
+                            clickEvent(ClickEvent.callback {
+                                buildingWorldService.joinAndOrLoadBuildingWorld(
+                                    player,
+                                    success.buildingWorldId
+                                )
+                            })
+                        }
                     }
                 } else {
                     player.sendText {

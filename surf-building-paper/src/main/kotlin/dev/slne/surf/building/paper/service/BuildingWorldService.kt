@@ -36,10 +36,10 @@ class BuildingWorldService {
         buildingWorldName: String,
         authorName: String,
         authorUuid: UUID
-    ): Boolean {
+    ): BuildingWorld? {
         val id = generateBuildingWorldId()
         val world = WorldCreator.name("bw-$id").generator(BuildingWorldGenerator).createWorld()
-            ?: return false
+            ?: return null
 
         world.setSpawnLocation(0, 0, 0)
         world.setBlockData(0, -1, 0, BlockType.BEDROCK.createBlockData())
@@ -94,7 +94,7 @@ class BuildingWorldService {
             this.save()
         }
 
-        return true
+        return bWorld
     }
 
     fun changeStatus(buildingWorld: BuildingWorld, status: BuildingWorld.Status): Boolean {

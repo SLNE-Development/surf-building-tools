@@ -45,5 +45,7 @@ fun World.teleportToHighestSpawn(player: Player): CompletableFuture<Boolean> {
     )
 }
 
+val World.buildingWorld get() = buildingWorldService.getBuildingWorldByWorld(this)
+
 
 
