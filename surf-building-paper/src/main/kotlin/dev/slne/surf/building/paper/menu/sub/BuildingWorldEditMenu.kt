@@ -39,7 +39,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
             val displayName = buildItem(Material.NAME_TAG) {
                 displayName {
                     infoColored("Name: ")
-                    buildingWorld.buildingWorldName
+                    variableValue(buildingWorld.buildingWorldName)
                 }
             }
 
