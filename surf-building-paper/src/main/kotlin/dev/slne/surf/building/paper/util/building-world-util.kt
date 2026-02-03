@@ -26,7 +26,9 @@ fun World.isBuildingWorld(): Boolean {
 }
 
 fun Player.currentBuildingWorld() =
-    buildingWorldService.buildingWorlds.find { bWorld ->
-        bWorld.world.players.map { it.uniqueId }.contains(this.uniqueId)
+    buildingWorldService.buildingWorlds.find { buildingWorld ->
+        buildingWorld.world?.players?.any { it.uniqueId == this.uniqueId } == true
     }
+
+
 
