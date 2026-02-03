@@ -1,7 +1,9 @@
 package dev.slne.surf.building.paper.menu.sub
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
+import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldEditNameDialog
 import dev.slne.surf.building.paper.menu.util.MenuHeads
 import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
@@ -10,16 +12,19 @@ import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.infoColored
 import dev.slne.surf.building.paper.util.playClickSound
 import dev.slne.surf.building.paper.world.BuildingWorld
+import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.inventory.dsl.menu
+import dev.slne.surf.surfapi.bukkit.api.inventory.types.SurfChestGui
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
 
 private const val width = 9
 private const val height = 5
 
-fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld) =
+fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfChestGui =
     menu(buildText { spacer("Bau-Welt bearbeiten") }, height) {
         withOutline(width, height)
         withOutClicks()
@@ -27,6 +32,22 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
 
         val previousState = buildingWorld.status.allowBuild
         var currentState = previousState
+
+        val editNameButton = StaticPane(
+            2, 2, 1, 1
+        ).apply {
+            val displayName = buildItem(Material.NAME_TAG) {
+                displayName {
+                    infoColored("Name: ")
+                    buildingWorld.buildingWorldName
+                }
+            }
+
+            addItem(GuiItem(displayName) {
+                it.whoClicked.playClickSound()
+                it.whoClicked.showDialog(showBuildingWorldEditNameDialog(buildingWorld))
+            }, 0, 0)
+        }
 
         val statusButton = ToggleButton(
             4, 2, 1, 1, buildingWorld.status.allowBuild
@@ -68,6 +89,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
             }
         }
 
+        addPane(editNameButton)
         addPane(statusButton)
         show(player)
     }

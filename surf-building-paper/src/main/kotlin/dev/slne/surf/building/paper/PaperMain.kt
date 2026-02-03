@@ -28,7 +28,7 @@ class PaperMain : SuspendingJavaPlugin() {
 
     val menuItem = buildItem(Material.COMPASS) {
         displayName {
-
+            
         }
     }
 }

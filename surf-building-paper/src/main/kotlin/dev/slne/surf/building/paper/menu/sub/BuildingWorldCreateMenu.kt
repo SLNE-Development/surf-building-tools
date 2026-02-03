@@ -3,7 +3,7 @@ package dev.slne.surf.building.paper.menu.sub
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
-import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldNameDialog
+import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldCreateNameDialog
 import dev.slne.surf.building.paper.menu.util.MenuHeads
 import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
@@ -55,7 +55,7 @@ fun showBuildingWorldCreateMenu(
 
             addItem(GuiItem(displayName) {
                 it.whoClicked.playClickSound()
-                it.whoClicked.showDialog(showBuildingWorldNameDialog(name, mayChangedType))
+                it.whoClicked.showDialog(showBuildingWorldCreateNameDialog(name, mayChangedType))
             }, 0, 0)
         }
 

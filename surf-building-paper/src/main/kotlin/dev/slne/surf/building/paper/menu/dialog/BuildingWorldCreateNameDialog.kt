@@ -10,7 +10,7 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 
 @Suppress("UnstableApiUsage")
-fun showBuildingWorldNameDialog(
+fun showBuildingWorldCreateNameDialog(
     name: String? = null,
     type: BuildingWorld.Type? = null
 ) = dialog {
