@@ -19,7 +19,9 @@ import dev.slne.surf.surfapi.bukkit.api.builder.buildLore
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.ClickType
 
@@ -93,6 +95,10 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
                 }) {
                     pages.page = (pages.page - 1)
                     update()
+
+                    it.whoClicked.playSound(true) {
+                        type(Sound.ENTITY_CHICKEN_EGG)
+                    }
                 }, 2, 0
             )
         }
@@ -106,6 +112,10 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
                 }) {
                     pages.page = (pages.page + 1)
                     update()
+
+                    it.whoClicked.playSound(true) {
+                        type(Sound.ENTITY_CHICKEN_EGG)
+                    }
                 }, 6, 0
             )
         }
