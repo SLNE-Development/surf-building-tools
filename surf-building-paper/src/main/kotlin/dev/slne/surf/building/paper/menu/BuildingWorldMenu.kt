@@ -91,9 +91,9 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
                         variableValue("Vorherige Seite")
                     }
                 }) {
-                    pages.page = (pages.page - 1).coerceAtLeast(1)
+                    pages.page = (pages.page - 1)
                     update()
-                }, 1, 0
+                }, 2, 0
             )
         }
 
@@ -104,9 +104,9 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
                         variableValue("Nächste Seite")
                     }
                 }) {
-                    pages.page = (pages.page + 1).coerceAtMost(pages.pages - 1)
+                    pages.page = (pages.page + 1)
                     update()
-                }, 5, 0
+                }, 6, 0
             )
         }
     }
