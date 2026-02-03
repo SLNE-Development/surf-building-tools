@@ -5,7 +5,6 @@ import dev.slne.surf.building.paper.buildingConfig
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldPlayerDataService
 import dev.slne.surf.building.paper.util.currentBuildingWorld
-import dev.slne.surf.building.paper.util.isBuildingWorld
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import dev.slne.surf.surfapi.core.api.messages.adventure.showTitle
@@ -59,10 +58,8 @@ object ConnectionListener : Listener {
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
-        if (event.player.world.isBuildingWorld()) {
-            event.player.currentBuildingWorld()?.let {
-                buildingWorldPlayerDataService.savePlayerData(event.player, it)
-            }
+        event.player.currentBuildingWorld()?.let {
+            buildingWorldPlayerDataService.savePlayerData(event.player, it)
         }
     }
 
