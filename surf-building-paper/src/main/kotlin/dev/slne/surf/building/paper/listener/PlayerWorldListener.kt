@@ -1,14 +1,20 @@
 package dev.slne.surf.building.paper.listener
 
+import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldPlayerDataService
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.currentBuildingWorld
+import dev.slne.surf.building.paper.util.infoColored
 import dev.slne.surf.building.paper.util.isBuildingWorld
+import dev.slne.surf.building.paper.util.primaryColored
 import dev.slne.surf.surfapi.bukkit.api.scoreboard.ObsoleteScoreboardApi
 import dev.slne.surf.surfapi.bukkit.api.scoreboard.SurfScoreboard
 import dev.slne.surf.surfapi.bukkit.api.surfBukkitApi
+import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
+import kotlinx.coroutines.delay
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -16,6 +22,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.world.WorldSaveEvent
 import java.util.*
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ObsoleteScoreboardApi::class)
 object PlayerWorldListener : Listener {
@@ -44,7 +51,9 @@ object PlayerWorldListener : Listener {
                 buildingWorldPlayerDataService.loadPlayerData(player, it)
             }
         } else {
-            player.inventory.clear()
+            event.player.inventory.clear()
+            event.player.inventory.heldItemSlot = 4
+            event.player.inventory.setItem(4, plugin.menuItem)
         }
     }
 
@@ -61,34 +70,42 @@ object PlayerWorldListener : Listener {
     }
 
     private fun showScoreboard(player: Player) {
-        _scoreboards[player.uniqueId] = surfBukkitApi.createScoreboard(buildText {
-            primary("     Bau Server     ", TextDecoration.BOLD)
-        })
-            .addLine(buildText {
-                info("Welt: ")
+        plugin.launch {
+            delay(2.seconds)
+            _scoreboards[player.uniqueId] = surfBukkitApi.createScoreboard(buildText {
+                primaryColored("     Bau Server     ".toSmallCaps(), TextDecoration.BOLD)
             })
-            .addLine(buildText {
-                variableValue(player.currentBuildingWorld()?.buildingWorldName ?: "Unbekannt")
-            })
-            .addEmptyLine()
-            .addLine(buildText {
-                info("Besitzer: ")
-            })
-            .addLine(buildText {
-                variableValue(player.currentBuildingWorld()?.authorName ?: "/")
-            })
-            .addEmptyLine()
-            .addLine(buildText {
-                info("Status: ")
-            })
-            .addLine(buildText {
-                variableValue(player.currentBuildingWorld()?.status?.displayName ?: "/")
-            })
-            .addEmptyLine()
-            .build()
+                .addEmptyLine()
+                .addLine(buildText {
+                    infoColored("Welt: ".toSmallCaps())
+                })
+                .addLine(buildText {
+                    variableValue(player.currentBuildingWorld()?.buildingWorldName ?: "Unbekannt")
+                })
+                .addEmptyLine()
+                .addLine(buildText {
+                    infoColored("Besitzer: ".toSmallCaps())
+                })
+                .addUpdatableLine {
+                    buildText {
+                        variableValue(player.currentBuildingWorld()?.authorName ?: "/")
+                    }
+                }
+                .addEmptyLine()
+                .addLine(buildText {
+                    infoColored("Status: ".toSmallCaps())
+                })
+                .addUpdatableLine {
+                    buildText {
+                        variableValue(player.currentBuildingWorld()?.status?.displayName ?: "/")
+                    }
+                }
+                .addEmptyLine()
+                .build()
 
-        _scoreboards[player.uniqueId]?.enable()
-        _scoreboards[player.uniqueId]?.addViewer(player)
+            _scoreboards[player.uniqueId]?.enable()
+            _scoreboards[player.uniqueId]?.addViewer(player)
+        }
     }
 
     private fun hideScoreboard(player: Player) {

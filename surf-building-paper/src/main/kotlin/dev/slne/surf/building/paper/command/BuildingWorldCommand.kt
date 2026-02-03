@@ -2,12 +2,14 @@ package dev.slne.surf.building.paper.command
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.building.paper.buildingConfig
 import dev.slne.surf.building.paper.command.argument.buildingWorldArgument
 import dev.slne.surf.building.paper.permission.PermissionRegistry
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import org.bukkit.Bukkit
 
 fun buildingWorldCommand() = commandTree("buildingworld") {
     withAliases("bWorld", "bw")
@@ -106,11 +108,67 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
         }
     }
 
-    literalArgument("debug") {
-        playerExecutor { player, args ->
-            plugin.launch {
-                buildingWorldService.buildingWorlds.forEach {
-                    player.sendMessage("BuildingWorld: ${it.buildingWorldName} (${it.buildingWorldId}) - World: ${it.worldName} (${it.worldUuid}) - Author: ${it.authorName} (${it.authorUuid}) - CreatedAt: ${it.createdAt}")
+    literalArgument("done") {
+        buildingWorldArgument("bWorld") {
+            playerExecutor { player, args ->
+                val bWorld: BuildingWorld by args
+
+                val success = buildingWorldService.changeStatus(
+                    bWorld, BuildingWorld.Status.DONE
+                )
+
+                if (success) {
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Die Bau-Welt wurde erfolgreich als ")
+                        variableValue("'Fertiggestellt'")
+                        success(" markiert.")
+                    }
+                } else {
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Die Bau Welt ist bereits als 'Fertiggestellt' markiert!")
+                    }
+                }
+            }
+        }
+    }
+
+    literalArgument("published") {
+        buildingWorldArgument("bWorld") {
+            playerExecutor { player, args ->
+                val bWorld: BuildingWorld by args
+
+                val success = buildingWorldService.changeStatus(
+                    bWorld, BuildingWorld.Status.PUBLISHED
+                )
+
+                if (success) {
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Die Bau-Welt wurde erfolgreich als ")
+                        variableValue("'Veröffentlicht'")
+                        success(" markiert.")
+                    }
+                } else {
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Die Bau Welt ist bereits als 'Veröffentlicht' markiert!")
+                    }
+                }
+            }
+        }
+    }
+
+    literalArgument("lobby") {
+        playerExecutor { player, _ ->
+            player.teleportAsync(
+                Bukkit.getWorld(buildingConfig.lobbyWorldName)?.spawnLocation
+                    ?: error("Lobby world not found")
+            ).thenRun {
+                player.sendText {
+                    appendSuccessPrefix()
+                    success("Du wurdest erfolgreich in Bau-Server Lobby teleportiert!")
                 }
             }
         }

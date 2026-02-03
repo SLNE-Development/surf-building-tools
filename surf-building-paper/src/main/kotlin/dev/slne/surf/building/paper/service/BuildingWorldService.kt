@@ -9,7 +9,6 @@ import dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator
 import dev.slne.surf.surfapi.core.api.config.manager.SpongeConfigManager
 import dev.slne.surf.surfapi.core.api.config.surfConfigApi
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
-import dev.slne.surf.surfapi.core.api.util.mutableObjectSetOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
@@ -27,7 +26,8 @@ import kotlin.io.path.isDirectory
 val buildingWorldService = BuildingWorldService()
 
 class BuildingWorldService {
-    val buildingWorlds = mutableObjectSetOf<BuildingWorld>()
+    private val buildingWorldsMap = mutableObject2ObjectMapOf<String, BuildingWorld>()
+    val buildingWorlds get() = buildingWorldsMap.values
     val buildingWorldConfigManagers =
         mutableObject2ObjectMapOf<String, SpongeConfigManager<BuildingWorldConfig>>()
 
@@ -66,7 +66,7 @@ class BuildingWorldService {
             createdAt = OffsetDateTime.now()
         )
 
-        buildingWorlds.add(bWorld)
+        buildingWorldsMap[bWorld.buildingWorldId] = bWorld
 
         surfConfigApi.createSpongeYmlConfig(
             BuildingWorldConfig::class.java,
@@ -96,6 +96,15 @@ class BuildingWorldService {
         return true
     }
 
+    fun changeStatus(buildingWorld: BuildingWorld, status: BuildingWorld.Status): Boolean {
+        if (buildingWorld.status == status) {
+            return false
+        }
+
+        saveBuildingWorld(buildingWorld.copy(status = status))
+        return true
+    }
+
     fun saveBuildingWorld(buildingWorld: BuildingWorld) {
         buildingWorldConfigManagers[buildingWorld.buildingWorldId]?.apply {
             config.buildingWorldName = buildingWorld.buildingWorldName
@@ -109,6 +118,8 @@ class BuildingWorldService {
 
             this.save()
         }
+
+        buildingWorldsMap[buildingWorld.buildingWorldId] = buildingWorld
     }
 
     fun cacheAllBuildingWorlds() {
@@ -137,14 +148,14 @@ class BuildingWorldService {
                     createdAt = OffsetDateTime.parse(config.createdAtString)
                 )
 
-                buildingWorlds.add(bWorld)
+                buildingWorldsMap[bWorld.buildingWorldId] = bWorld
                 buildingWorldConfigManagers[config.buildingWorldId] = configManager
 
                 plugin.logger.info("Loaded Building World '${bWorld.buildingWorldName}' (#${bWorld.buildingWorldId}) by ${bWorld.authorName} !")
             }
         }
 
-        plugin.logger.info("Finished loading Building Worlds. Total: ${buildingWorlds.size}")
+        plugin.logger.info("Finished loading Building Worlds. Total: ${buildingWorldsMap.size}")
     }
 
     fun getBuildingWorldByWorld(world: World) = buildingWorlds
@@ -218,7 +229,7 @@ class BuildingWorldService {
 
 
             buildingWorldConfigManagers.remove(buildingWorldId)
-            buildingWorlds.removeIf { it.buildingWorldId == buildingWorldId }
+            buildingWorldsMap.remove(buildingWorldId)
             return@withContext true
         }
 }

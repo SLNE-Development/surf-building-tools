@@ -8,6 +8,7 @@ import dev.slne.surf.building.paper.listener.MenuItemListener
 import dev.slne.surf.building.paper.listener.PlayerWorldListener
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
+import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.event.register
 import org.bukkit.Material
 import org.bukkit.plugin.java.JavaPlugin
@@ -26,7 +27,9 @@ class PaperMain : SuspendingJavaPlugin() {
     }
 
     val menuItem = buildItem(Material.COMPASS) {
+        displayName {
 
+        }
     }
 }
 

@@ -25,7 +25,7 @@ data class BuildingWorld(
     @ConfigSerializable
     enum class Status(val displayName: String, val material: Material) {
         UNKNOWN("Unbekannt", Material.LIGHT_GRAY_DYE),
-        EDITING("Bearbeitung", Material.YELLOW_DYE),
+        EDITING("In Bearbeitung", Material.YELLOW_DYE),
         DONE("Fertiggestellt", Material.LIME_DYE),
         PUBLISHED("Veröffentlicht", Material.LIGHT_BLUE_DYE),
     }
