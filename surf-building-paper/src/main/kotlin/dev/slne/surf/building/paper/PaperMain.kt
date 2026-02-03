@@ -5,6 +5,7 @@ import dev.slne.surf.building.paper.command.buildingWorldCommand
 import dev.slne.surf.building.paper.config.BuildingConfigHolder
 import dev.slne.surf.building.paper.listener.*
 import dev.slne.surf.building.paper.service.buildingWorldService
+import dev.slne.surf.building.paper.util.primaryColored
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.event.register
@@ -28,7 +29,7 @@ class PaperMain : SuspendingJavaPlugin() {
 
     val menuItem = buildItem(Material.COMPASS) {
         displayName {
-            
+            primaryColored("Bau Welten Menu")
         }
     }
 }
