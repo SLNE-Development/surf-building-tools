@@ -4,6 +4,7 @@ import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.building.paper.buildingConfig
 import dev.slne.surf.building.paper.command.argument.buildingWorldArgument
+import dev.slne.surf.building.paper.menu.showBuildingWorldMenu
 import dev.slne.surf.building.paper.permission.PermissionRegistry
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldService
@@ -14,6 +15,11 @@ import org.bukkit.Bukkit
 fun buildingWorldCommand() = commandTree("buildingworld") {
     withAliases("bWorld", "bw")
     withPermission(PermissionRegistry.COMMAND)
+
+    playerExecutor { player, _ ->
+        showBuildingWorldMenu(player)
+    }
+
     literalArgument("create") {
         stringArgument("name") {
             playerExecutor { player, args ->
