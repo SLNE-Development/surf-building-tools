@@ -1,6 +1,6 @@
 package dev.slne.surf.building.paper.listener
 
-import dev.slne.surf.building.paper.service.buildingWorldItemsService
+import dev.slne.surf.building.paper.service.buildingWorldPlayerDataService
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.currentBuildingWorld
 import dev.slne.surf.building.paper.util.isBuildingWorld
@@ -27,6 +27,13 @@ object PlayerWorldListener : Listener {
         val toWorld = event.player.world
 
         hideScoreboard(player)
+        buildingWorldService.buildingWorlds.forEach { it.currentPlayers.remove(player.uniqueId) }
+
+        if (event.from.isBuildingWorld()) {
+            buildingWorldService.getBuildingWorldByWorld(event.from)?.let {
+                buildingWorldPlayerDataService.savePlayerData(player, it)
+            }
+        }
 
         if (toWorld.isBuildingWorld()) {
             showScoreboard(player)
@@ -34,16 +41,10 @@ object PlayerWorldListener : Listener {
             player.currentBuildingWorld()?.let {
                 it.currentPlayers.add(player.uniqueId)
 
-                buildingWorldItemsService.loadPlayerData(player, it)
+                buildingWorldPlayerDataService.loadPlayerData(player, it)
             }
         } else {
-            if (event.from.isBuildingWorld()) {
-                buildingWorldService.getBuildingWorldByWorld(event.from)?.let {
-                    buildingWorldItemsService.savePlayerData(player, it)
-                }
-            }
-
-            buildingWorldService.buildingWorlds.forEach { it.currentPlayers.remove(player.uniqueId) }
+            player.inventory.clear()
         }
     }
 
@@ -51,7 +52,7 @@ object PlayerWorldListener : Listener {
     fun onSave(event: WorldSaveEvent) {
         event.world.players.forEach {
             val buildingWorld = it.currentBuildingWorld() ?: return@forEach
-            buildingWorldItemsService.savePlayerData(it, buildingWorld)
+            buildingWorldPlayerDataService.savePlayerData(it, buildingWorld)
         }
 
         buildingWorldService.buildingWorlds.forEach {

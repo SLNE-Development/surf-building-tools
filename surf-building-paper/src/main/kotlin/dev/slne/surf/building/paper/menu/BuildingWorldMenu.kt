@@ -44,7 +44,7 @@ fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwel
             displayName {
                 primary("Neue Bauwelt erstellen")
             }
-        }), 3, 0)
+        }), 4, 0)
 
         if (contentPane.page < contentPane.pages - 1) {
             addItem(

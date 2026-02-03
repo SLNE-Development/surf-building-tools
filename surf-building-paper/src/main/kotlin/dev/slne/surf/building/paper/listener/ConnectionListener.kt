@@ -2,7 +2,7 @@ package dev.slne.surf.building.paper.listener
 
 import dev.slne.surf.building.paper.buildingConfig
 import dev.slne.surf.building.paper.plugin
-import dev.slne.surf.building.paper.service.buildingWorldItemsService
+import dev.slne.surf.building.paper.service.buildingWorldPlayerDataService
 import dev.slne.surf.building.paper.util.currentBuildingWorld
 import dev.slne.surf.building.paper.util.isBuildingWorld
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
@@ -51,7 +51,7 @@ object ConnectionListener : Listener {
     fun onQuit(event: PlayerQuitEvent) {
         if (event.player.world.isBuildingWorld()) {
             event.player.currentBuildingWorld()?.let {
-                buildingWorldItemsService.savePlayerData(event.player, it)
+                buildingWorldPlayerDataService.savePlayerData(event.player, it)
             }
         }
     }
