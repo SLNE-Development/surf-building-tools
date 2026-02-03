@@ -1,6 +1,7 @@
 package dev.slne.surf.building.paper.listener
 
 import dev.slne.surf.building.paper.buildingConfig
+import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.showTitle
 import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent
@@ -36,5 +37,9 @@ object ConnectionListener : Listener {
                 fadeOut(20)
             }
         }
+
+        event.player.inventory.clear()
+        event.player.inventory.heldItemSlot = 4
+        event.player.inventory.setItem(4, plugin.menuItem)
     }
 }

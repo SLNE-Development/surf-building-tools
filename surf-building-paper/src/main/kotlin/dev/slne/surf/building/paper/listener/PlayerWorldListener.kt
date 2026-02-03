@@ -1,5 +1,6 @@
 package dev.slne.surf.building.paper.listener
 
+import dev.slne.surf.building.paper.service.buildingWorldItemsService
 import dev.slne.surf.building.paper.util.currentBuildingWorld
 import dev.slne.surf.building.paper.util.isBuildingWorld
 import dev.slne.surf.surfapi.bukkit.api.scoreboard.ObsoleteScoreboardApi
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
+import org.bukkit.event.world.WorldSaveEvent
 import java.util.*
 
 @OptIn(ObsoleteScoreboardApi::class)
@@ -27,6 +29,15 @@ object PlayerWorldListener : Listener {
 
         if (toWorld.isBuildingWorld()) {
             showScoreboard(player)
+
+        }
+    }
+
+    @EventHandler
+    fun onSave(event: WorldSaveEvent) {
+        event.world.players.forEach {
+            val buildingWorld = it.currentBuildingWorld() ?: return@forEach
+            buildingWorldItemsService.savePlayerData(it, buildingWorld)
         }
     }
 
