@@ -80,12 +80,17 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld) = GuiItem(
             emptyLine()
             line {
                 spacer("Besitzer: ".toSmallCaps())
+            }
+            line {
                 variableValue(buildingWorld.authorName)
             }
             emptyLine()
 
             line {
                 spacer("Status: ".toSmallCaps())
+
+            }
+            line {
                 variableValue(buildingWorld.status.displayName)
             }
             emptyLine()

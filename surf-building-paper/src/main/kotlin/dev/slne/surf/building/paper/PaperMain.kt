@@ -5,6 +5,7 @@ import dev.slne.surf.building.paper.command.buildingWorldCommand
 import dev.slne.surf.building.paper.config.BuildingConfigHolder
 import dev.slne.surf.building.paper.listener.ConnectionListener
 import dev.slne.surf.building.paper.listener.MenuItemListener
+import dev.slne.surf.building.paper.listener.PlayerMoveListener
 import dev.slne.surf.building.paper.listener.PlayerWorldListener
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
@@ -20,6 +21,7 @@ class PaperMain : SuspendingJavaPlugin() {
         ConnectionListener.register()
         PlayerWorldListener.register()
         MenuItemListener.register()
+        PlayerMoveListener.register()
 
         buildingWorldCommand()
 
