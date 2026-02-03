@@ -58,7 +58,11 @@ fun showBuildingWorldNameDialog(
                         val name = response.getText("bworld_name")?.trim()?.replace(" ", "-")
 
                         player.closeDialog()
-                        showBuildingWorldCreateMenu(player, name, type)
+                        showBuildingWorldCreateMenu(
+                            player,
+                            if (name == "" || name == "-") null else name,
+                            type
+                        )
                     }
                 }
             })

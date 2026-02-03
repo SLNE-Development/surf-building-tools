@@ -17,9 +17,11 @@ import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.inventory.dsl.menu
 import dev.slne.surf.surfapi.bukkit.api.inventory.types.SurfChestGui
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
+import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.HumanEntity
 
 private const val width = 9
@@ -34,6 +36,8 @@ fun showBuildingWorldCreateMenu(
         withOutline(width, height)
         withOutClicks()
         withHomeButton(height)
+
+        var mayChangedType = type
 
         val nameButton = StaticPane(
             2, 2, 1, 1
@@ -51,12 +55,12 @@ fun showBuildingWorldCreateMenu(
 
             addItem(GuiItem(displayName) {
                 it.whoClicked.playClickSound()
-                it.whoClicked.showDialog(showBuildingWorldNameDialog(name, type))
+                it.whoClicked.showDialog(showBuildingWorldNameDialog(name, mayChangedType))
             }, 0, 0)
         }
 
         val typeButton = ToggleButton(
-            4, 2, 1, 1, true
+            4, 2, 1, 1
         ).apply {
             setEnabledItem(GuiItem(MenuHeads.WORLD.apply {
                 displayName {
@@ -65,6 +69,12 @@ fun showBuildingWorldCreateMenu(
                 }
             }) {
                 it.whoClicked.playClickSound()
+                mayChangedType = BuildingWorld.Type.FLAT
+
+                it.whoClicked.sendText {
+                    appendInfoPrefix()
+                    info("Der Weltentyp wurde auf 'Flach' gesetzt.")
+                }
             })
 
             setDisabledItem(GuiItem(MenuHeads.WORLD.apply {
@@ -74,6 +84,12 @@ fun showBuildingWorldCreateMenu(
                 }
             }) {
                 it.whoClicked.playClickSound()
+                mayChangedType = BuildingWorld.Type.VOID
+
+                it.whoClicked.sendText {
+                    appendInfoPrefix()
+                    info("Der Weltentyp wurde auf 'Leer' gesetzt.")
+                }
             })
         }
 
@@ -89,7 +105,17 @@ fun showBuildingWorldCreateMenu(
                     BuildingWorld.Type.FLAT
                 }
 
-                val name = "a"
+                val finalName = name ?: run {
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Die Bau-Welt konnte nicht erstellt werden, da kein Name gesetzt wurde!")
+                    }
+
+                    player.playSound(true) {
+                        type(Sound.ENTITY_VILLAGER_NO)
+                    }
+                    return@GuiItem
+                }
 
                 it.whoClicked.playClickSound()
                 it.whoClicked.closeInventory()
@@ -99,8 +125,9 @@ fun showBuildingWorldCreateMenu(
                     info("Die Bauwelt wird erstellt...")
                 }
 
+
                 val success = buildingWorldService.createBuildingWorld(
-                    name,
+                    finalName,
                     player.name,
                     player.uniqueId,
                     selectedType

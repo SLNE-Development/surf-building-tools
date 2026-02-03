@@ -46,7 +46,6 @@ class BuildingWorldService {
 
             BuildingWorld.Type.VOID -> WorldCreator
                 .name("bw-$id")
-                .type(WorldType.FLAT)
                 .generator(BuildingWorldGenerator)
                 .generateStructures(false)
                 .createWorld()
