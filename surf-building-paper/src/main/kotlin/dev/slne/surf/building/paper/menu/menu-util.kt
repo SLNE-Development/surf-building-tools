@@ -28,7 +28,7 @@ fun ChestGui.withOutline(width: Int, height: Int) = apply {
     })
 }
 
-fun ChestGui.withHomeButton(height: Int) = apply {
+fun ChestGui.withHomeButton(height: Int): ChestGui = apply {
     addPane(
         StaticPane(0, 0, 9, height, Pane.Priority.HIGHEST).apply {
             addItem(GuiItem(buildItem(Material.BARRIER) {
