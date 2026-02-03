@@ -74,9 +74,11 @@ object PlayerWorldListener : Listener {
             .addLine(buildText {
                 infoColored("Welt: ".toSmallCaps())
             })
-            .addLine(buildText {
-                variableValue(player.currentBuildingWorld()?.buildingWorldName ?: "Unbekannt")
-            })
+            .addUpdatableLine {
+                buildText {
+                    variableValue(player.currentBuildingWorld()?.buildingWorldName ?: "Unbekannt")
+                }
+            }
             .addEmptyLine()
             .addLine(buildText {
                 infoColored("Besitzer: ".toSmallCaps())
