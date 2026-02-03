@@ -60,9 +60,9 @@ fun showBuildingWorldCreateMenu(
         }
 
         val typeButton = ToggleButton(
-            4, 2, 1, 1
+            4, 2, 1, 1, mayChangedType == BuildingWorld.Type.VOID
         ).apply {
-            setEnabledItem(GuiItem(MenuHeads.WORLD.apply {
+            setEnabledItem(GuiItem(MenuHeads.WORLD.clone().apply {
                 displayName {
                     infoColored("Weltentyp: ")
                     variableValue("Leer")
@@ -77,7 +77,7 @@ fun showBuildingWorldCreateMenu(
                 }
             })
 
-            setDisabledItem(GuiItem(MenuHeads.WORLD.apply {
+            setDisabledItem(GuiItem(MenuHeads.WORLD.clone().apply {
                 displayName {
                     infoColored("Weltentyp: ")
                     variableValue("Flach")
