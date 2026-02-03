@@ -60,6 +60,7 @@ fun showBuildingWorldMenu(player: HumanEntity) = menu(buildText { spacer("Bauwel
     })
 
     addPane(contentPane)
+    show(player)
 }
 
 private fun buildBuildingWorldItem(buildingWorld: BuildingWorld) =
