@@ -11,10 +11,7 @@ import dev.slne.surf.surfapi.core.api.config.surfConfigApi
 import dev.slne.surf.surfapi.core.api.util.mutableObject2ObjectMapOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.bukkit.Bukkit
-import org.bukkit.GameRules
-import org.bukkit.World
-import org.bukkit.WorldCreator
+import org.bukkit.*
 import org.bukkit.block.BlockType
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
@@ -35,11 +32,25 @@ class BuildingWorldService {
     fun createBuildingWorld(
         buildingWorldName: String,
         authorName: String,
-        authorUuid: UUID
+        authorUuid: UUID,
+        type: BuildingWorld.Type
     ): BuildingWorld? {
         val id = generateBuildingWorldId()
-        val world = WorldCreator.name("bw-$id").generator(BuildingWorldGenerator).createWorld()
-            ?: return null
+
+        val world = when (type) {
+            BuildingWorld.Type.FLAT -> WorldCreator
+                .name("bw-$id")
+                .type(WorldType.FLAT)
+                .generateStructures(false)
+                .createWorld()
+
+            BuildingWorld.Type.VOID -> WorldCreator
+                .name("bw-$id")
+                .type(WorldType.FLAT)
+                .generator(BuildingWorldGenerator)
+                .generateStructures(false)
+                .createWorld()
+        } ?: return null
 
         world.setSpawnLocation(0, 0, 0)
         world.setBlockData(0, -1, 0, BlockType.BEDROCK.createBlockData())

@@ -27,7 +27,10 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                 val name: String by args
 
                 val success =
-                    buildingWorldService.createBuildingWorld(name, player.name, player.uniqueId)
+                    buildingWorldService.createBuildingWorld(
+                        name, player.name, player.uniqueId,
+                        BuildingWorld.Type.VOID
+                    )
 
                 if (success != null) {
                     player.sendText {

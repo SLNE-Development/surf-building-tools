@@ -29,4 +29,8 @@ data class BuildingWorld(
         DONE("Fertiggestellt", Material.LIME_DYE, false),
         PUBLISHED("Veröffentlicht", Material.LIGHT_BLUE_DYE, false),
     }
+
+    enum class Type {
+        FLAT, VOID
+    }
 }

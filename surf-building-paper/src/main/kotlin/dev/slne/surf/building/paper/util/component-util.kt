@@ -1,10 +1,13 @@
 package dev.slne.surf.building.paper.util
 
 import dev.slne.surf.surfapi.core.api.messages.Colors
+import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Sound
+import org.bukkit.entity.HumanEntity
 
 fun SurfComponentBuilder.infoColored(text: Any, vararg decoration: TextDecoration) =
     coloredComponent(
@@ -28,3 +31,10 @@ fun SurfComponentBuilder.displayKey(key: String) =
     append(
         MiniMessage.miniMessage().deserialize("<key:key.$key>")
     ).color(Colors.WHITE) // https://minecraft.fandom.com/wiki/Key_codes
+
+
+fun HumanEntity.playClickSound() {
+    this.playSound(true) {
+        type(Sound.UI_BUTTON_CLICK)
+    }
+}

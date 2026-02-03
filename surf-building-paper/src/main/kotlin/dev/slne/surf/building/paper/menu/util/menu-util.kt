@@ -1,9 +1,10 @@
-package dev.slne.surf.building.paper.menu
+package dev.slne.surf.building.paper.menu.util
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import dev.slne.surf.building.paper.menu.showBuildingWorldMenu
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import org.bukkit.Material

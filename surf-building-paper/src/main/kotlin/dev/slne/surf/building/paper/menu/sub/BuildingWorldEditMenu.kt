@@ -1,16 +1,19 @@
-package dev.slne.surf.building.paper.menu
+package dev.slne.surf.building.paper.menu.sub
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
+import dev.slne.surf.building.paper.menu.util.MenuHeads
+import dev.slne.surf.building.paper.menu.util.withHomeButton
+import dev.slne.surf.building.paper.menu.util.withOutClicks
+import dev.slne.surf.building.paper.menu.util.withOutline
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.infoColored
+import dev.slne.surf.building.paper.util.playClickSound
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.inventory.dsl.menu
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import org.bukkit.Sound
 import org.bukkit.entity.HumanEntity
 
 private const val width = 9
@@ -68,9 +71,3 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         addPane(statusButton)
         show(player)
     }
-
-private fun HumanEntity.playClickSound() {
-    this.playSound(true) {
-        type(Sound.UI_BUTTON_CLICK)
-    }
-}
