@@ -7,11 +7,12 @@ import org.bukkit.entity.HumanEntity
 private const val width = 9
 private const val height = 5
 
-fun showBuildingWorldCreateMenu(player: HumanEntity) = menu(buildText { }, height) {
-    withOutline(width, height)
-    withOutClicks()
-    withHomeButton(height)
+fun showBuildingWorldCreateMenu(player: HumanEntity) =
+    menu(buildText { spacer("Bau-Welt erstellen") }, height) {
+        withOutline(width, height)
+        withOutClicks()
+        withHomeButton(height)
 
 
-    show(player)
-}
+        show(player)
+    }

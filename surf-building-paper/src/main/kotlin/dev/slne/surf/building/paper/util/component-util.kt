@@ -1,5 +1,6 @@
 package dev.slne.surf.building.paper.util
 
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -26,4 +27,4 @@ fun SurfComponentBuilder.noteColored(text: Any, vararg decoration: TextDecoratio
 fun SurfComponentBuilder.displayKey(key: String) =
     append(
         MiniMessage.miniMessage().deserialize("<key:key.$key>")
-    ) // https://minecraft.fandom.com/wiki/Key_codes
+    ).color(Colors.WHITE) // https://minecraft.fandom.com/wiki/Key_codes
