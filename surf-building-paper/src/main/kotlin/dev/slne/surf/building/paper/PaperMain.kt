@@ -24,11 +24,11 @@ class PaperMain : SuspendingJavaPlugin() {
         PlayerWorldStatusListener.register()
 
         buildingWorldCommand()
+        
+        // Preload valid materials list before loading worlds to avoid legacy material warnings
+        preloadValidMaterials()
 
         buildingWorldService.cacheAllBuildingWorlds()
-        
-        // Preload valid materials list to avoid legacy material warnings
-        preloadValidMaterials()
     }
 
     val menuItem = buildItem(Material.COMPASS) {
