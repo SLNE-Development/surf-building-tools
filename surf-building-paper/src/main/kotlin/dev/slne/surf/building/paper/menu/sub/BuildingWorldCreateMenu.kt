@@ -60,7 +60,7 @@ fun showBuildingWorldCreateMenu(
         }
 
         val typeButton = ToggleButton(
-            4, 2, 1, 1, mayChangedType == BuildingWorld.Type.VOID
+            4, 2, 1, 1, mayChangedType != BuildingWorld.Type.VOID
         ).apply {
             setEnabledItem(GuiItem(MenuHeads.WORLD.clone().apply {
                 displayName {
