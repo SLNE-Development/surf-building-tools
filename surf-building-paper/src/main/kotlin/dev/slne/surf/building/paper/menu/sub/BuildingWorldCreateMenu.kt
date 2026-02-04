@@ -63,7 +63,7 @@ fun showBuildingWorldCreateMenu(
         }
 
         val typeButton = ToggleButton(
-            3, 2, 1, 1, mayChangedType != BuildingWorld.Type.VOID
+            3, 2, 1, 1, mayChangedType == BuildingWorld.Type.VOID
         ).apply {
             setEnabledItem(GuiItem(MenuHeads.WORLD.clone().apply {
                 displayName {
@@ -130,7 +130,8 @@ fun showBuildingWorldCreateMenu(
                 }
             }) {
                 // Use mayChangedType instead of reading from toggle button state
-                val selectedType = mayChangedType ?: BuildingWorld.Type.FLAT
+                // Default to VOID if not set
+                val selectedType = mayChangedType ?: BuildingWorld.Type.VOID
 
                 val finalName = name ?: run {
                     player.sendText {
