@@ -23,7 +23,7 @@ private const val width = 9
 private const val height = 6
 
 private val validMaterials by lazy {
-    Material.entries.filter { !it.isLegacy && it.isBlock && it.isItem && !it.isAir }
+    Material.entries.filter { !it.isLegacy && it.isItem && !it.isAir }
         .sortedBy { it.name }
 }
 
