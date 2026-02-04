@@ -174,7 +174,7 @@ class BuildingWorldService {
                 buildingWorldsMap[bWorld.buildingWorldId] = bWorld
                 buildingWorldConfigManagers[config.buildingWorldId] = configManager
 
-                plugin.logger.info("Loaded Building World '${bWorld.buildingWorldName}' (#${bWorld.buildingWorldId}) by ${bWorld.authorName} !")
+                plugin.logger.info("Loaded Building World '${bWorld.buildingWorldName}' (#${bWorld.buildingWorldId}) by ${bWorld.authorName}!")
             }
         }
 
@@ -232,35 +232,30 @@ class BuildingWorldService {
                 .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return@withContext false
 
             val world = Bukkit.getWorld(buildingWorld.worldName)
-                ?: return@withContext false
 
             val lobbySpawn = Bukkit.getWorld(buildingConfig.lobbyWorldName)?.spawnLocation
                 ?: return@withContext false
 
             val futures = mutableListOf<CompletableFuture<Boolean>>()
 
-            world.players.forEach {
+            world?.players?.forEach {
                 futures.add(it.teleportAsync(lobbySpawn))
             }
 
             CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
-                if (Bukkit.getWorld(world.name) != null) {
-                    if (!Bukkit.unloadWorld(world, true)) {
+                world?.let {
+                    if (!Bukkit.unloadWorld(it, false)) {
                         error("Failed to unload world ${world.name}")
                     }
                 }
 
-                val file = Bukkit.getWorldContainer().resolve(world.name)
-                if (!file.exists() || !file.isDirectory) {
-                    error("World folder for world ${world.name} does not exist")
+                if (!buildingWorld.folder.exists() || !buildingWorld.folder.isDirectory) {
+                    error("World folder for world ${buildingWorld.worldName} does not exist")
                 }
 
-                file.deleteRecursively()
-
-                // Remove generator from bukkit.yml
-                removeGeneratorFromBukkitYml(world.name)
+                buildingWorld.folder.deleteRecursively()
+                removeGeneratorFromBukkitYml(buildingWorld.worldName)
             }
-
 
             buildingWorldConfigManagers.remove(buildingWorldId)
             buildingWorldsMap.remove(buildingWorldId)
