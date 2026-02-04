@@ -7,10 +7,12 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.slne.surf.building.paper.menu.sub.showBuildingWorldCreateMenu
+import dev.slne.surf.building.paper.menu.sub.showBuildingWorldDeleteConfirmMenu
 import dev.slne.surf.building.paper.menu.sub.showBuildingWorldEditMenu
 import dev.slne.surf.building.paper.menu.util.MenuHeads
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
+import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.displayKey
 import dev.slne.surf.building.paper.util.playClickSound
@@ -155,16 +157,28 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEn
                     displayKey("mouse.right")
                     spacer(" zum bearbeiten")
                 }
+                line {
+                    spacer("Nutze ")
+                    displayKey("key.shift")
+                    spacer(" + ")
+                    displayKey("mouse.left")
+                    spacer(" zum löschen")
+                }
             }
         }
     }) {
-    if (it.click == ClickType.LEFT) {
+    if (it.click == ClickType.SHIFT_LEFT) {
+        if (buildingWorld.authorUuid == player.uniqueId) {
+            showBuildingWorldDeleteConfirmMenu(it.whoClicked, buildingWorld, plugin)
+            it.whoClicked.playClickSound()
+        }
+    } else if (it.click == ClickType.LEFT) {
         buildingWorldService.joinAndOrLoadBuildingWorld(
             it.whoClicked,
             buildingWorld.buildingWorldId
         )
         it.whoClicked.playClickSound()
-    } else {
+    } else if (it.click == ClickType.RIGHT) {
         if (buildingWorld.authorUuid == player.uniqueId) {
             showBuildingWorldEditMenu(it.whoClicked, buildingWorld)
             it.whoClicked.playClickSound()
