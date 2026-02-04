@@ -31,10 +31,10 @@ fun parseWorldType(worldTypeString: String): BuildingWorld.Type {
         try {
             BuildingWorld.Type.valueOf(worldTypeString)
         } catch (e: IllegalArgumentException) {
-            BuildingWorld.Type.FLAT // Default for invalid or old configs
+            BuildingWorld.Type.FLAT
         }
     } else {
-        BuildingWorld.Type.FLAT // Default for empty strings
+        BuildingWorld.Type.FLAT
     }
 }
 

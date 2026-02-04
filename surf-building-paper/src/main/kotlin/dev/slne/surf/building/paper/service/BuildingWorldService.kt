@@ -55,7 +55,6 @@ class BuildingWorldService {
                 .createWorld()
         } ?: return null
 
-        // Save generator to bukkit.yml for VOID worlds
         if (type == BuildingWorld.Type.VOID) {
             addGeneratorToBukkitYml(world.name)
         }
