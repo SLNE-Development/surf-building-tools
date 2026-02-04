@@ -119,7 +119,7 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
 }
 
 private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEntity) = GuiItem(
-    buildItem(buildingWorld.status.material) {
+    buildItem(buildingWorld.displayItem) {
         displayName {
             primary(buildingWorld.buildingWorldName)
         }

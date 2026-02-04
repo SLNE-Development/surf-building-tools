@@ -66,7 +66,7 @@ object ConnectionListener : Listener {
     suspend fun playWelcomeSound(player: Player) {
         player.playSound(true) {
             type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.0f) // Pling
+            pitch(1.0f)
             volume(1f)
         }
 
@@ -74,7 +74,7 @@ object ConnectionListener : Listener {
 
         player.playSound(true) {
             type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.3348f) // Pong (höherer Ton)
+            pitch(1.3348f)
             volume(1f)
         }
 
@@ -82,7 +82,7 @@ object ConnectionListener : Listener {
 
         player.playSound(true) {
             type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.1225f) // Ping (mittlerer Ton)
+            pitch(1.1225f)
             volume(1f)
         }
 
@@ -90,7 +90,7 @@ object ConnectionListener : Listener {
 
         player.playSound(true) {
             type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.0f) // Pling (wieder Grundton)
+            pitch(1.0f)
             volume(1f)
         }
     }

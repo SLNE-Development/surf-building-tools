@@ -23,18 +23,15 @@ fun generateBuildingWorldId(): String {
     }
 }
 
-/**
- * Safely parse world type from config string, returning FLAT as default
- */
 fun parseWorldType(worldTypeString: String): BuildingWorld.Type {
     return if (worldTypeString.isNotEmpty()) {
         try {
             BuildingWorld.Type.valueOf(worldTypeString)
         } catch (e: IllegalArgumentException) {
-            BuildingWorld.Type.FLAT // Default for invalid or old configs
+            BuildingWorld.Type.FLAT
         }
     } else {
-        BuildingWorld.Type.FLAT // Default for empty strings
+        BuildingWorld.Type.FLAT
     }
 }
 

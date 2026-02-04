@@ -11,6 +11,7 @@ import dev.slne.surf.building.paper.menu.util.withOutline
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.infoColored
 import dev.slne.surf.building.paper.util.playClickSound
+import dev.slne.surf.building.paper.util.translatable
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
@@ -30,7 +31,8 @@ private const val height = 5
 fun showBuildingWorldCreateMenu(
     player: HumanEntity,
     name: String? = null,
-    type: BuildingWorld.Type? = null
+    type: BuildingWorld.Type? = null,
+    displayItem: Material? = null
 ): SurfChestGui =
     menu(buildText { spacer("Bau-Welt erstellen") }, height) {
         withOutline(width, height)
@@ -38,9 +40,10 @@ fun showBuildingWorldCreateMenu(
         withHomeButton(height)
 
         var mayChangedType = type
+        var mayChangedDisplayItem = displayItem ?: Material.GRASS_BLOCK
 
         val nameButton = StaticPane(
-            2, 2, 1, 1
+            1, 2, 1, 1
         ).apply {
             val displayName = buildItem(Material.NAME_TAG) {
                 displayName {
@@ -55,12 +58,18 @@ fun showBuildingWorldCreateMenu(
 
             addItem(GuiItem(displayName) {
                 it.whoClicked.playClickSound()
-                it.whoClicked.showDialog(showBuildingWorldCreateNameDialog(name, mayChangedType))
+                it.whoClicked.showDialog(
+                    showBuildingWorldCreateNameDialog(
+                        name,
+                        mayChangedType,
+                        mayChangedDisplayItem
+                    )
+                )
             }, 0, 0)
         }
 
         val typeButton = ToggleButton(
-            4, 2, 1, 1, mayChangedType != BuildingWorld.Type.VOID
+            3, 2, 1, 1, mayChangedType == BuildingWorld.Type.VOID
         ).apply {
             setEnabledItem(GuiItem(MenuHeads.WORLD.clone().apply {
                 displayName {
@@ -93,17 +102,50 @@ fun showBuildingWorldCreateMenu(
             })
         }
 
-        val createButton = StaticPane(6, 2, 1, 1).apply {
+        val displayItemButton = StaticPane(
+            5, 2, 1, 1
+        ).apply {
+            fun updateDisplayItem() {
+                clear()
+                val item = buildItem(mayChangedDisplayItem) {
+                    displayName {
+                        infoColored("Display-Item: ")
+                        translatable(mayChangedDisplayItem.translationKey())
+                    }
+                }
+
+                addItem(GuiItem(item) {
+                    it.whoClicked.playClickSound()
+                    showDisplayItemSelectMenuForCreate(
+                        it.whoClicked,
+                        name,
+                        mayChangedType,
+                        mayChangedDisplayItem
+                    ) { selectedMaterial ->
+                        mayChangedDisplayItem = selectedMaterial
+                        it.whoClicked.sendText {
+                            appendInfoPrefix()
+                            info("Das Display-Item wurde geändert.")
+                        }
+                        showBuildingWorldCreateMenu(
+                            it.whoClicked,
+                            name,
+                            mayChangedType,
+                            mayChangedDisplayItem
+                        )
+                    }
+                }, 0, 0)
+            }
+            updateDisplayItem()
+        }
+
+        val createButton = StaticPane(7, 2, 1, 1).apply {
             addItem(GuiItem(MenuHeads.CHECK.apply {
                 displayName {
                     infoColored("Bauwelt erstellen")
                 }
             }) {
-                val selectedType = if (typeButton.isEnabled) {
-                    BuildingWorld.Type.VOID
-                } else {
-                    BuildingWorld.Type.FLAT
-                }
+                val selectedType = mayChangedType ?: BuildingWorld.Type.VOID
 
                 val finalName = name ?: run {
                     player.sendText {
@@ -130,7 +172,8 @@ fun showBuildingWorldCreateMenu(
                     finalName,
                     player.name,
                     player.uniqueId,
-                    selectedType
+                    selectedType,
+                    mayChangedDisplayItem
                 )
 
                 if (success != null) {
@@ -160,6 +203,7 @@ fun showBuildingWorldCreateMenu(
 
         addPane(typeButton)
         addPane(nameButton)
+        addPane(displayItemButton)
         addPane(createButton)
         show(player)
     }

@@ -17,7 +17,8 @@ data class BuildingWorld(
     val authorUuid: UUID,
     val status: Status,
     val createdAt: OffsetDateTime,
-    val type: Type = Type.FLAT
+    val type: Type = Type.FLAT,
+    val displayItem: Material = Material.GRASS_BLOCK
 ) {
     val currentPlayers = mutableObjectSetOf<UUID>()
     val folder = plugin.server.worldContainer.resolve(worldName)
