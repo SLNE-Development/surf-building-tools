@@ -159,7 +159,7 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEn
                 }
                 line {
                     spacer("Nutze ")
-                    displayKey("key.shift")
+                    displayKey("sneak")
                     spacer(" + ")
                     displayKey("mouse.left")
                     spacer(" zum löschen")
