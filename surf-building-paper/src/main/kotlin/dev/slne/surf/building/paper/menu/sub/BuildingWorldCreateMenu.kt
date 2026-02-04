@@ -129,11 +129,8 @@ fun showBuildingWorldCreateMenu(
                     infoColored("Bauwelt erstellen")
                 }
             }) {
-                val selectedType = if (typeButton.isEnabled) {
-                    BuildingWorld.Type.VOID
-                } else {
-                    BuildingWorld.Type.FLAT
-                }
+                // Use mayChangedType instead of reading from toggle button state
+                val selectedType = mayChangedType ?: BuildingWorld.Type.FLAT
 
                 val finalName = name ?: run {
                     player.sendText {
