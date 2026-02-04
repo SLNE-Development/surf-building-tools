@@ -54,7 +54,6 @@ private class DisplayItemSelectMenuForCreate(
             GuiItem(buildItem(material) {
                 displayName {
                     if (material == currentDisplayItem) {
-                        success("")
                         translatable(material.translationKey())
                         spacer(" ")
                         success("(Ausgewählt)")
@@ -150,7 +149,6 @@ private class DisplayItemSelectMenuForEdit(
             GuiItem(buildItem(material) {
                 displayName {
                     if (material == buildingWorld.displayItem) {
-                        success("")
                         translatable(material.translationKey())
                         spacer(" ")
                         success("(Ausgewählt)")
