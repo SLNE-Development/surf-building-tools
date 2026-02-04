@@ -8,11 +8,13 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.builder.actionButton
 import dev.slne.surf.surfapi.bukkit.api.dialog.dialog
 import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
+import org.bukkit.Material
 
 @Suppress("UnstableApiUsage")
 fun showBuildingWorldCreateNameDialog(
     name: String? = null,
-    type: BuildingWorld.Type? = null
+    type: BuildingWorld.Type? = null,
+    displayItem: Material? = null
 ) = dialog {
     base {
         title { primaryColored("Bau-Welt benennen") }
@@ -45,7 +47,7 @@ fun showBuildingWorldCreateNameDialog(
                 action {
                     customPlayerClick { _, player ->
                         player.closeDialog()
-                        showBuildingWorldCreateMenu(player, name, type)
+                        showBuildingWorldCreateMenu(player, name, type, displayItem)
                     }
                 }
             }, actionButton {
@@ -61,7 +63,8 @@ fun showBuildingWorldCreateNameDialog(
                         showBuildingWorldCreateMenu(
                             player,
                             if (name == "" || name == "-") null else name,
-                            type
+                            type,
+                            displayItem
                         )
                     }
                 }

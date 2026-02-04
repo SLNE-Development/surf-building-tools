@@ -36,7 +36,8 @@ class BuildingWorldService {
         buildingWorldName: String,
         authorName: String,
         authorUuid: UUID,
-        type: BuildingWorld.Type
+        type: BuildingWorld.Type,
+        displayItem: Material = Material.GRASS_BLOCK
     ): BuildingWorld? {
         val id = generateBuildingWorldId()
 
@@ -83,7 +84,8 @@ class BuildingWorldService {
             authorUuid = authorUuid,
             status = BuildingWorld.Status.EDITING,
             createdAt = OffsetDateTime.now(),
-            type = type
+            type = type,
+            displayItem = displayItem
         )
 
         buildingWorldsMap[bWorld.buildingWorldId] = bWorld
@@ -110,6 +112,7 @@ class BuildingWorldService {
             config.status = bWorld.status.name
             config.createdAtString = bWorld.createdAt.toString()
             config.worldType = bWorld.type.name
+            config.displayItemName = bWorld.displayItem.name
 
             this.save()
         }
@@ -137,6 +140,7 @@ class BuildingWorldService {
             config.status = buildingWorld.status.name
             config.createdAtString = buildingWorld.createdAt.toString()
             config.worldType = buildingWorld.type.name
+            config.displayItemName = buildingWorld.displayItem.name
 
             this.save()
         }
@@ -168,7 +172,8 @@ class BuildingWorldService {
                     authorUuid = config.authorUuid,
                     status = BuildingWorld.Status.valueOf(config.status),
                     createdAt = OffsetDateTime.parse(config.createdAtString),
-                    type = parseWorldType(config.worldType)
+                    type = parseWorldType(config.worldType),
+                    displayItem = try { Material.valueOf(config.displayItemName) } catch (e: Exception) { Material.GRASS_BLOCK }
                 )
 
                 buildingWorldsMap[bWorld.buildingWorldId] = bWorld

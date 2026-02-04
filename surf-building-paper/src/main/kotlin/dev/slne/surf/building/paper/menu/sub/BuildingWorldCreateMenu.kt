@@ -30,7 +30,8 @@ private const val height = 5
 fun showBuildingWorldCreateMenu(
     player: HumanEntity,
     name: String? = null,
-    type: BuildingWorld.Type? = null
+    type: BuildingWorld.Type? = null,
+    displayItem: Material? = null
 ): SurfChestGui =
     menu(buildText { spacer("Bau-Welt erstellen") }, height) {
         withOutline(width, height)
@@ -38,9 +39,10 @@ fun showBuildingWorldCreateMenu(
         withHomeButton(height)
 
         var mayChangedType = type
+        var mayChangedDisplayItem = displayItem ?: Material.GRASS_BLOCK
 
         val nameButton = StaticPane(
-            2, 2, 1, 1
+            1, 2, 1, 1
         ).apply {
             val displayName = buildItem(Material.NAME_TAG) {
                 displayName {
@@ -55,12 +57,12 @@ fun showBuildingWorldCreateMenu(
 
             addItem(GuiItem(displayName) {
                 it.whoClicked.playClickSound()
-                it.whoClicked.showDialog(showBuildingWorldCreateNameDialog(name, mayChangedType))
+                it.whoClicked.showDialog(showBuildingWorldCreateNameDialog(name, mayChangedType, mayChangedDisplayItem))
             }, 0, 0)
         }
 
         val typeButton = ToggleButton(
-            4, 2, 1, 1, mayChangedType != BuildingWorld.Type.VOID
+            3, 2, 1, 1, mayChangedType != BuildingWorld.Type.VOID
         ).apply {
             setEnabledItem(GuiItem(MenuHeads.WORLD.clone().apply {
                 displayName {
@@ -93,7 +95,34 @@ fun showBuildingWorldCreateMenu(
             })
         }
 
-        val createButton = StaticPane(6, 2, 1, 1).apply {
+        val displayItemButton = StaticPane(
+            5, 2, 1, 1
+        ).apply {
+            fun updateDisplayItem() {
+                clear()
+                val item = buildItem(mayChangedDisplayItem) {
+                    displayName {
+                        infoColored("Display-Item: ")
+                        variableValue(mayChangedDisplayItem.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                    }
+                }
+
+                addItem(GuiItem(item) {
+                    it.whoClicked.playClickSound()
+                    showDisplayItemSelectMenuForCreate(it.whoClicked, name, mayChangedType, mayChangedDisplayItem) { selectedMaterial ->
+                        mayChangedDisplayItem = selectedMaterial
+                        it.whoClicked.sendText {
+                            appendInfoPrefix()
+                            info("Das Display-Item wurde auf ${selectedMaterial.name.lowercase().replace("_", " ")} gesetzt.")
+                        }
+                        showBuildingWorldCreateMenu(it.whoClicked, name, mayChangedType, mayChangedDisplayItem)
+                    }
+                }, 0, 0)
+            }
+            updateDisplayItem()
+        }
+
+        val createButton = StaticPane(7, 2, 1, 1).apply {
             addItem(GuiItem(MenuHeads.CHECK.apply {
                 displayName {
                     infoColored("Bauwelt erstellen")
@@ -130,7 +159,8 @@ fun showBuildingWorldCreateMenu(
                     finalName,
                     player.name,
                     player.uniqueId,
-                    selectedType
+                    selectedType,
+                    mayChangedDisplayItem
                 )
 
                 if (success != null) {
@@ -160,6 +190,7 @@ fun showBuildingWorldCreateMenu(
 
         addPane(typeButton)
         addPane(nameButton)
+        addPane(displayItemButton)
         addPane(createButton)
         show(player)
     }

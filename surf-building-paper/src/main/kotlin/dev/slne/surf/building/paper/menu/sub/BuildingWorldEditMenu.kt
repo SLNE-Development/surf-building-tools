@@ -32,9 +32,10 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
 
         val previousState = buildingWorld.status.allowBuild
         var currentState = previousState
+        var currentDisplayItem = buildingWorld.displayItem
 
         val editNameButton = StaticPane(
-            2, 2, 1, 1
+            2, 1, 1, 1
         ).apply {
             val displayName = buildItem(Material.NAME_TAG) {
                 displayName {
@@ -50,7 +51,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         }
 
         val statusButton = ToggleButton(
-            4, 2, 1, 1, buildingWorld.status.allowBuild
+            4, 1, 1, 1, buildingWorld.status.allowBuild
         ).apply {
             setEnabledItem(GuiItem(MenuHeads.STATE_EDITING.apply {
                 displayName {
@@ -83,11 +84,44 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
             })
         }
 
+        val displayItemButton = StaticPane(
+            6, 1, 1, 1
+        ).apply {
+            fun updateDisplayItem() {
+                clear()
+                val item = buildItem(currentDisplayItem) {
+                    displayName {
+                        infoColored("Display-Item: ")
+                        variableValue(currentDisplayItem.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                    }
+                }
+
+                addItem(GuiItem(item) {
+                    it.whoClicked.playClickSound()
+                    showDisplayItemSelectMenuForEdit(it.whoClicked, buildingWorld) { selectedMaterial ->
+                        currentDisplayItem = selectedMaterial
+                        it.whoClicked.sendText {
+                            appendSuccessPrefix()
+                            success("Das Display-Item wurde auf ${selectedMaterial.name.lowercase().replace("_", " ")} gesetzt.")
+                        }
+                        showBuildingWorldEditMenu(it.whoClicked, buildingWorld.copy(displayItem = currentDisplayItem))
+                    }
+                }, 0, 0)
+            }
+            updateDisplayItem()
+        }
+
         setOnClose {
-            buildingWorldService.saveBuildingWorld(buildingWorld.copy(status = if (currentState) BuildingWorld.Status.EDITING else BuildingWorld.Status.DONE))
+            buildingWorldService.saveBuildingWorld(
+                buildingWorld.copy(
+                    status = if (currentState) BuildingWorld.Status.EDITING else BuildingWorld.Status.DONE,
+                    displayItem = currentDisplayItem
+                )
+            )
         }
 
         addPane(editNameButton)
         addPane(statusButton)
+        addPane(displayItemButton)
         show(player)
     }
