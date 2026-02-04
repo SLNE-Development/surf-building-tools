@@ -37,15 +37,7 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
     height,
     ComponentHolder.of(buildText { spacer("Bauwelten") })
 ) {
-    val contentPane = PaginatedPane(1, 1, width - 2, height - 2).apply {
-        populateWithGuiItems(
-            buildingWorldService.buildingWorlds
-                .sortedWith(compareBy<BuildingWorld> { it.status }.thenBy { it.authorName }
-                    .thenBy { it.buildingWorldName })
-                .map { buildBuildingWorldItem(it, player) }
-        )
-    }
-
+    val contentPane = PaginatedPane(1, 1, width - 2, height - 2)
     val navBar = StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST)
 
     init {
@@ -64,19 +56,22 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
 
         addPane(contentPane)
         addPane(navBar)
-        show(player)
-
         update()
+        show(player)
     }
 
     override fun update() {
         contentPane.clear()
         contentPane.populateWithGuiItems(
             buildingWorldService.buildingWorlds
-                .sortedWith(compareBy<BuildingWorld> { it.status }.thenBy { it.authorName }
-                    .thenBy { it.buildingWorldName })
+                .sortedWith(
+                    compareBy<BuildingWorld> { it.status }
+                        .thenBy { it.authorName }
+                        .thenBy(naturalComparator) { it.buildingWorldName }
+                )
                 .map { buildBuildingWorldItem(it, player) }
         )
+
 
         updatePagination(navBar, contentPane)
         super.update()
@@ -176,3 +171,27 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEn
         }
     }
 }
+
+private val naturalComparator = Comparator<String> { a, b ->
+    val regex = Regex("(\\d+)|(\\D+)")
+    val aParts = regex.findAll(a.lowercase()).map { it.value }.toList()
+    val bParts = regex.findAll(b.lowercase()).map { it.value }.toList()
+
+    for (i in 0 until minOf(aParts.size, bParts.size)) {
+        val x = aParts[i]
+        val y = bParts[i]
+
+        val xNum = x.toIntOrNull()
+        val yNum = y.toIntOrNull()
+
+        val cmp = when {
+            xNum != null && yNum != null -> xNum.compareTo(yNum)
+            else -> x.compareTo(y)
+        }
+
+        if (cmp != 0) return@Comparator cmp
+    }
+
+    aParts.size.compareTo(bParts.size)
+}
+
