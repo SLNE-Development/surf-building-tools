@@ -3,7 +3,10 @@ package dev.slne.surf.building.paper.service
 import dev.slne.surf.building.paper.buildingConfig
 import dev.slne.surf.building.paper.config.BuildingWorldConfig
 import dev.slne.surf.building.paper.plugin
+import dev.slne.surf.building.paper.util.addGeneratorToBukkitYml
 import dev.slne.surf.building.paper.util.generateBuildingWorldId
+import dev.slne.surf.building.paper.util.parseWorldType
+import dev.slne.surf.building.paper.util.removeGeneratorFromBukkitYml
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator
 import dev.slne.surf.surfapi.core.api.config.manager.SpongeConfigManager
@@ -51,6 +54,11 @@ class BuildingWorldService {
                 .createWorld()
         } ?: return null
 
+        // Save generator to bukkit.yml for VOID worlds
+        if (type == BuildingWorld.Type.VOID) {
+            addGeneratorToBukkitYml(world.name)
+        }
+
         world.setSpawnLocation(0, 0, 0)
         world.setBlockData(0, -1, 0, BlockType.BEDROCK.createBlockData())
         world.setGameRule<Boolean>(GameRules.ADVANCE_TIME, false)
@@ -74,7 +82,8 @@ class BuildingWorldService {
             authorName = authorName,
             authorUuid = authorUuid,
             status = BuildingWorld.Status.EDITING,
-            createdAt = OffsetDateTime.now()
+            createdAt = OffsetDateTime.now(),
+            type = type
         )
 
         buildingWorldsMap[bWorld.buildingWorldId] = bWorld
@@ -100,6 +109,7 @@ class BuildingWorldService {
             config.authorUuid = bWorld.authorUuid
             config.status = bWorld.status.name
             config.createdAtString = bWorld.createdAt.toString()
+            config.worldType = bWorld.type.name
 
             this.save()
         }
@@ -126,6 +136,7 @@ class BuildingWorldService {
             config.authorUuid = buildingWorld.authorUuid
             config.status = buildingWorld.status.name
             config.createdAtString = buildingWorld.createdAt.toString()
+            config.worldType = buildingWorld.type.name
 
             this.save()
         }
@@ -156,7 +167,8 @@ class BuildingWorldService {
                     authorName = config.authorName,
                     authorUuid = config.authorUuid,
                     status = BuildingWorld.Status.valueOf(config.status),
-                    createdAt = OffsetDateTime.parse(config.createdAtString)
+                    createdAt = OffsetDateTime.parse(config.createdAtString),
+                    type = parseWorldType(config.worldType)
                 )
 
                 buildingWorldsMap[bWorld.buildingWorldId] = bWorld
@@ -187,9 +199,13 @@ class BuildingWorldService {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
-        val world = Bukkit.getWorld(buildingWorld.worldName) ?: Bukkit.createWorld(
-            WorldCreator.name(buildingWorld.worldName)
-        ) ?: return false
+        val world = Bukkit.getWorld(buildingWorld.worldName) ?: run {
+            val worldCreator = WorldCreator.name(buildingWorld.worldName)
+            if (buildingWorld.type == BuildingWorld.Type.VOID) {
+                worldCreator.generator(BuildingWorldGenerator)
+            }
+            Bukkit.createWorld(worldCreator)
+        } ?: return false
 
         player.teleportAsync(world.spawnLocation)
 
@@ -200,7 +216,11 @@ class BuildingWorldService {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
-        Bukkit.createWorld(WorldCreator.name(buildingWorld.worldName))
+        val worldCreator = WorldCreator.name(buildingWorld.worldName)
+        if (buildingWorld.type == BuildingWorld.Type.VOID) {
+            worldCreator.generator(BuildingWorldGenerator)
+        }
+        Bukkit.createWorld(worldCreator)
             ?: return false
 
         return true
@@ -236,6 +256,9 @@ class BuildingWorldService {
                 }
 
                 file.deleteRecursively()
+
+                // Remove generator from bukkit.yml
+                removeGeneratorFromBukkitYml(world.name)
             }
 
 
