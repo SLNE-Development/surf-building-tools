@@ -3,7 +3,9 @@ package dev.slne.surf.building.paper.service
 import dev.slne.surf.building.paper.buildingConfig
 import dev.slne.surf.building.paper.config.BuildingWorldConfig
 import dev.slne.surf.building.paper.plugin
+import dev.slne.surf.building.paper.util.addGeneratorToBukkitYml
 import dev.slne.surf.building.paper.util.generateBuildingWorldId
+import dev.slne.surf.building.paper.util.removeGeneratorFromBukkitYml
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator
 import dev.slne.surf.surfapi.core.api.config.manager.SpongeConfigManager
@@ -50,6 +52,11 @@ class BuildingWorldService {
                 .generateStructures(false)
                 .createWorld()
         } ?: return null
+
+        // Save generator to bukkit.yml for VOID worlds
+        if (type == BuildingWorld.Type.VOID) {
+            addGeneratorToBukkitYml(world.name, "${plugin.name}:${BuildingWorldGenerator::class.java.simpleName}")
+        }
 
         world.setSpawnLocation(0, 0, 0)
         world.setBlockData(0, -1, 0, BlockType.BEDROCK.createBlockData())
@@ -236,6 +243,9 @@ class BuildingWorldService {
                 }
 
                 file.deleteRecursively()
+
+                // Remove generator from bukkit.yml
+                removeGeneratorFromBukkitYml(world.name)
             }
 
 
