@@ -1,6 +1,7 @@
 package dev.slne.surf.building.paper.util
 
 import dev.slne.surf.building.paper.plugin
+import dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
@@ -9,10 +10,17 @@ import java.io.File
  */
 
 /**
+ * The generator name format used in bukkit.yml
+ */
+private val GENERATOR_NAME = "${plugin.name}:${BuildingWorldGenerator::class.java.simpleName}"
+
+/**
  * Adds a world generator entry to bukkit.yml
  */
-fun addGeneratorToBukkitYml(worldName: String, generatorName: String) {
-    val bukkitYmlFile = File(plugin.server.worldContainer.parentFile, "bukkit.yml")
+fun addGeneratorToBukkitYml(worldName: String) {
+    val worldContainer = plugin.server.worldContainer
+    val bukkitYmlFile = worldContainer.parentFile?.let { File(it, "bukkit.yml") }
+        ?: File(worldContainer.absolutePath, "../bukkit.yml").canonicalFile
     
     // Create bukkit.yml if it doesn't exist
     if (!bukkitYmlFile.exists()) {
@@ -22,19 +30,21 @@ fun addGeneratorToBukkitYml(worldName: String, generatorName: String) {
     val config = YamlConfiguration.loadConfiguration(bukkitYmlFile)
     
     // Set the generator for the world
-    config.set("worlds.$worldName.generator", generatorName)
+    config.set("worlds.$worldName.generator", GENERATOR_NAME)
     
     // Save the configuration
     config.save(bukkitYmlFile)
     
-    plugin.logger.info("Added generator '$generatorName' for world '$worldName' to bukkit.yml")
+    plugin.logger.info("Added generator '$GENERATOR_NAME' for world '$worldName' to bukkit.yml")
 }
 
 /**
  * Removes a world generator entry from bukkit.yml
  */
 fun removeGeneratorFromBukkitYml(worldName: String) {
-    val bukkitYmlFile = File(plugin.server.worldContainer.parentFile, "bukkit.yml")
+    val worldContainer = plugin.server.worldContainer
+    val bukkitYmlFile = worldContainer.parentFile?.let { File(it, "bukkit.yml") }
+        ?: File(worldContainer.absolutePath, "../bukkit.yml").canonicalFile
     
     // If bukkit.yml doesn't exist, nothing to remove
     if (!bukkitYmlFile.exists()) {

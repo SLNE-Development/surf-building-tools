@@ -5,6 +5,7 @@ import dev.slne.surf.building.paper.config.BuildingWorldConfig
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.util.addGeneratorToBukkitYml
 import dev.slne.surf.building.paper.util.generateBuildingWorldId
+import dev.slne.surf.building.paper.util.parseWorldType
 import dev.slne.surf.building.paper.util.removeGeneratorFromBukkitYml
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator
@@ -55,7 +56,7 @@ class BuildingWorldService {
 
         // Save generator to bukkit.yml for VOID worlds
         if (type == BuildingWorld.Type.VOID) {
-            addGeneratorToBukkitYml(world.name, "${plugin.name}:${BuildingWorldGenerator::class.java.simpleName}")
+            addGeneratorToBukkitYml(world.name)
         }
 
         world.setSpawnLocation(0, 0, 0)
@@ -167,11 +168,7 @@ class BuildingWorldService {
                     authorUuid = config.authorUuid,
                     status = BuildingWorld.Status.valueOf(config.status),
                     createdAt = OffsetDateTime.parse(config.createdAtString),
-                    type = try {
-                        BuildingWorld.Type.valueOf(config.worldType)
-                    } catch (e: IllegalArgumentException) {
-                        BuildingWorld.Type.FLAT // Default for old configs without type
-                    }
+                    type = parseWorldType(config.worldType)
                 )
 
                 buildingWorldsMap[bWorld.buildingWorldId] = bWorld

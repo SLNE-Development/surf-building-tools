@@ -1,6 +1,7 @@
 package dev.slne.surf.building.paper.util
 
 import dev.slne.surf.building.paper.service.buildingWorldService
+import dev.slne.surf.building.paper.world.BuildingWorld
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -19,6 +20,21 @@ fun generateBuildingWorldId(): String {
         if (!exists) {
             return id
         }
+    }
+}
+
+/**
+ * Safely parse world type from config string, returning FLAT as default
+ */
+fun parseWorldType(worldTypeString: String): BuildingWorld.Type {
+    return if (worldTypeString.isNotEmpty()) {
+        try {
+            BuildingWorld.Type.valueOf(worldTypeString)
+        } catch (e: IllegalArgumentException) {
+            BuildingWorld.Type.FLAT // Default for invalid or old configs
+        }
+    } else {
+        BuildingWorld.Type.FLAT // Default for empty strings
     }
 }
 
