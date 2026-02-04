@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
 import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldEditNameDialog
 import dev.slne.surf.building.paper.menu.util.MenuHeads
+import dev.slne.surf.building.paper.menu.util.toDisplayName
 import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
@@ -92,7 +93,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
                 val item = buildItem(currentDisplayItem) {
                     displayName {
                         infoColored("Display-Item: ")
-                        variableValue(currentDisplayItem.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                        variableValue(currentDisplayItem.toDisplayName())
                     }
                 }
 
@@ -102,7 +103,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
                         currentDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
-                            success("Das Display-Item wurde auf ${selectedMaterial.name.lowercase().replace("_", " ")} gesetzt.")
+                            success("Das Display-Item wurde auf ${selectedMaterial.toDisplayName()} gesetzt.")
                         }
                         showBuildingWorldEditMenu(it.whoClicked, buildingWorld.copy(displayItem = currentDisplayItem))
                     }

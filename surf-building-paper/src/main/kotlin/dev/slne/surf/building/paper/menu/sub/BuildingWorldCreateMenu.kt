@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
 import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldCreateNameDialog
 import dev.slne.surf.building.paper.menu.util.MenuHeads
+import dev.slne.surf.building.paper.menu.util.toDisplayName
 import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
@@ -103,7 +104,7 @@ fun showBuildingWorldCreateMenu(
                 val item = buildItem(mayChangedDisplayItem) {
                     displayName {
                         infoColored("Display-Item: ")
-                        variableValue(mayChangedDisplayItem.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                        variableValue(mayChangedDisplayItem.toDisplayName())
                     }
                 }
 
@@ -113,7 +114,7 @@ fun showBuildingWorldCreateMenu(
                         mayChangedDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendInfoPrefix()
-                            info("Das Display-Item wurde auf ${selectedMaterial.name.lowercase().replace("_", " ")} gesetzt.")
+                            info("Das Display-Item wurde auf ${selectedMaterial.toDisplayName()} gesetzt.")
                         }
                         showBuildingWorldCreateMenu(it.whoClicked, name, mayChangedType, mayChangedDisplayItem)
                     }

@@ -173,7 +173,12 @@ class BuildingWorldService {
                     status = BuildingWorld.Status.valueOf(config.status),
                     createdAt = OffsetDateTime.parse(config.createdAtString),
                     type = parseWorldType(config.worldType),
-                    displayItem = try { Material.valueOf(config.displayItemName) } catch (e: Exception) { Material.GRASS_BLOCK }
+                    displayItem = try {
+                        Material.valueOf(config.displayItemName)
+                    } catch (e: IllegalArgumentException) {
+                        plugin.logger.warning("Invalid display item '${config.displayItemName}' for world '${config.buildingWorldName}', using default GRASS_BLOCK")
+                        Material.GRASS_BLOCK
+                    }
                 )
 
                 buildingWorldsMap[bWorld.buildingWorldId] = bWorld

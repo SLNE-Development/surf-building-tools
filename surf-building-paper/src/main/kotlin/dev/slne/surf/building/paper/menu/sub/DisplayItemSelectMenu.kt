@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import dev.slne.surf.building.paper.menu.util.toDisplayName
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
 import dev.slne.surf.building.paper.util.infoColored
@@ -22,6 +23,9 @@ import org.bukkit.entity.HumanEntity
 private const val width = 9
 private const val height = 6
 
+private val validMaterials = Material.entries.filter { it.isBlock && it.isItem && !it.isAir }
+    .sortedBy { it.name }
+
 fun showDisplayItemSelectMenuForCreate(
     player: HumanEntity,
     name: String?,
@@ -36,19 +40,15 @@ fun showDisplayItemSelectMenuForCreate(
         val contentPane = PaginatedPane(1, 1, width - 2, height - 2)
         val navBar = StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST)
 
-        // Get all valid block materials
-        val validMaterials = Material.entries.filter { it.isBlock && it.isItem && !it.isAir }
-            .sortedBy { it.name }
-
         val items = validMaterials.map { material ->
             GuiItem(buildItem(material) {
                 displayName {
                     if (material == currentDisplayItem) {
-                        success(material.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                        success(material.toDisplayName())
                         spacer(" ")
                         success("(Ausgewählt)")
                     } else {
-                        infoColored(material.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                        infoColored(material.toDisplayName())
                     }
                 }
             }) { event ->
@@ -117,19 +117,15 @@ fun showDisplayItemSelectMenuForEdit(
         val contentPane = PaginatedPane(1, 1, width - 2, height - 2)
         val navBar = StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST)
 
-        // Get all valid block materials
-        val validMaterials = Material.entries.filter { it.isBlock && it.isItem && !it.isAir }
-            .sortedBy { it.name }
-
         val items = validMaterials.map { material ->
             GuiItem(buildItem(material) {
                 displayName {
                     if (material == buildingWorld.displayItem) {
-                        success(material.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                        success(material.toDisplayName())
                         spacer(" ")
                         success("(Ausgewählt)")
                     } else {
-                        infoColored(material.name.lowercase().replace("_", " ").replaceFirstChar { it.uppercase() })
+                        infoColored(material.toDisplayName())
                     }
                 }
             }) { event ->
