@@ -5,13 +5,13 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
 import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldCreateNameDialog
 import dev.slne.surf.building.paper.menu.util.MenuHeads
-import dev.slne.surf.building.paper.menu.util.toDisplayName
 import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.infoColored
 import dev.slne.surf.building.paper.util.playClickSound
+import dev.slne.surf.building.paper.util.translatable
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
@@ -104,7 +104,7 @@ fun showBuildingWorldCreateMenu(
                 val item = buildItem(mayChangedDisplayItem) {
                     displayName {
                         infoColored("Display-Item: ")
-                        variableValue(mayChangedDisplayItem.toDisplayName())
+                        translatable(mayChangedDisplayItem.translationKey())
                     }
                 }
 
@@ -114,7 +114,7 @@ fun showBuildingWorldCreateMenu(
                         mayChangedDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendInfoPrefix()
-                            info("Das Display-Item wurde auf ${selectedMaterial.toDisplayName()} gesetzt.")
+                            info("Das Display-Item wurde geändert.")
                         }
                         showBuildingWorldCreateMenu(it.whoClicked, name, mayChangedType, mayChangedDisplayItem)
                     }

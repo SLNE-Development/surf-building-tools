@@ -5,13 +5,13 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
 import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldEditNameDialog
 import dev.slne.surf.building.paper.menu.util.MenuHeads
-import dev.slne.surf.building.paper.menu.util.toDisplayName
 import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.infoColored
 import dev.slne.surf.building.paper.util.playClickSound
+import dev.slne.surf.building.paper.util.translatable
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
@@ -93,7 +93,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
                 val item = buildItem(currentDisplayItem) {
                     displayName {
                         infoColored("Display-Item: ")
-                        variableValue(currentDisplayItem.toDisplayName())
+                        translatable(currentDisplayItem.translationKey())
                     }
                 }
 
@@ -103,7 +103,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
                         currentDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
-                            success("Das Display-Item wurde auf ${selectedMaterial.toDisplayName()} gesetzt.")
+                            success("Das Display-Item wurde geändert.")
                         }
                         showBuildingWorldEditMenu(it.whoClicked, buildingWorld.copy(displayItem = currentDisplayItem))
                     }

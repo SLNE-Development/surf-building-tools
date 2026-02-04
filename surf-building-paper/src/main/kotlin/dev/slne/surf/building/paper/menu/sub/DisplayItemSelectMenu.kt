@@ -6,11 +6,10 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import dev.slne.surf.building.paper.menu.util.toDisplayName
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
-import dev.slne.surf.building.paper.util.infoColored
 import dev.slne.surf.building.paper.util.playClickSound
+import dev.slne.surf.building.paper.util.translatable
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
@@ -55,11 +54,12 @@ private class DisplayItemSelectMenuForCreate(
             GuiItem(buildItem(material) {
                 displayName {
                     if (material == currentDisplayItem) {
-                        success(material.toDisplayName())
+                        success("")
+                        translatable(material.translationKey())
                         spacer(" ")
                         success("(Ausgewählt)")
                     } else {
-                        infoColored(material.toDisplayName())
+                        translatable(material.translationKey())
                     }
                 }
             }) { event ->
@@ -150,11 +150,12 @@ private class DisplayItemSelectMenuForEdit(
             GuiItem(buildItem(material) {
                 displayName {
                     if (material == buildingWorld.displayItem) {
-                        success(material.toDisplayName())
+                        success("")
+                        translatable(material.translationKey())
                         spacer(" ")
                         success("(Ausgewählt)")
                     } else {
-                        infoColored(material.toDisplayName())
+                        translatable(material.translationKey())
                     }
                 }
             }) { event ->
