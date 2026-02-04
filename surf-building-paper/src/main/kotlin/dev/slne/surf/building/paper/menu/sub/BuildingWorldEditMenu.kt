@@ -36,7 +36,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         var currentDisplayItem = buildingWorld.displayItem
 
         val editNameButton = StaticPane(
-            2, 1, 1, 1
+            2, 2, 1, 1
         ).apply {
             val displayName = buildItem(Material.NAME_TAG) {
                 displayName {
@@ -52,7 +52,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         }
 
         val statusButton = ToggleButton(
-            4, 1, 1, 1, buildingWorld.status.allowBuild
+            4, 2, 1, 1, buildingWorld.status.allowBuild
         ).apply {
             setEnabledItem(GuiItem(MenuHeads.STATE_EDITING.apply {
                 displayName {
@@ -86,7 +86,7 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         }
 
         val displayItemButton = StaticPane(
-            6, 1, 1, 1
+            6, 2, 1, 1
         ).apply {
             fun updateDisplayItem() {
                 clear()
@@ -99,13 +99,19 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
 
                 addItem(GuiItem(item) {
                     it.whoClicked.playClickSound()
-                    showDisplayItemSelectMenuForEdit(it.whoClicked, buildingWorld) { selectedMaterial ->
+                    showDisplayItemSelectMenuForEdit(
+                        it.whoClicked,
+                        buildingWorld
+                    ) { selectedMaterial ->
                         currentDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
                             success("Das Display-Item wurde geändert.")
                         }
-                        showBuildingWorldEditMenu(it.whoClicked, buildingWorld.copy(displayItem = currentDisplayItem))
+                        showBuildingWorldEditMenu(
+                            it.whoClicked,
+                            buildingWorld.copy(displayItem = currentDisplayItem)
+                        )
                     }
                 }, 0, 0)
             }
