@@ -3,6 +3,8 @@ package dev.slne.surf.building.paper.listener
 import dev.slne.surf.building.paper.menu.showBuildingWorldMenu
 import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.surfapi.bukkit.api.event.cancel
+import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
+import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -19,6 +21,9 @@ object MenuItemListener : Listener {
 
         if (event.item == plugin.menuItem) {
             showBuildingWorldMenu(event.player)
+            event.player.playSound(true) {
+                type(Sound.ENTITY_CHICKEN_EGG)
+            }
         }
     }
 
