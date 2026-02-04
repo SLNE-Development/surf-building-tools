@@ -31,7 +31,8 @@ private val validMaterials by lazy {
  * Preloads the valid materials list during plugin initialization to avoid lazy loading delays
  */
 fun preloadValidMaterials() {
-    validMaterials.size // Access to trigger lazy initialization
+    // Access the property to trigger lazy initialization
+    validMaterials.let { }
 }
 
 fun showDisplayItemSelectMenuForCreate(
