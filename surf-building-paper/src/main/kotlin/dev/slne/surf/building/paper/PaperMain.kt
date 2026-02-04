@@ -24,8 +24,7 @@ class PaperMain : SuspendingJavaPlugin() {
         PlayerWorldStatusListener.register()
 
         buildingWorldCommand()
-        
-        // Preload valid materials list before loading worlds to avoid legacy material warnings
+
         preloadValidMaterials()
 
         buildingWorldService.cacheAllBuildingWorlds()

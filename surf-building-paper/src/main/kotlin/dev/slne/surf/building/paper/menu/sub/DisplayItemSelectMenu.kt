@@ -27,11 +27,7 @@ private val validMaterials by lazy {
         .sortedBy { it.name }
 }
 
-/**
- * Preloads the valid materials list during plugin initialization to avoid lazy loading delays
- */
 fun preloadValidMaterials() {
-    // Access the property to trigger lazy initialization
     validMaterials.let { }
 }
 

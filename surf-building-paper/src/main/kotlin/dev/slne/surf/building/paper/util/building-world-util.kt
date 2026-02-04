@@ -23,9 +23,6 @@ fun generateBuildingWorldId(): String {
     }
 }
 
-/**
- * Safely parse world type from config string, returning FLAT as default
- */
 fun parseWorldType(worldTypeString: String): BuildingWorld.Type {
     return if (worldTypeString.isNotEmpty()) {
         try {

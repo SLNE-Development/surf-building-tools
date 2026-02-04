@@ -58,7 +58,13 @@ fun showBuildingWorldCreateMenu(
 
             addItem(GuiItem(displayName) {
                 it.whoClicked.playClickSound()
-                it.whoClicked.showDialog(showBuildingWorldCreateNameDialog(name, mayChangedType, mayChangedDisplayItem))
+                it.whoClicked.showDialog(
+                    showBuildingWorldCreateNameDialog(
+                        name,
+                        mayChangedType,
+                        mayChangedDisplayItem
+                    )
+                )
             }, 0, 0)
         }
 
@@ -110,13 +116,23 @@ fun showBuildingWorldCreateMenu(
 
                 addItem(GuiItem(item) {
                     it.whoClicked.playClickSound()
-                    showDisplayItemSelectMenuForCreate(it.whoClicked, name, mayChangedType, mayChangedDisplayItem) { selectedMaterial ->
+                    showDisplayItemSelectMenuForCreate(
+                        it.whoClicked,
+                        name,
+                        mayChangedType,
+                        mayChangedDisplayItem
+                    ) { selectedMaterial ->
                         mayChangedDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendInfoPrefix()
                             info("Das Display-Item wurde geändert.")
                         }
-                        showBuildingWorldCreateMenu(it.whoClicked, name, mayChangedType, mayChangedDisplayItem)
+                        showBuildingWorldCreateMenu(
+                            it.whoClicked,
+                            name,
+                            mayChangedType,
+                            mayChangedDisplayItem
+                        )
                     }
                 }, 0, 0)
             }
@@ -129,8 +145,6 @@ fun showBuildingWorldCreateMenu(
                     infoColored("Bauwelt erstellen")
                 }
             }) {
-                // Use mayChangedType instead of reading from toggle button state
-                // Default to VOID if not set
                 val selectedType = mayChangedType ?: BuildingWorld.Type.VOID
 
                 val finalName = name ?: run {
