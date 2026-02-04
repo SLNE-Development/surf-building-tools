@@ -22,8 +22,17 @@ import org.bukkit.entity.HumanEntity
 private const val width = 9
 private const val height = 6
 
-private val validMaterials = Material.entries.filter { it.isBlock && it.isItem && !it.isAir }
-    .sortedBy { it.name }
+private val validMaterials by lazy {
+    Material.entries.filter { !it.isLegacy && it.isBlock && it.isItem && !it.isAir }
+        .sortedBy { it.name }
+}
+
+/**
+ * Preloads the valid materials list during plugin initialization to avoid lazy loading delays
+ */
+fun preloadValidMaterials() {
+    validMaterials.size // Access to trigger lazy initialization
+}
 
 fun showDisplayItemSelectMenuForCreate(
     player: HumanEntity,

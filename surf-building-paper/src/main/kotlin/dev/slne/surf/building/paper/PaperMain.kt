@@ -4,6 +4,7 @@ import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
 import dev.slne.surf.building.paper.command.buildingWorldCommand
 import dev.slne.surf.building.paper.config.BuildingConfigHolder
 import dev.slne.surf.building.paper.listener.*
+import dev.slne.surf.building.paper.menu.sub.preloadValidMaterials
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.primaryColored
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
@@ -25,6 +26,9 @@ class PaperMain : SuspendingJavaPlugin() {
         buildingWorldCommand()
 
         buildingWorldService.cacheAllBuildingWorlds()
+        
+        // Preload valid materials list to avoid legacy material warnings
+        preloadValidMaterials()
     }
 
     val menuItem = buildItem(Material.COMPASS) {
