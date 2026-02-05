@@ -28,7 +28,7 @@ private const val width = 9
 private const val height = 5
 
 fun showWarpCreateMenu(
-    player: HumanEntity, 
+    player: HumanEntity,
     buildingWorld: BuildingWorld,
     currentName: String? = null,
     currentDisplayItem: Material = Material.COMPASS
@@ -94,7 +94,7 @@ fun showWarpCreateMenu(
         }
 
         val saveButton = StaticPane(6, 2, 1, 1).apply {
-            addItem(GuiItem(MenuHeads.WRITABLE_BOOK.clone().apply {
+            addItem(GuiItem(MenuHeads.CHECK.clone().apply {
                 displayName {
                     success("Warp speichern")
                 }

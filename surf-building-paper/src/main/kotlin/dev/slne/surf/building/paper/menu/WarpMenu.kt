@@ -29,7 +29,7 @@ import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.ClickType
 
 private const val width = 9
-private const val height = 6
+private const val height = 3
 
 fun showWarpMenu(player: HumanEntity, buildingWorld: BuildingWorld) {
     WarpMenu(player, buildingWorld).show(player)
