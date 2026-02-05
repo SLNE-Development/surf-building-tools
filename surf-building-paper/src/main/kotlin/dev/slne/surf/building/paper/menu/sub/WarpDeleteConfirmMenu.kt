@@ -57,7 +57,7 @@ fun showWarpDeleteConfirmMenu(player: HumanEntity, buildingWorld: BuildingWorld,
         }
 
         val cancelPane = StaticPane(6, 1, 1, 1).apply {
-            addItem(GuiItem(buildItem(MenuHeads.DELETE) {
+            addItem(GuiItem(buildItem(Material.RED_STAINED_GLASS_PANE) {
                 displayName {
                     error("Nein, abbrechen")
                 }

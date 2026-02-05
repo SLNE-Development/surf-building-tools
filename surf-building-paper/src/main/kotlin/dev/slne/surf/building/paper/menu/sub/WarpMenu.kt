@@ -44,7 +44,7 @@ fun showWarpMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfChestGu
         // Add create warp button if player is owner
         if (isOwner) {
             addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGH).apply {
-                addItem(GuiItem(MenuHeads.CREATE_BUTTON.apply {
+                addItem(GuiItem(MenuHeads.CREATE_BUTTON.clone().apply {
                     displayName {
                         primary("Neuen Warp erstellen")
                     }

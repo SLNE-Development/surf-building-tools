@@ -50,9 +50,9 @@ fun showWarpCreateMenu(
                         infoColored("Position: ")
                         if (currentLocation != null) {
                             variableValue("%.1f, %.1f, %.1f".format(
-                                currentLocation!!.x,
-                                currentLocation!!.y,
-                                currentLocation!!.z
+                                currentLocation.x,
+                                currentLocation.y,
+                                currentLocation.z
                             ))
                         } else {
                             variableValue("Nicht gesetzt")
