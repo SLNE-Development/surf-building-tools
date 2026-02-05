@@ -40,7 +40,7 @@ fun showWarpCreateMenu(
         withHomeButton(height)
 
         var currentLocation = location ?: if (player is Player) player.location else null
-        val currentDisplayItem = displayItem ?: Material.ENDER_PEARL
+        var currentDisplayItem = displayItem ?: Material.ENDER_PEARL
 
         val setPositionButton = StaticPane(2, 2, 1, 1).apply {
             fun updatePosition() {
@@ -116,11 +116,12 @@ fun showWarpCreateMenu(
                 addItem(GuiItem(item) {
                     it.whoClicked.playClickSound()
                     showDisplayItemSelectMenuForWarp(it.whoClicked, currentDisplayItem) { selectedMaterial ->
+                        currentDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
                             success("Das Display-Item wurde geändert.")
                         }
-                        showWarpCreateMenu(it.whoClicked, buildingWorld, warpName, currentLocation, selectedMaterial)
+                        showWarpCreateMenu(it.whoClicked, buildingWorld, warpName, currentLocation, currentDisplayItem)
                     }
                 }, 0, 0)
             }
