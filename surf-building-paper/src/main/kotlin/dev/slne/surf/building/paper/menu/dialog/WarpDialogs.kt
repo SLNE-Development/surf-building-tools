@@ -146,6 +146,18 @@ fun showWarpEditNameDialog(
                             return@customPlayerClick
                         }
 
+                        // Check if the name is already taken by another warp (not the current one)
+                        if (name != warp.name && buildingWorld.warps.any { it.name == name }) {
+                            player.sendText {
+                                appendErrorPrefix()
+                                error("Ein Warp mit diesem Namen existiert bereits!")
+                            }
+                            player.playSound(true) {
+                                type(Sound.ENTITY_VILLAGER_NO)
+                            }
+                            return@customPlayerClick
+                        }
+
                         player.closeDialog()
                         showWarpEditMenu(player, buildingWorld, warp, name, currentLocation, currentDisplayItem)
                     }

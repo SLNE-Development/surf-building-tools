@@ -132,7 +132,7 @@ fun showWarpEditMenu(
                 )
 
                 val updatedWarps = buildingWorld.warps.map {
-                    if (it.name == warp.name && it.x == warp.x && it.y == warp.y && it.z == warp.z) {
+                    if (it.name == warp.name) {
                         updatedWarp
                     } else {
                         it

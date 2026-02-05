@@ -42,7 +42,7 @@ fun showWarpDeleteConfirmMenu(player: HumanEntity, buildingWorld: BuildingWorld,
                 it.whoClicked.playClickSound()
 
                 val updatedWarps = buildingWorld.warps.filterNot {
-                    it.name == warp.name && it.x == warp.x && it.y == warp.y && it.z == warp.z
+                    it.name == warp.name
                 }
                 val updatedWorld = buildingWorld.copy(warps = updatedWarps)
                 buildingWorldService.saveBuildingWorld(updatedWorld)

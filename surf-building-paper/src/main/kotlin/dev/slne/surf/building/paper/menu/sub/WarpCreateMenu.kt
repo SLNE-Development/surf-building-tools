@@ -40,7 +40,7 @@ fun showWarpCreateMenu(
         withHomeButton(height)
 
         var currentLocation = location ?: if (player is Player) player.location else null
-        var currentDisplayItem = displayItem ?: Material.ENDER_PEARL
+        val currentDisplayItem = displayItem ?: Material.ENDER_PEARL
 
         val setPositionButton = StaticPane(2, 2, 1, 1).apply {
             fun updatePosition() {
@@ -138,10 +138,18 @@ fun showWarpCreateMenu(
             addItem(GuiItem(item) {
                 it.whoClicked.playClickSound()
 
-                if (warpName == null || warpName.isEmpty()) {
+                if (warpName == null) {
                     it.whoClicked.sendText {
                         appendErrorPrefix()
                         error("Bitte gib einen Namen für den Warp ein.")
+                    }
+                    return@GuiItem
+                }
+
+                if (buildingWorld.warps.any { it.name == warpName }) {
+                    it.whoClicked.sendText {
+                        appendErrorPrefix()
+                        error("Ein Warp mit diesem Namen existiert bereits.")
                     }
                     return@GuiItem
                 }
