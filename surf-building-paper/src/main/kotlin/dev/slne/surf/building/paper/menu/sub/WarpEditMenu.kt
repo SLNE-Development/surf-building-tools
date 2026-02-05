@@ -112,7 +112,7 @@ fun showWarpEditMenu(
         }
 
         val saveButton = StaticPane(4, 3, 1, 1).apply {
-            val item = buildItem(MenuHeads.CHECK) {
+            val item = buildItem(Material.WRITABLE_BOOK) {
                 displayName {
                     success("Änderungen speichern")
                 }

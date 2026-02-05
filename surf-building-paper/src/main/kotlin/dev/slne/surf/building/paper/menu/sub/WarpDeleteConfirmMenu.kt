@@ -28,9 +28,9 @@ fun showWarpDeleteConfirmMenu(player: HumanEntity, buildingWorld: BuildingWorld,
         withOutClicks()
 
         val confirmPane = StaticPane(2, 1, 1, 1).apply {
-            addItem(GuiItem(buildItem(MenuHeads.CHECK) {
+            addItem(GuiItem(buildItem(MenuHeads.DELETE) {
                 displayName {
-                    success("Ja, löschen")
+                    error("Ja, löschen")
                 }
                 buildLore {
                     emptyLine()

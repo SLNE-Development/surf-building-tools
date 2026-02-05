@@ -129,7 +129,7 @@ fun showWarpCreateMenu(
         }
 
         val createButton = StaticPane(4, 3, 1, 1).apply {
-            val item = buildItem(MenuHeads.CHECK) {
+            val item = buildItem(MenuHeads.CREATE_BUTTON) {
                 displayName {
                     success("Warp erstellen")
                 }
@@ -164,11 +164,11 @@ fun showWarpCreateMenu(
 
                 val newWarp = Warp(
                     name = warpName,
-                    x = currentLocation!!.x,
-                    y = currentLocation!!.y,
-                    z = currentLocation!!.z,
-                    pitch = currentLocation!!.pitch,
-                    yaw = currentLocation!!.yaw,
+                    x = currentLocation.x,
+                    y = currentLocation.y,
+                    z = currentLocation.z,
+                    pitch = currentLocation.pitch,
+                    yaw = currentLocation.yaw,
                     displayItem = currentDisplayItem
                 )
 
