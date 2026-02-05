@@ -27,15 +27,22 @@ import org.bukkit.entity.Player
 private const val width = 9
 private const val height = 5
 
-fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Warp): SurfChestGui =
+fun showWarpEditMenu(
+    player: HumanEntity, 
+    buildingWorld: BuildingWorld, 
+    warp: Warp,
+    currentName: String = warp.name,
+    currentDisplayItem: Material = warp.displayItem,
+    positionNeedsUpdate: Boolean = false
+): SurfChestGui =
     menu(buildText { spacer("Warp bearbeiten") }, height) {
         withOutline(width, height)
         withOutClicks()
         withHomeButton(height)
 
-        var updatedName = warp.name
-        var updatedDisplayItem = warp.displayItem
-        var positionNeedsUpdate = false
+        var updatedName = currentName
+        var updatedDisplayItem = currentDisplayItem
+        var updatePosition = positionNeedsUpdate
 
         val nameButton = StaticPane(1, 2, 1, 1).apply {
             fun updateName() {
@@ -52,7 +59,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                     it.whoClicked.showDialog(showWarpNameDialog(buildingWorld, warp) { newName ->
                         if (newName != null) {
                             updatedName = newName
-                            showWarpEditMenu(player, buildingWorld, warp.copy(name = updatedName))
+                            showWarpEditMenu(player, buildingWorld, warp, newName, updatedDisplayItem, updatePosition)
                         }
                     })
                 }, 0, 0)
@@ -84,7 +91,10 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                         showWarpEditMenu(
                             it.whoClicked,
                             buildingWorld,
-                            warp.copy(displayItem = updatedDisplayItem)
+                            warp,
+                            updatedName,
+                            selectedMaterial,
+                            updatePosition
                         )
                     }
                 }, 0, 0)
@@ -101,7 +111,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
 
             addItem(GuiItem(item) {
                 it.whoClicked.playClickSound()
-                positionNeedsUpdate = true
+                updatePosition = true
 
                 it.whoClicked.sendText {
                     appendSuccessPrefix()
@@ -135,7 +145,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                 }
 
                 val player = it.whoClicked as? Player
-                val updatedWarp = if (positionNeedsUpdate && player != null) {
+                val updatedWarp = if (updatePosition && player != null) {
                     val location = player.location
                     warp.copy(
                         name = updatedName,

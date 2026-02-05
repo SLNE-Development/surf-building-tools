@@ -27,14 +27,19 @@ import org.bukkit.entity.Player
 private const val width = 9
 private const val height = 5
 
-fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfChestGui =
+fun showWarpCreateMenu(
+    player: HumanEntity, 
+    buildingWorld: BuildingWorld,
+    currentName: String? = null,
+    currentDisplayItem: Material = Material.COMPASS
+): SurfChestGui =
     menu(buildText { spacer("Warp erstellen") }, height) {
         withOutline(width, height)
         withOutClicks()
         withHomeButton(height)
 
-        var updatedName: String? = null
-        var updatedDisplayItem = Material.COMPASS
+        var updatedName: String? = currentName
+        var updatedDisplayItem = currentDisplayItem
 
         val nameButton = StaticPane(2, 2, 1, 1).apply {
             fun updateName() {
@@ -52,7 +57,7 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                     it.whoClicked.showDialog(showWarpNameDialog(buildingWorld, null) { newName ->
                         if (newName != null) {
                             updatedName = newName
-                            showWarpCreateMenu(player, buildingWorld)
+                            showWarpCreateMenu(player, buildingWorld, newName, updatedDisplayItem)
                         }
                     })
                 }, 0, 0)
@@ -81,7 +86,7 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                             appendSuccessPrefix()
                             success("Das Display-Item wurde geändert.")
                         }
-                        showWarpCreateMenu(player, buildingWorld)
+                        showWarpCreateMenu(player, buildingWorld, updatedName, selectedMaterial)
                     }
                 }, 0, 0)
             }
