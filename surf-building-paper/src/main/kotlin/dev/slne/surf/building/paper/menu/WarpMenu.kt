@@ -12,6 +12,7 @@ import dev.slne.surf.building.paper.menu.sub.showWarpEditMenu
 import dev.slne.surf.building.paper.menu.util.MenuHeads
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
+import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.displayKey
 import dev.slne.surf.building.paper.util.playClickSound
 import dev.slne.surf.building.paper.world.BuildingWorld
@@ -22,11 +23,8 @@ import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.core.api.font.toSmallCaps
 import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
-import org.bukkit.WorldCreator
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.ClickType
 
@@ -175,32 +173,7 @@ private fun buildWarpItem(warp: Warp, player: HumanEntity, buildingWorld: Buildi
             it.whoClicked.playClickSound()
         }
     } else if (it.click == ClickType.LEFT) {
-        // Load world if not loaded
-        val world = buildingWorld.world ?: run {
-            val worldCreator = WorldCreator.name(buildingWorld.worldName)
-            if (buildingWorld.type == BuildingWorld.Type.VOID) {
-                worldCreator.generator(dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator)
-            }
-            org.bukkit.Bukkit.createWorld(worldCreator)
-        }
-        
-        if (world != null) {
-            val location = Location(world, warp.x, warp.y, warp.z, warp.yaw, warp.pitch)
-            it.whoClicked.teleportAsync(location)
-            it.whoClicked.closeInventory()
-            it.whoClicked.sendText {
-                appendSuccessPrefix()
-                success("Du wurdest zu ")
-                variableValue(warp.name)
-                success(" teleportiert.")
-            }
-            it.whoClicked.playClickSound()
-        } else {
-            it.whoClicked.sendText {
-                appendErrorPrefix()
-                error("Die Welt konnte nicht geladen werden.")
-            }
-        }
+        buildingWorldService.joinAndOrLoadBuildingWorld(player, buildingWorld.buildingWorldId)
     } else if (it.click == ClickType.RIGHT) {
         if (buildingWorld.authorUuid == player.uniqueId) {
             showWarpEditMenu(it.whoClicked, buildingWorld, warp)
