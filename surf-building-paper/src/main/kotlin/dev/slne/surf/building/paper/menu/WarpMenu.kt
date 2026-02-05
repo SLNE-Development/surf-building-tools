@@ -24,7 +24,9 @@ import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
 import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.WorldCreator
 import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.ClickType
 
@@ -46,6 +48,18 @@ private class WarpMenu(val player: HumanEntity, val buildingWorld: BuildingWorld
         withOutClicks()
         withOutline(width, height)
 
+        // Home button (back to main menu)
+        addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST).apply {
+            addItem(GuiItem(buildItem(Material.BARRIER) {
+                displayName {
+                    error("Zurück")
+                }
+            }) {
+                it.whoClicked.playClickSound()
+                showBuildingWorldMenu(it.whoClicked)
+            }, 3, 0)
+        })
+
         if (buildingWorld.authorUuid == player.uniqueId) {
             addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGH).apply {
                 addItem(GuiItem(MenuHeads.CREATE_BUTTON.clone().apply {
@@ -54,7 +68,7 @@ private class WarpMenu(val player: HumanEntity, val buildingWorld: BuildingWorld
                     }
                 }) {
                     showWarpCreateMenu(player, buildingWorld)
-                }, 4, 0)
+                }, 5, 0)
             })
         }
 
@@ -161,7 +175,15 @@ private fun buildWarpItem(warp: Warp, player: HumanEntity, buildingWorld: Buildi
             it.whoClicked.playClickSound()
         }
     } else if (it.click == ClickType.LEFT) {
-        val world = buildingWorld.world
+        // Load world if not loaded
+        val world = buildingWorld.world ?: run {
+            val worldCreator = WorldCreator.name(buildingWorld.worldName)
+            if (buildingWorld.type == BuildingWorld.Type.VOID) {
+                worldCreator.generator(dev.slne.surf.building.paper.world.generator.BuildingWorldGenerator)
+            }
+            org.bukkit.Bukkit.createWorld(worldCreator)
+        }
+        
         if (world != null) {
             val location = Location(world, warp.x, warp.y, warp.z, warp.yaw, warp.pitch)
             it.whoClicked.teleportAsync(location)
@@ -176,7 +198,7 @@ private fun buildWarpItem(warp: Warp, player: HumanEntity, buildingWorld: Buildi
         } else {
             it.whoClicked.sendText {
                 appendErrorPrefix()
-                error("Die Welt konnte nicht gefunden werden.")
+                error("Die Welt konnte nicht geladen werden.")
             }
         }
     } else if (it.click == ClickType.RIGHT) {
