@@ -33,9 +33,9 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
         withOutClicks()
         withHomeButton(height)
 
-        var currentName = warp.name
-        var currentDisplayItem = warp.displayItem
-        var shouldUpdatePosition = false
+        var updatedName = warp.name
+        var updatedDisplayItem = warp.displayItem
+        var positionNeedsUpdate = false
 
         val nameButton = StaticPane(1, 2, 1, 1).apply {
             fun updateName() {
@@ -43,7 +43,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                 val item = buildItem(Material.NAME_TAG) {
                     displayName {
                         infoColored("Name: ")
-                        variableValue(currentName)
+                        variableValue(updatedName)
                     }
                 }
 
@@ -51,8 +51,8 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                     it.whoClicked.playClickSound()
                     it.whoClicked.showDialog(showWarpNameDialog(buildingWorld, warp) { newName ->
                         if (newName != null) {
-                            currentName = newName
-                            showWarpEditMenu(player, buildingWorld, warp.copy(name = currentName))
+                            updatedName = newName
+                            showWarpEditMenu(player, buildingWorld, warp.copy(name = updatedName))
                         }
                     })
                 }, 0, 0)
@@ -63,10 +63,10 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
         val displayItemButton = StaticPane(3, 2, 1, 1).apply {
             fun updateDisplayItem() {
                 clear()
-                val item = buildItem(currentDisplayItem) {
+                val item = buildItem(updatedDisplayItem) {
                     displayName {
                         infoColored("Display-Item: ")
-                        translatable(currentDisplayItem.translationKey())
+                        translatable(updatedDisplayItem.translationKey())
                     }
                 }
 
@@ -74,9 +74,9 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                     it.whoClicked.playClickSound()
                     showDisplayItemSelectMenuForWarp(
                         it.whoClicked,
-                        currentDisplayItem
+                        updatedDisplayItem
                     ) { selectedMaterial ->
-                        currentDisplayItem = selectedMaterial
+                        updatedDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
                             success("Das Display-Item wurde geändert.")
@@ -84,7 +84,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                         showWarpEditMenu(
                             it.whoClicked,
                             buildingWorld,
-                            warp.copy(displayItem = currentDisplayItem)
+                            warp.copy(displayItem = updatedDisplayItem)
                         )
                     }
                 }, 0, 0)
@@ -101,7 +101,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
 
             addItem(GuiItem(item) {
                 it.whoClicked.playClickSound()
-                shouldUpdatePosition = true
+                positionNeedsUpdate = true
 
                 it.whoClicked.sendText {
                     appendSuccessPrefix()
@@ -118,7 +118,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
             }) {
                 it.whoClicked.playClickSound()
 
-                if (currentName.isBlank()) {
+                if (updatedName.isBlank()) {
                     it.whoClicked.sendText {
                         appendErrorPrefix()
                         error("Der Name darf nicht leer sein.")
@@ -126,7 +126,7 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                     return@GuiItem
                 }
 
-                if (currentName != warp.name && buildingWorld.warps.any { w -> w.name == currentName }) {
+                if (updatedName != warp.name && buildingWorld.warps.any { w -> w.name == updatedName }) {
                     it.whoClicked.sendText {
                         appendErrorPrefix()
                         error("Ein Warp mit diesem Namen existiert bereits.")
@@ -135,21 +135,21 @@ fun showWarpEditMenu(player: HumanEntity, buildingWorld: BuildingWorld, warp: Wa
                 }
 
                 val player = it.whoClicked as? Player
-                val updatedWarp = if (shouldUpdatePosition && player != null) {
+                val updatedWarp = if (positionNeedsUpdate && player != null) {
                     val location = player.location
                     warp.copy(
-                        name = currentName,
+                        name = updatedName,
                         x = location.x,
                         y = location.y,
                         z = location.z,
                         pitch = location.pitch,
                         yaw = location.yaw,
-                        displayItem = currentDisplayItem
+                        displayItem = updatedDisplayItem
                     )
                 } else {
                     warp.copy(
-                        name = currentName,
-                        displayItem = currentDisplayItem
+                        name = updatedName,
+                        displayItem = updatedDisplayItem
                     )
                 }
 

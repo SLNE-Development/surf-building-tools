@@ -33,13 +33,13 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
         withOutClicks()
         withHomeButton(height)
 
-        var mayChangedName: String? = null
-        var mayChangedDisplayItem = Material.COMPASS
+        var updatedName: String? = null
+        var updatedDisplayItem = Material.COMPASS
 
         val nameButton = StaticPane(2, 2, 1, 1).apply {
             fun updateName() {
                 clear()
-                val name = mayChangedName ?: "Warp"
+                val name = updatedName ?: "Warp"
                 val item = buildItem(Material.NAME_TAG) {
                     displayName {
                         infoColored("Name: ")
@@ -51,7 +51,7 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                     it.whoClicked.playClickSound()
                     it.whoClicked.showDialog(showWarpNameDialog(buildingWorld, null) { newName ->
                         if (newName != null) {
-                            mayChangedName = newName
+                            updatedName = newName
                             showWarpCreateMenu(player, buildingWorld)
                         }
                     })
@@ -63,10 +63,10 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
         val displayItemButton = StaticPane(4, 2, 1, 1).apply {
             fun updateDisplayItem() {
                 clear()
-                val item = buildItem(mayChangedDisplayItem) {
+                val item = buildItem(updatedDisplayItem) {
                     displayName {
                         infoColored("Display-Item: ")
-                        translatable(mayChangedDisplayItem.translationKey())
+                        translatable(updatedDisplayItem.translationKey())
                     }
                 }
 
@@ -74,9 +74,9 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                     it.whoClicked.playClickSound()
                     showDisplayItemSelectMenuForWarp(
                         it.whoClicked,
-                        mayChangedDisplayItem
+                        updatedDisplayItem
                     ) { selectedMaterial ->
-                        mayChangedDisplayItem = selectedMaterial
+                        updatedDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
                             success("Das Display-Item wurde geändert.")
@@ -96,7 +96,7 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
             }) {
                 it.whoClicked.playClickSound()
 
-                val name = mayChangedName
+                val name = updatedName
                 if (name.isNullOrBlank()) {
                     it.whoClicked.sendText {
                         appendErrorPrefix()
@@ -123,7 +123,7 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                     z = location.z,
                     pitch = location.pitch,
                     yaw = location.yaw,
-                    displayItem = mayChangedDisplayItem
+                    displayItem = updatedDisplayItem
                 )
 
                 val updatedWorld = buildingWorld.copy(
