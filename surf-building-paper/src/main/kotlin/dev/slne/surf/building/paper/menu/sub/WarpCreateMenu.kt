@@ -115,8 +115,7 @@ fun showWarpCreateMenu(
 
                 addItem(GuiItem(item) {
                     it.whoClicked.playClickSound()
-                    showDisplayItemSelectMenuForWarp(it.whoClicked, buildingWorld, warpName, currentLocation, currentDisplayItem) { selectedMaterial ->
-                        currentDisplayItem = selectedMaterial
+                    showDisplayItemSelectMenuForWarp(it.whoClicked, currentDisplayItem) { selectedMaterial ->
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
                             success("Das Display-Item wurde geändert.")
@@ -196,9 +195,6 @@ fun showWarpCreateMenu(
 
 fun showDisplayItemSelectMenuForWarp(
     player: HumanEntity,
-    buildingWorld: BuildingWorld,
-    warpName: String?,
-    location: Location?,
     currentDisplayItem: Material?,
     onSelect: (Material) -> Unit
 ): SurfChestGui {
