@@ -222,3 +222,98 @@ private class DisplayItemSelectMenuForEdit(
         }
     }
 }
+
+fun showDisplayItemSelectMenuForWarp(
+    player: HumanEntity,
+    currentDisplayItem: Material,
+    onSelect: (Material) -> Unit
+) {
+    DisplayItemSelectMenuForWarp(player, currentDisplayItem, onSelect).show(player)
+}
+
+private class DisplayItemSelectMenuForWarp(
+    val player: HumanEntity,
+    val currentDisplayItem: Material,
+    val onSelect: (Material) -> Unit
+) : ChestGui(
+    height,
+    ComponentHolder.of(buildText { spacer("Display-Item auswählen") })
+) {
+    val contentPane = PaginatedPane(1, 1, width - 2, height - 2)
+    val navBar = StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST)
+
+    init {
+        withOutClicks()
+        withOutline(width, height)
+
+        val items = validMaterials.map { material ->
+            GuiItem(buildItem(material) {
+                displayName {
+                    if (material == currentDisplayItem) {
+                        translatable(material.translationKey())
+                        spacer(" ")
+                        success("(Ausgewählt)")
+                    } else {
+                        translatable(material.translationKey())
+                    }
+                }
+            }) { event ->
+                event.whoClicked.playClickSound()
+                event.whoClicked.closeInventory()
+                onSelect(material)
+            }
+        }
+
+        contentPane.populateWithGuiItems(items)
+
+        addPane(contentPane)
+        addPane(navBar)
+        update()
+        show(player)
+    }
+
+    override fun update() {
+        updatePagination(navBar, contentPane)
+        super.update()
+    }
+
+    private fun updatePagination(
+        outlinePane: StaticPane,
+        pages: PaginatedPane
+    ) {
+        outlinePane.clear()
+        if (pages.page > 0) {
+            outlinePane.addItem(
+                GuiItem(buildItem(Material.ARROW) {
+                    displayName {
+                        variableValue("Vorherige Seite")
+                    }
+                }) {
+                    pages.page = (pages.page - 1)
+                    update()
+
+                    it.whoClicked.playSound(true) {
+                        type(Sound.ENTITY_CHICKEN_EGG)
+                    }
+                }, 2, 0
+            )
+        }
+
+        if (pages.page + 1 < pages.pages) {
+            outlinePane.addItem(
+                GuiItem(buildItem(Material.ARROW) {
+                    displayName {
+                        variableValue("Nächste Seite")
+                    }
+                }) {
+                    pages.page = (pages.page + 1)
+                    update()
+
+                    it.whoClicked.playSound(true) {
+                        type(Sound.ENTITY_CHICKEN_EGG)
+                    }
+                }, 6, 0
+            )
+        }
+    }
+}
