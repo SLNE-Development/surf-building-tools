@@ -33,7 +33,7 @@ fun showWarpEditMenu(
     warp: Warp,
     currentName: String = warp.name,
     currentDisplayItem: Material = warp.displayItem,
-    positionNeedsUpdate: Boolean = false
+    positionUpdated: Boolean = false
 ): SurfChestGui =
     menu(buildText { spacer("Warp bearbeiten") }, height) {
         withOutline(width, height)
@@ -42,7 +42,7 @@ fun showWarpEditMenu(
 
         var updatedName = currentName
         var updatedDisplayItem = currentDisplayItem
-        var updatePosition = positionNeedsUpdate
+        var updatedPosition = positionUpdated
 
         val nameButton = StaticPane(1, 2, 1, 1).apply {
             fun updateName() {
@@ -59,7 +59,7 @@ fun showWarpEditMenu(
                     it.whoClicked.showDialog(showWarpNameDialog(buildingWorld, warp) { newName ->
                         if (newName != null) {
                             updatedName = newName
-                            showWarpEditMenu(player, buildingWorld, warp, newName, updatedDisplayItem, updatePosition)
+                            showWarpEditMenu(player, buildingWorld, warp, newName, updatedDisplayItem, updatedPosition)
                         }
                     })
                 }, 0, 0)
@@ -94,7 +94,7 @@ fun showWarpEditMenu(
                             warp,
                             updatedName,
                             selectedMaterial,
-                            updatePosition
+                            updatedPosition
                         )
                     }
                 }, 0, 0)
@@ -111,7 +111,7 @@ fun showWarpEditMenu(
 
             addItem(GuiItem(item) {
                 it.whoClicked.playClickSound()
-                updatePosition = true
+                updatedPosition = true
 
                 it.whoClicked.sendText {
                     appendSuccessPrefix()
@@ -145,7 +145,7 @@ fun showWarpEditMenu(
                 }
 
                 val player = it.whoClicked as? Player
-                val updatedWarp = if (updatePosition && player != null) {
+                val updatedWarp = if (updatedPosition && player != null) {
                     val location = player.location
                     warp.copy(
                         name = updatedName,
