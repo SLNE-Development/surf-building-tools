@@ -1,11 +1,11 @@
 package dev.slne.surf.building.paper.menu.sub
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
+import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.slne.surf.building.paper.menu.dialog.showWarpNameDialog
 import dev.slne.surf.building.paper.menu.showWarpMenu
 import dev.slne.surf.building.paper.menu.util.MenuHeads
-import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
 import dev.slne.surf.building.paper.service.buildingWorldService
@@ -36,7 +36,20 @@ fun showWarpCreateMenu(
     menu(buildText { spacer("Warp erstellen") }, height) {
         withOutline(width, height)
         withOutClicks()
-        withHomeButton(height)
+        
+        // Back button to Warp Menu
+        addPane(
+            StaticPane(0, 0, 9, height, Pane.Priority.HIGHEST).apply {
+                addItem(GuiItem(buildItem(Material.BARRIER) {
+                    displayName {
+                        error("Zurück")
+                    }
+                }) {
+                    it.whoClicked.playClickSound()
+                    showWarpMenu(it.whoClicked, buildingWorld)
+                }, 4, height - 1)
+            }
+        )
 
         var updatedName: String? = currentName
         var updatedDisplayItem = currentDisplayItem
