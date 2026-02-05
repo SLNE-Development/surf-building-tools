@@ -27,15 +27,20 @@ import org.bukkit.entity.Player
 private const val width = 9
 private const val height = 5
 
-fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfChestGui =
+fun showWarpCreateMenu(
+    player: HumanEntity,
+    buildingWorld: BuildingWorld,
+    warpName: String? = null,
+    location: Location? = null,
+    displayItem: Material? = null
+): SurfChestGui =
     menu(buildText { spacer("Neuen Warp erstellen") }, height) {
         withOutline(width, height)
         withOutClicks()
         withHomeButton(height)
 
-        var currentLocation: Location? = if (player is Player) player.location else null
-        var currentDisplayItem = Material.ENDER_PEARL
-        var warpName: String? = null
+        var currentLocation = location ?: if (player is Player) player.location else null
+        var currentDisplayItem = displayItem ?: Material.ENDER_PEARL
 
         val setPositionButton = StaticPane(2, 2, 1, 1).apply {
             fun updatePosition() {
@@ -63,8 +68,13 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                             appendSuccessPrefix()
                             success("Position wurde auf deine aktuelle Position gesetzt.")
                         }
-                        updatePosition()
-                        update()
+                        showWarpCreateMenu(
+                            it.whoClicked,
+                            buildingWorld,
+                            warpName,
+                            currentLocation,
+                            currentDisplayItem
+                        )
                     }
                 }, 0, 0)
             }
@@ -77,16 +87,17 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                 val item = buildItem(Material.NAME_TAG) {
                     displayName {
                         infoColored("Name: ")
-                        variableValue(warpName ?: "Nicht gesetzt")
+                        if (warpName != null) {
+                            variableValue(warpName)
+                        } else {
+                            error("Nicht gesetzt")
+                        }
                     }
                 }
 
                 addItem(GuiItem(item) {
                     it.whoClicked.playClickSound()
-                    it.whoClicked.showDialog(showWarpCreateNameDialog(buildingWorld) { name ->
-                        warpName = name
-                        showWarpCreateMenu(it.whoClicked, buildingWorld)
-                    })
+                    it.whoClicked.showDialog(showWarpCreateNameDialog(buildingWorld, warpName, currentLocation, currentDisplayItem))
                 }, 0, 0)
             }
             updateName()
@@ -104,13 +115,13 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
 
                 addItem(GuiItem(item) {
                     it.whoClicked.playClickSound()
-                    showDisplayItemSelectMenuForWarp(it.whoClicked, buildingWorld) { selectedMaterial ->
+                    showDisplayItemSelectMenuForWarp(it.whoClicked, buildingWorld, warpName, currentLocation, currentDisplayItem) { selectedMaterial ->
                         currentDisplayItem = selectedMaterial
                         it.whoClicked.sendText {
                             appendSuccessPrefix()
                             success("Das Display-Item wurde geändert.")
                         }
-                        showWarpCreateMenu(it.whoClicked, buildingWorld)
+                        showWarpCreateMenu(it.whoClicked, buildingWorld, warpName, currentLocation, selectedMaterial)
                     }
                 }, 0, 0)
             }
@@ -127,7 +138,7 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
             addItem(GuiItem(item) {
                 it.whoClicked.playClickSound()
 
-                if (warpName == null || warpName!!.isEmpty()) {
+                if (warpName == null || warpName.isEmpty()) {
                     it.whoClicked.sendText {
                         appendErrorPrefix()
                         error("Bitte gib einen Namen für den Warp ein.")
@@ -144,7 +155,7 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
                 }
 
                 val newWarp = Warp(
-                    name = warpName!!,
+                    name = warpName,
                     x = currentLocation!!.x,
                     y = currentLocation!!.y,
                     z = currentLocation!!.z,
@@ -178,7 +189,10 @@ fun showWarpCreateMenu(player: HumanEntity, buildingWorld: BuildingWorld): SurfC
 fun showDisplayItemSelectMenuForWarp(
     player: HumanEntity,
     buildingWorld: BuildingWorld,
+    warpName: String?,
+    location: Location?,
+    currentDisplayItem: Material?,
     onSelect: (Material) -> Unit
 ): SurfChestGui {
-    return showDisplayItemSelectMenuForCreate(player, null, null, null, onSelect)
+    return showDisplayItemSelectMenuForCreate(player, null, null, currentDisplayItem, onSelect)
 }

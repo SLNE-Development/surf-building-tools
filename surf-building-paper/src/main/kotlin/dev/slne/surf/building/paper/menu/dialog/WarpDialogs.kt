@@ -1,5 +1,7 @@
 package dev.slne.surf.building.paper.menu.dialog
 
+import dev.slne.surf.building.paper.menu.sub.showWarpCreateMenu
+import dev.slne.surf.building.paper.menu.sub.showWarpEditMenu
 import dev.slne.surf.building.paper.util.primaryColored
 import dev.slne.surf.building.paper.world.BuildingWorld
 import dev.slne.surf.building.paper.world.Warp
@@ -10,12 +12,16 @@ import dev.slne.surf.surfapi.bukkit.api.dialog.type
 import dev.slne.surf.surfapi.core.api.messages.adventure.appendNewline
 import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.Sound
 
 @Suppress("UnstableApiUsage")
 fun showWarpCreateNameDialog(
     buildingWorld: BuildingWorld,
-    onSuccess: (String) -> Unit
+    warpName: String?,
+    location: Location?,
+    displayItem: Material?
 ) = dialog {
     base {
         title { primaryColored("Warp benennen") }
@@ -31,6 +37,9 @@ fun showWarpCreateNameDialog(
                 text("warp_name") {
                     label { primaryColored("Name des Warps:") }
                     width(300)
+                    if (warpName != null) {
+                        initial(warpName)
+                    }
                     maxLength(64)
                 }
             }
@@ -45,6 +54,7 @@ fun showWarpCreateNameDialog(
                 action {
                     customPlayerClick { _, player ->
                         player.closeDialog()
+                        showWarpCreateMenu(player, buildingWorld, warpName, location, displayItem)
                     }
                 }
             }, actionButton {
@@ -68,7 +78,7 @@ fun showWarpCreateNameDialog(
                         }
 
                         player.closeDialog()
-                        onSuccess(name)
+                        showWarpCreateMenu(player, buildingWorld, name, location, displayItem)
                     }
                 }
             })
@@ -80,7 +90,9 @@ fun showWarpCreateNameDialog(
 fun showWarpEditNameDialog(
     buildingWorld: BuildingWorld,
     warp: Warp,
-    onSuccess: (String) -> Unit
+    currentName: String,
+    currentLocation: Location,
+    currentDisplayItem: Material
 ) = dialog {
     base {
         title { primaryColored("Warp umbenennen") }
@@ -96,7 +108,7 @@ fun showWarpEditNameDialog(
                 text("warp_name") {
                     label { primaryColored("Name des Warps:") }
                     width(300)
-                    initial(warp.name)
+                    initial(currentName)
                     maxLength(64)
                 }
             }
@@ -111,6 +123,7 @@ fun showWarpEditNameDialog(
                 action {
                     customPlayerClick { _, player ->
                         player.closeDialog()
+                        showWarpEditMenu(player, buildingWorld, warp, currentName, currentLocation, currentDisplayItem)
                     }
                 }
             }, actionButton {
@@ -134,7 +147,7 @@ fun showWarpEditNameDialog(
                         }
 
                         player.closeDialog()
-                        onSuccess(name)
+                        showWarpEditMenu(player, buildingWorld, warp, name, currentLocation, currentDisplayItem)
                     }
                 }
             })
