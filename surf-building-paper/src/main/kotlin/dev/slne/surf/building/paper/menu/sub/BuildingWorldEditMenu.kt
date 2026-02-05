@@ -4,7 +4,6 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.ToggleButton
 import dev.slne.surf.building.paper.menu.dialog.showBuildingWorldEditNameDialog
-import dev.slne.surf.building.paper.menu.showWarpMenu
 import dev.slne.surf.building.paper.menu.util.MenuHeads
 import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
@@ -119,21 +118,6 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
             updateDisplayItem()
         }
 
-        val warpManagementButton = StaticPane(
-            4, 3, 1, 1
-        ).apply {
-            val item = buildItem(Material.COMPASS) {
-                displayName {
-                    infoColored("Warps verwalten")
-                }
-            }
-
-            addItem(GuiItem(item) {
-                it.whoClicked.playClickSound()
-                showWarpMenu(it.whoClicked, buildingWorld)
-            }, 0, 0)
-        }
-
         setOnClose {
             buildingWorldService.saveBuildingWorld(
                 buildingWorld.copy(
@@ -146,6 +130,5 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         addPane(editNameButton)
         addPane(statusButton)
         addPane(displayItemButton)
-        addPane(warpManagementButton)
         show(player)
     }

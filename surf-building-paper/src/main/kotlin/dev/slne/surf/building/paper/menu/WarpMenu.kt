@@ -10,7 +10,6 @@ import dev.slne.surf.building.paper.menu.sub.showWarpCreateMenu
 import dev.slne.surf.building.paper.menu.sub.showWarpDeleteConfirmMenu
 import dev.slne.surf.building.paper.menu.sub.showWarpEditMenu
 import dev.slne.surf.building.paper.menu.util.MenuHeads
-import dev.slne.surf.building.paper.menu.util.withHomeButton
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
 import dev.slne.surf.building.paper.util.displayKey
@@ -46,7 +45,6 @@ private class WarpMenu(val player: HumanEntity, val buildingWorld: BuildingWorld
     init {
         withOutClicks()
         withOutline(width, height)
-        withHomeButton(height)
 
         if (buildingWorld.authorUuid == player.uniqueId) {
             addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGH).apply {
