@@ -112,6 +112,17 @@ class BuildingWorldService {
             config.createdAtString = bWorld.createdAt.toString()
             config.worldType = bWorld.type.name
             config.displayItemName = bWorld.displayItem.name
+            config.warps = bWorld.warps.map { warp ->
+                dev.slne.surf.building.paper.world.WarpConfig(
+                    name = warp.name,
+                    x = warp.x,
+                    y = warp.y,
+                    z = warp.z,
+                    pitch = warp.pitch,
+                    yaw = warp.yaw,
+                    displayItemName = warp.displayItem.name
+                )
+            }.toMutableList()
 
             this.save()
         }
@@ -140,6 +151,17 @@ class BuildingWorldService {
             config.createdAtString = buildingWorld.createdAt.toString()
             config.worldType = buildingWorld.type.name
             config.displayItemName = buildingWorld.displayItem.name
+            config.warps = buildingWorld.warps.map { warp ->
+                dev.slne.surf.building.paper.world.WarpConfig(
+                    name = warp.name,
+                    x = warp.x,
+                    y = warp.y,
+                    z = warp.z,
+                    pitch = warp.pitch,
+                    yaw = warp.yaw,
+                    displayItemName = warp.displayItem.name
+                )
+            }.toMutableList()
 
             this.save()
         }
@@ -177,6 +199,22 @@ class BuildingWorldService {
                     } catch (e: IllegalArgumentException) {
                         plugin.logger.warning("Invalid display item '${config.displayItemName}' for world '${config.buildingWorldName}', using default GRASS_BLOCK")
                         Material.GRASS_BLOCK
+                    },
+                    warps = config.warps.map { warpConfig ->
+                        dev.slne.surf.building.paper.world.Warp(
+                            name = warpConfig.name,
+                            x = warpConfig.x,
+                            y = warpConfig.y,
+                            z = warpConfig.z,
+                            pitch = warpConfig.pitch,
+                            yaw = warpConfig.yaw,
+                            displayItem = try {
+                                Material.valueOf(warpConfig.displayItemName)
+                            } catch (e: IllegalArgumentException) {
+                                plugin.logger.warning("Invalid warp display item '${warpConfig.displayItemName}' for warp '${warpConfig.name}', using default COMPASS")
+                                Material.COMPASS
+                            }
+                        )
                     }
                 )
 
