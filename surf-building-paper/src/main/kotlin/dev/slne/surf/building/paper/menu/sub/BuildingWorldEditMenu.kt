@@ -118,6 +118,24 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
             updateDisplayItem()
         }
 
+        val warpButton = StaticPane(
+            4, 3, 1, 1
+        ).apply {
+            val item = buildItem(Material.ENDER_PEARL) {
+                displayName {
+                    infoColored("Warps verwalten")
+                }
+            }
+
+            addItem(GuiItem(item) {
+                it.whoClicked.playClickSound()
+                showWarpMenu(it.whoClicked, buildingWorld.copy(
+                    status = if (currentState) BuildingWorld.Status.EDITING else BuildingWorld.Status.DONE,
+                    displayItem = currentDisplayItem
+                ))
+            }, 0, 0)
+        }
+
         setOnClose {
             buildingWorldService.saveBuildingWorld(
                 buildingWorld.copy(
@@ -130,5 +148,6 @@ fun showBuildingWorldEditMenu(player: HumanEntity, buildingWorld: BuildingWorld)
         addPane(editNameButton)
         addPane(statusButton)
         addPane(displayItemButton)
+        addPane(warpButton)
         show(player)
     }

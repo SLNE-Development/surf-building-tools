@@ -151,6 +151,12 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEn
                 spacer(" zum Beitreten")
             }
 
+            line {
+                spacer("Nutze ")
+                displayKey("mouse.middle")
+                spacer(" zum Warps anzeigen")
+            }
+
             if (buildingWorld.authorUuid == player.uniqueId) {
                 line {
                     spacer("Nutze ")
@@ -162,7 +168,7 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEn
                     displayKey("sneak")
                     spacer(" + ")
                     displayKey("mouse.left")
-                    spacer(" zum löschen")
+                    spacer(" zum Löschen")
                 }
             }
         }
@@ -177,6 +183,10 @@ private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEn
             it.whoClicked,
             buildingWorld.buildingWorldId
         )
+        it.whoClicked.playClickSound()
+    } else if (it.click == ClickType.MIDDLE) {
+        // Open warps menu for all users
+        showWarpMenu(it.whoClicked, buildingWorld)
         it.whoClicked.playClickSound()
     } else if (it.click == ClickType.RIGHT) {
         if (buildingWorld.authorUuid == player.uniqueId) {

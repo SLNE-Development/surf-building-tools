@@ -140,6 +140,17 @@ class BuildingWorldService {
             config.createdAtString = buildingWorld.createdAt.toString()
             config.worldType = buildingWorld.type.name
             config.displayItemName = buildingWorld.displayItem.name
+            config.warps = buildingWorld.warps.map { warp ->
+                dev.slne.surf.building.paper.world.WarpConfig(
+                    name = warp.name,
+                    x = warp.x,
+                    y = warp.y,
+                    z = warp.z,
+                    pitch = warp.pitch,
+                    yaw = warp.yaw,
+                    displayItemName = warp.displayItem.name
+                )
+            }.toMutableList()
 
             this.save()
         }
@@ -177,6 +188,22 @@ class BuildingWorldService {
                     } catch (e: IllegalArgumentException) {
                         plugin.logger.warning("Invalid display item '${config.displayItemName}' for world '${config.buildingWorldName}', using default GRASS_BLOCK")
                         Material.GRASS_BLOCK
+                    },
+                    warps = config.warps.mapNotNull { warpConfig ->
+                        try {
+                            dev.slne.surf.building.paper.world.Warp(
+                                name = warpConfig.name,
+                                x = warpConfig.x,
+                                y = warpConfig.y,
+                                z = warpConfig.z,
+                                pitch = warpConfig.pitch,
+                                yaw = warpConfig.yaw,
+                                displayItem = Material.valueOf(warpConfig.displayItemName)
+                            )
+                        } catch (e: IllegalArgumentException) {
+                            plugin.logger.warning("Invalid display item '${warpConfig.displayItemName}' for warp '${warpConfig.name}' in world '${config.buildingWorldName}', skipping warp")
+                            null
+                        }
                     }
                 )
 

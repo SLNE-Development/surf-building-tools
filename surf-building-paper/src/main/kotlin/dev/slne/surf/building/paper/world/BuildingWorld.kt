@@ -18,7 +18,8 @@ data class BuildingWorld(
     val status: Status,
     val createdAt: OffsetDateTime,
     val type: Type = Type.FLAT,
-    val displayItem: Material = Material.GRASS_BLOCK
+    val displayItem: Material = Material.GRASS_BLOCK,
+    val warps: List<Warp> = emptyList()
 ) {
     val currentPlayers = mutableObjectSetOf<UUID>()
     val folder = plugin.server.worldContainer.resolve(worldName)
