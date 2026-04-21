@@ -3,6 +3,7 @@ package dev.slne.surf.building.command
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.api.paper.inventory.framework.viewFrame
 import dev.slne.surf.building.buildingConfig
 import dev.slne.surf.building.command.argument.buildingWorldArgument
@@ -24,7 +25,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
 
     literalArgument("create") {
         stringArgument("name") {
-            playerExecutor { player, args ->
+            playerExecutorSuspend { player, args ->
                 val name: String by args
 
                 val success =
@@ -42,10 +43,12 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                             success("Beitreten")
                             spacer("]")
                             clickEvent(ClickEvent.callback {
-                                BuildingWorldService.joinAndOrLoadBuildingWorld(
-                                    player,
-                                    success.buildingWorldId
-                                )
+                                plugin.launch {
+                                    BuildingWorldService.joinAndOrLoadBuildingWorld(
+                                        player,
+                                        success.buildingWorldId
+                                    )
+                                }
                             })
                         }
                     }
@@ -61,7 +64,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
 
     literalArgument("join") {
         buildingWorldArgument("bWorld") {
-            playerExecutor { player, args ->
+            playerExecutorSuspend { player, args ->
                 val bWorld: BuildingWorld by args
 
                 val success =
@@ -108,7 +111,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
 
     literalArgument("load") {
         buildingWorldArgument("bWorld") {
-            playerExecutor { player, args ->
+            playerExecutorSuspend { player, args ->
                 val bWorld: BuildingWorld by args
 
                 val success = BuildingWorldService.loadBuildingWorld(

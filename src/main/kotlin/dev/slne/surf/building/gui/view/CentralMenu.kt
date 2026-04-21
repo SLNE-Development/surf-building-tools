@@ -1,5 +1,6 @@
 package dev.slne.surf.building.gui.view
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.font.toSmallCaps
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
@@ -10,6 +11,7 @@ import dev.slne.surf.building.gui.GuiState
 import dev.slne.surf.building.gui.dialog.searchWorldDialog
 import dev.slne.surf.building.gui.guiState
 import dev.slne.surf.building.gui.view.world.WorldView
+import dev.slne.surf.building.plugin
 import dev.slne.surf.building.service.BuildingWorldService
 import dev.slne.surf.building.world.BuildingWorld
 import me.devnatan.inventoryframework.View
@@ -48,18 +50,23 @@ object CentralMenu : View() {
                 if (context.isRightClick) {
                     context.openForPlayer(WorldView::class.java, mutableMapOf("world" to world))
                 } else {
-                    BuildingWorldService.joinAndOrLoadBuildingWorld(
-                        context.player,
-                        world.buildingWorldId
-                    )
+                    plugin.launch {
+                        BuildingWorldService.joinAndOrLoadBuildingWorld(
+                            context.player,
+                            world.buildingWorldId
+                        )
+                    }
+
                 }
                 return@onClick
             }
 
-            BuildingWorldService.joinAndOrLoadBuildingWorld(
-                context.player,
-                world.buildingWorldId
-            )
+            plugin.launch {
+                BuildingWorldService.joinAndOrLoadBuildingWorld(
+                    context.player,
+                    world.buildingWorldId
+                )
+            }
         }
     }.layoutTarget('R').build()
 
@@ -214,7 +221,7 @@ object CentralMenu : View() {
                         appendSpace()
                         spacer("-")
                         appendSpace()
-                        append(it.displayName)
+                        append(it.displayName).decorate(TextDecoration.BOLD)
                     } else {
                         spacer("-")
                         appendSpace()

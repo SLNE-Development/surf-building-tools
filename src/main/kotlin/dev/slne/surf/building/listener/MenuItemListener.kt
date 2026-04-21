@@ -2,6 +2,8 @@ package dev.slne.surf.building.listener
 
 import dev.slne.surf.api.core.messages.adventure.playSound
 import dev.slne.surf.api.paper.event.cancel
+import dev.slne.surf.api.paper.inventory.framework.viewFrame
+import dev.slne.surf.building.gui.view.CentralMenu
 import dev.slne.surf.building.plugin
 import org.bukkit.Sound
 import org.bukkit.event.EventHandler
@@ -22,6 +24,8 @@ object MenuItemListener : Listener {
             event.player.playSound(true) {
                 type(Sound.ENTITY_CHICKEN_EGG)
             }
+
+            viewFrame.open(CentralMenu::class.java, event.player)
         }
     }
 

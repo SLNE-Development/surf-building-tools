@@ -1,5 +1,6 @@
 package dev.slne.surf.building.service
 
+import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import dev.slne.surf.api.core.config.manager.SpongeConfigManager
 import dev.slne.surf.api.core.config.surfConfigApi
 import dev.slne.surf.api.core.util.mutableObject2ObjectMapOf
@@ -11,9 +12,9 @@ import dev.slne.surf.building.util.generateBuildingWorldId
 import dev.slne.surf.building.util.parseWorldType
 import dev.slne.surf.building.util.removeGeneratorFromBukkitYml
 import dev.slne.surf.building.world.BuildingWorld
-import dev.slne.surf.building.world.generator.BuildingWorldGenerator
 import dev.slne.surf.building.world.Warp
 import dev.slne.surf.building.world.WarpConfig
+import dev.slne.surf.building.world.generator.BuildingWorldGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bukkit.*
@@ -37,13 +38,13 @@ object BuildingWorldService {
     fun findBuildingWorldByWorld(world: World) =
         buildingWorlds.firstOrNull { it.worldUuid == world.uid }
 
-    fun createBuildingWorld(
+    suspend fun createBuildingWorld(
         buildingWorldName: String,
         authorName: String,
         authorUuid: UUID,
         type: BuildingWorld.Type,
         displayItem: Material = Material.GRASS_BLOCK
-    ): BuildingWorld? {
+    ): BuildingWorld? = withContext(plugin.globalRegionDispatcher) {
         val id = generateBuildingWorldId()
 
         val world = when (type) {
@@ -58,7 +59,7 @@ object BuildingWorldService {
                 .generator(BuildingWorldGenerator)
                 .generateStructures(false)
                 .createWorld()
-        } ?: return null
+        } ?: return@withContext null
 
         if (type == BuildingWorld.Type.VOID) {
             addGeneratorToBukkitYml(world.name)
@@ -132,7 +133,7 @@ object BuildingWorldService {
             this.save()
         }
 
-        return bWorld
+        return@withContext bWorld
     }
 
     fun changeStatus(buildingWorld: BuildingWorld, status: BuildingWorld.Status): Boolean {
@@ -247,7 +248,7 @@ object BuildingWorldService {
         return true
     }
 
-    fun joinAndOrLoadBuildingWorld(player: HumanEntity, buildingWorldId: String): Boolean {
+    suspend fun joinAndOrLoadBuildingWorld(player: HumanEntity, buildingWorldId: String): Boolean {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
@@ -256,7 +257,10 @@ object BuildingWorldService {
             if (buildingWorld.type == BuildingWorld.Type.VOID) {
                 worldCreator.generator(BuildingWorldGenerator)
             }
-            Bukkit.createWorld(worldCreator)
+            withContext(plugin.globalRegionDispatcher) {
+                Bukkit.createWorld(worldCreator)
+            }
+
         } ?: return false
 
         player.teleportAsync(world.spawnLocation)
@@ -264,7 +268,7 @@ object BuildingWorldService {
         return true
     }
 
-    fun loadBuildingWorld(buildingWorldId: String): Boolean {
+    suspend fun loadBuildingWorld(buildingWorldId: String): Boolean {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
@@ -272,8 +276,10 @@ object BuildingWorldService {
         if (buildingWorld.type == BuildingWorld.Type.VOID) {
             worldCreator.generator(BuildingWorldGenerator)
         }
-        Bukkit.createWorld(worldCreator)
-            ?: return false
+        withContext(plugin.globalRegionDispatcher) {
+            Bukkit.createWorld(worldCreator)
+                ?: return@withContext false
+        }
 
         return true
     }
