@@ -1,28 +1,13 @@
-import dev.slne.surf.surfapi.gradle.util.slneReleases
-
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        maven("https://repo.slne.dev/repository/maven-public/") { name = "maven-public" }
-    }
-    dependencies {
-        classpath("dev.slne.surf:surf-api-gradle-plugin:1.21.11+")
-    }
+plugins {
+    id("dev.slne.surf.api.gradle.paper-plugin")
 }
 
-allprojects {
-    group = "dev.slne.surf.building"
-    version = findProperty("version") as String
-}
+group = "dev.slne.surf.building"
+version = findProperty("version") as String
 
-subprojects {
-    afterEvaluate {
-        plugins.withType<PublishingPlugin> {
-            configure<PublishingExtension> {
-                repositories {
-                    slneReleases()
-                }
-            }
-        }
-    }
+surfPaperPluginApi {
+    mainClass("dev.slne.surf.building.PaperMain")
+    generateLibraryLoader(false)
+
+    authors.add("red")
 }
