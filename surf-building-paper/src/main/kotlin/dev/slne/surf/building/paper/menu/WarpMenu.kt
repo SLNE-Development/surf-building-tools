@@ -6,17 +6,17 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import dev.slne.surf.building.paper.menu.sub.showBuildingWorldCreateMenu
-import dev.slne.surf.building.paper.menu.sub.showBuildingWorldDeleteConfirmMenu
-import dev.slne.surf.building.paper.menu.sub.showBuildingWorldEditMenu
+import dev.slne.surf.building.paper.menu.sub.showWarpCreateMenu
+import dev.slne.surf.building.paper.menu.sub.showWarpDeleteConfirmMenu
+import dev.slne.surf.building.paper.menu.sub.showWarpEditMenu
 import dev.slne.surf.building.paper.menu.util.MenuHeads
 import dev.slne.surf.building.paper.menu.util.withOutClicks
 import dev.slne.surf.building.paper.menu.util.withOutline
-import dev.slne.surf.building.paper.plugin
 import dev.slne.surf.building.paper.service.buildingWorldService
 import dev.slne.surf.building.paper.util.displayKey
 import dev.slne.surf.building.paper.util.playClickSound
 import dev.slne.surf.building.paper.world.BuildingWorld
+import dev.slne.surf.building.paper.world.Warp
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.buildLore
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
@@ -29,15 +29,15 @@ import org.bukkit.entity.HumanEntity
 import org.bukkit.event.inventory.ClickType
 
 private const val width = 9
-private const val height = 6
+private const val height = 3
 
-fun showBuildingWorldMenu(player: HumanEntity) {
-    BuildingWorldMenu(player).show(player)
+fun showWarpMenu(player: HumanEntity, buildingWorld: BuildingWorld) {
+    WarpMenu(player, buildingWorld).show(player)
 }
 
-private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
+private class WarpMenu(val player: HumanEntity, val buildingWorld: BuildingWorld) : ChestGui(
     height,
-    ComponentHolder.of(buildText { spacer("Bauwelten") })
+    ComponentHolder.of(buildText { spacer("Warps") })
 ) {
     val contentPane = PaginatedPane(1, 1, width - 2, height - 2)
     val navBar = StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST)
@@ -46,15 +46,29 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
         withOutClicks()
         withOutline(width, height)
 
-        addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGH).apply {
-            addItem(GuiItem(MenuHeads.CREATE_BUTTON.apply {
+        // Home button (back to main menu)
+        addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGHEST).apply {
+            addItem(GuiItem(buildItem(Material.BARRIER) {
                 displayName {
-                    primary("Neue Bauwelt erstellen")
+                    error("Zurück")
                 }
             }) {
-                showBuildingWorldCreateMenu(player)
-            }, 4, 0)
+                it.whoClicked.playClickSound()
+                showBuildingWorldMenu(it.whoClicked)
+            }, 3, 0)
         })
+
+        if (buildingWorld.authorUuid == player.uniqueId) {
+            addPane(StaticPane(0, height - 1, 7, 1, Pane.Priority.HIGH).apply {
+                addItem(GuiItem(MenuHeads.CREATE_BUTTON.clone().apply {
+                    displayName {
+                        primary("Neuen Warp erstellen")
+                    }
+                }) {
+                    showWarpCreateMenu(player, buildingWorld)
+                }, 5, 0)
+            })
+        }
 
         addPane(contentPane)
         addPane(navBar)
@@ -65,15 +79,10 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
     override fun update() {
         contentPane.clear()
         contentPane.populateWithGuiItems(
-            buildingWorldService.buildingWorlds
-                .sortedWith(
-                    compareBy<BuildingWorld> { it.status }
-                        .thenBy { it.authorName }
-                        .thenBy(naturalComparator) { it.buildingWorldName }
-                )
-                .map { buildBuildingWorldItem(it, player) }
+            buildingWorld.warps
+                .sortedBy { it.name }
+                .map { buildWarpItem(it, player, buildingWorld) }
         )
-
 
         updatePagination(navBar, contentPane)
         super.update()
@@ -86,7 +95,7 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
         outlinePane.clear()
         if (pages.page > 0) {
             outlinePane.addItem(
-                GuiItem(buildItem(Material.ARROW) {
+                GuiItem(buildItem(org.bukkit.Material.ARROW) {
                     displayName {
                         variableValue("Vorherige Seite")
                     }
@@ -103,7 +112,7 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
 
         if (pages.page + 1 < pages.pages) {
             outlinePane.addItem(
-                GuiItem(buildItem(Material.ARROW) {
+                GuiItem(buildItem(org.bukkit.Material.ARROW) {
                     displayName {
                         variableValue("Nächste Seite")
                     }
@@ -120,101 +129,55 @@ private class BuildingWorldMenu(val player: HumanEntity) : ChestGui(
     }
 }
 
-private fun buildBuildingWorldItem(buildingWorld: BuildingWorld, player: HumanEntity) = GuiItem(
-    buildItem(buildingWorld.displayItem) {
+private fun buildWarpItem(warp: Warp, player: HumanEntity, buildingWorld: BuildingWorld) = GuiItem(
+    buildItem(warp.displayItem) {
         displayName {
-            primary(buildingWorld.buildingWorldName)
+            primary(warp.name)
         }
 
         buildLore {
             emptyLine()
             line {
-                spacer("Besitzer: ".toSmallCaps())
+                spacer("Position: ".toSmallCaps())
             }
             line {
-                variableValue(buildingWorld.authorName)
-            }
-            emptyLine()
-
-            line {
-                spacer("Status: ".toSmallCaps())
-
-            }
-            line {
-                variableValue(buildingWorld.status.displayName)
+                variableValue("X: ${warp.x.toInt()}, Y: ${warp.y.toInt()}, Z: ${warp.z.toInt()}")
             }
             emptyLine()
 
             line {
                 spacer("Nutze ")
                 displayKey("mouse.left")
-                spacer(" zum Beitreten")
-            }
-
-            line {
-                spacer("Nutze ")
-                displayKey("mouse.middle")
-                spacer(" für Warps")
+                spacer(" zum Teleportieren")
             }
 
             if (buildingWorld.authorUuid == player.uniqueId) {
                 line {
                     spacer("Nutze ")
                     displayKey("mouse.right")
-                    spacer(" zum bearbeiten")
+                    spacer(" zum Bearbeiten")
                 }
                 line {
                     spacer("Nutze ")
                     displayKey("sneak")
                     spacer(" + ")
                     displayKey("mouse.left")
-                    spacer(" zum löschen")
+                    spacer(" zum Löschen")
                 }
             }
         }
     }) {
     if (it.click == ClickType.SHIFT_LEFT) {
         if (buildingWorld.authorUuid == player.uniqueId) {
-            showBuildingWorldDeleteConfirmMenu(it.whoClicked, buildingWorld, plugin)
+            showWarpDeleteConfirmMenu(it.whoClicked, buildingWorld, warp)
             it.whoClicked.playClickSound()
         }
     } else if (it.click == ClickType.LEFT) {
-        buildingWorldService.joinAndOrLoadBuildingWorld(
-            it.whoClicked,
-            buildingWorld.buildingWorldId
-        )
-        it.whoClicked.playClickSound()
-    } else if (it.click == ClickType.MIDDLE) {
-        showWarpMenu(it.whoClicked, buildingWorld)
-        it.whoClicked.playClickSound()
+        buildingWorldService.joinAndOrLoadBuildingWorld(player, buildingWorld.buildingWorldId)
     } else if (it.click == ClickType.RIGHT) {
         if (buildingWorld.authorUuid == player.uniqueId) {
-            showBuildingWorldEditMenu(it.whoClicked, buildingWorld)
+            showWarpEditMenu(it.whoClicked, buildingWorld, warp)
             it.whoClicked.playClickSound()
         }
     }
 }
-
-private val naturalComparator = Comparator<String> { a, b ->
-    val regex = Regex("(\\d+)|(\\D+)")
-    val aParts = regex.findAll(a.lowercase()).map { it.value }.toList()
-    val bParts = regex.findAll(b.lowercase()).map { it.value }.toList()
-
-    for (i in 0 until minOf(aParts.size, bParts.size)) {
-        val x = aParts[i]
-        val y = bParts[i]
-
-        val xNum = x.toIntOrNull()
-        val yNum = y.toIntOrNull()
-
-        val cmp = when {
-            xNum != null && yNum != null -> xNum.compareTo(yNum)
-            else -> x.compareTo(y)
-        }
-
-        if (cmp != 0) return@Comparator cmp
-    }
-
-    aParts.size.compareTo(bParts.size)
-}
-
