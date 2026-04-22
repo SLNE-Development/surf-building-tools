@@ -6,8 +6,8 @@ import dev.slne.surf.api.core.util.mutableObject2ObjectMapOf
 import dev.slne.surf.api.paper.scoreboard.SurfScoreboard
 import dev.slne.surf.api.paper.scoreboard.SurfScoreboardApi
 import dev.slne.surf.building.plugin
-import dev.slne.surf.building.service.BuildingWorldService
-import dev.slne.surf.building.service.buildingWorldPlayerDataService
+import dev.slne.surf.building.service.WorldManager
+import dev.slne.surf.building.service.WorldPlayerDataManager
 import dev.slne.surf.building.util.currentBuildingWorld
 import dev.slne.surf.building.util.infoColored
 import dev.slne.surf.building.util.isBuildingWorld
@@ -29,11 +29,11 @@ object PlayerWorldListener : Listener {
         val toWorld = event.player.world
 
         hideScoreboard(player)
-        BuildingWorldService.buildingWorlds.forEach { it.currentPlayers.remove(player.uniqueId) }
+        WorldManager.buildingWorlds.forEach { it.currentPlayers.remove(player.uniqueId) }
 
         if (event.from.isBuildingWorld()) {
-            BuildingWorldService.getBuildingWorldByWorld(event.from)?.let {
-                buildingWorldPlayerDataService.savePlayerData(player, it)
+            WorldManager.getBuildingWorldByWorld(event.from)?.let {
+                WorldPlayerDataManager.savePlayerData(player, it)
             }
         }
 
@@ -43,7 +43,7 @@ object PlayerWorldListener : Listener {
             player.currentBuildingWorld()?.let {
                 it.currentPlayers.add(player.uniqueId)
 
-                buildingWorldPlayerDataService.loadPlayerData(player, it)
+                WorldPlayerDataManager.loadPlayerData(player, it)
             }
         } else {
             event.player.inventory.clear()
@@ -56,11 +56,11 @@ object PlayerWorldListener : Listener {
     fun onSave(event: WorldSaveEvent) {
         event.world.players.forEach {
             val buildingWorld = it.currentBuildingWorld() ?: return@forEach
-            buildingWorldPlayerDataService.savePlayerData(it, buildingWorld)
+            WorldPlayerDataManager.savePlayerData(it, buildingWorld)
         }
 
-        BuildingWorldService.buildingWorlds.forEach {
-            BuildingWorldService.saveBuildingWorld(it)
+        WorldManager.buildingWorlds.forEach {
+            WorldManager.saveBuildingWorld(it)
         }
     }
 

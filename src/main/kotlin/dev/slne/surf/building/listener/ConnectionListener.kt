@@ -6,7 +6,7 @@ import dev.slne.surf.api.core.messages.adventure.playSound
 import dev.slne.surf.api.core.messages.adventure.showTitle
 import dev.slne.surf.building.buildingConfig
 import dev.slne.surf.building.plugin
-import dev.slne.surf.building.service.buildingWorldPlayerDataService
+import dev.slne.surf.building.service.WorldPlayerDataManager
 import dev.slne.surf.building.util.currentBuildingWorld
 import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent
 import kotlinx.coroutines.delay
@@ -59,7 +59,7 @@ object ConnectionListener : Listener {
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
         event.player.currentBuildingWorld()?.let {
-            buildingWorldPlayerDataService.savePlayerData(event.player, it)
+            WorldPlayerDataManager.savePlayerData(event.player, it)
         }
     }
 

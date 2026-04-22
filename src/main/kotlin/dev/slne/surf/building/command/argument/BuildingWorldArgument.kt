@@ -6,13 +6,13 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.slne.surf.api.core.messages.adventure.buildText
-import dev.slne.surf.building.service.BuildingWorldService
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import org.bukkit.command.CommandSender
 
 class BuildingWorldArgument(nodeName: String) :
     CustomArgument<BuildingWorld, String>(StringArgument(nodeName), { info ->
-        BuildingWorldService.buildingWorlds.find { it.buildingWorldName == info.input }
+        WorldManager.buildingWorlds.find { it.buildingWorldName == info.input }
             ?: throw CustomArgumentException.fromAdventureComponent {
                 buildText {
                     appendErrorPrefix()
@@ -24,7 +24,7 @@ class BuildingWorldArgument(nodeName: String) :
     init {
         this.replaceSuggestions(
             ArgumentSuggestions.stringCollection<CommandSender> {
-                BuildingWorldService.buildingWorlds.map { it.buildingWorldName }
+                WorldManager.buildingWorlds.map { it.buildingWorldName }
             }
         )
     }

@@ -1,6 +1,6 @@
 package dev.slne.surf.building.util
 
-import dev.slne.surf.building.service.BuildingWorldService
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -14,7 +14,7 @@ fun generateBuildingWorldId(): String {
             .map { charset.random() }
             .joinToString("")
 
-        val exists = BuildingWorldService.buildingWorlds
+        val exists = WorldManager.buildingWorlds
             .any { it.buildingWorldId == id }
 
         if (!exists) {
@@ -36,11 +36,11 @@ fun parseWorldType(worldTypeString: String): BuildingWorld.Type {
 }
 
 fun World.isBuildingWorld(): Boolean {
-    return BuildingWorldService.buildingWorlds.any { it.worldUuid == this.uid }
+    return WorldManager.buildingWorlds.any { it.worldUuid == this.uid }
 }
 
 fun Player.currentBuildingWorld() =
-    BuildingWorldService.buildingWorlds.find { buildingWorld ->
+    WorldManager.buildingWorlds.find { buildingWorld ->
         buildingWorld.worldOrNull?.uid == this.world.uid
     }
 
@@ -58,7 +58,7 @@ fun World.teleportToHighestSpawn(player: Player): CompletableFuture<Boolean> {
     )
 }
 
-val World.buildingWorld get() = BuildingWorldService.getBuildingWorldByWorld(this)
+val World.buildingWorld get() = WorldManager.getBuildingWorldByWorld(this)
 
 
 

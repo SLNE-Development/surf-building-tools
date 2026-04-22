@@ -12,7 +12,7 @@ import dev.slne.surf.building.gui.view.CentralMenu
 import dev.slne.surf.building.gui.view.backItem
 import dev.slne.surf.building.gui.view.playGeneralClickSound
 import dev.slne.surf.building.plugin
-import dev.slne.surf.building.service.BuildingWorldService
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
@@ -97,7 +97,7 @@ object WorldCreateView : View() {
                 }
 
                 plugin.launch {
-                    val world = BuildingWorldService.createBuildingWorld(
+                    val world = WorldManager.createWorld(
                         name,
                         click.player.name,
                         click.player.uniqueId,

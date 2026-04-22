@@ -10,7 +10,7 @@ import dev.slne.surf.building.command.argument.buildingWorldArgument
 import dev.slne.surf.building.gui.view.CentralMenu
 import dev.slne.surf.building.permission.PermissionRegistry
 import dev.slne.surf.building.plugin
-import dev.slne.surf.building.service.BuildingWorldService
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import net.kyori.adventure.text.event.ClickEvent
 import org.bukkit.Bukkit
@@ -29,7 +29,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                 val name: String by args
 
                 val success =
-                    BuildingWorldService.createBuildingWorld(
+                    WorldManager.createWorld(
                         name, player.name, player.uniqueId,
                         BuildingWorld.Type.VOID
                     )
@@ -44,7 +44,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                             spacer("]")
                             clickEvent(ClickEvent.callback {
                                 plugin.launch {
-                                    BuildingWorldService.joinAndOrLoadBuildingWorld(
+                                    WorldManager.joinAndOrLoadBuildingWorld(
                                         player,
                                         success.buildingWorldId
                                     )
@@ -68,7 +68,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                 val bWorld: BuildingWorld by args
 
                 val success =
-                    BuildingWorldService.joinAndOrLoadBuildingWorld(player, bWorld.buildingWorldId)
+                    WorldManager.joinAndOrLoadBuildingWorld(player, bWorld.buildingWorldId)
 
                 if (success) {
                     player.sendText {
@@ -91,7 +91,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                 val bWorld: BuildingWorld by args
 
                 plugin.launch {
-                    val success = BuildingWorldService.deleteBuildingWorld(bWorld.buildingWorldId)
+                    val success = WorldManager.deleteBuildingWorld(bWorld.buildingWorldId)
 
                     if (success) {
                         player.sendText {
@@ -114,7 +114,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
             playerExecutorSuspend { player, args ->
                 val bWorld: BuildingWorld by args
 
-                val success = BuildingWorldService.loadBuildingWorld(
+                val success = WorldManager.loadBuildingWorld(
                     bWorld.buildingWorldId
                 )
 
@@ -138,7 +138,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
             playerExecutor { player, args ->
                 val bWorld: BuildingWorld by args
 
-                val success = BuildingWorldService.changeStatus(
+                val success = WorldManager.changeStatus(
                     bWorld, BuildingWorld.Status.DONE
                 )
 
@@ -164,7 +164,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
             playerExecutor { player, args ->
                 val bWorld: BuildingWorld by args
 
-                val success = BuildingWorldService.changeStatus(
+                val success = WorldManager.changeStatus(
                     bWorld, BuildingWorld.Status.PUBLISHED
                 )
 

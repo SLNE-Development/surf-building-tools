@@ -9,9 +9,7 @@ import java.io.DataOutputStream
 import java.io.File
 import java.util.*
 
-val buildingWorldPlayerDataService = BuildingWorldPlayerDataService()
-
-class BuildingWorldPlayerDataService {
+object WorldPlayerDataManager {
     fun savePlayerData(player: Player, buildingWorld: BuildingWorld) {
         val folder = buildingWorld.folder.resolve("playerData")
 

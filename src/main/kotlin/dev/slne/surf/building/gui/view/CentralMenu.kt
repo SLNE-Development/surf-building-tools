@@ -12,7 +12,7 @@ import dev.slne.surf.building.gui.dialog.searchWorldDialog
 import dev.slne.surf.building.gui.guiState
 import dev.slne.surf.building.gui.view.world.WorldView
 import dev.slne.surf.building.plugin
-import dev.slne.surf.building.service.BuildingWorldService
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
@@ -51,7 +51,7 @@ object CentralMenu : View() {
                     context.openForPlayer(WorldView::class.java, mutableMapOf("world" to world))
                 } else {
                     plugin.launch {
-                        BuildingWorldService.joinAndOrLoadBuildingWorld(
+                        WorldManager.joinAndOrLoadBuildingWorld(
                             context.player,
                             world.buildingWorldId
                         )
@@ -62,7 +62,7 @@ object CentralMenu : View() {
             }
 
             plugin.launch {
-                BuildingWorldService.joinAndOrLoadBuildingWorld(
+                WorldManager.joinAndOrLoadBuildingWorld(
                     context.player,
                     world.buildingWorldId
                 )
@@ -147,7 +147,7 @@ object CentralMenu : View() {
         sortType: GuiState.Sorting,
         search: String?
     ): List<BuildingWorld> {
-        val base = BuildingWorldService.findBuildingWorlds()
+        val base = WorldManager.findBuildingWorlds()
 
         val filtered = if (search.isNullOrBlank()) {
             base

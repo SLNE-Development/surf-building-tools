@@ -12,7 +12,7 @@ import dev.slne.surf.building.gui.view.warp.WarpView
 import dev.slne.surf.building.gui.view.warp.WarpsView
 import dev.slne.surf.building.gui.view.world.*
 import dev.slne.surf.building.listener.*
-import dev.slne.surf.building.service.BuildingWorldService
+import dev.slne.surf.building.service.WorldConfigManager
 import dev.slne.surf.building.util.primaryColored
 import org.bukkit.Material
 import org.bukkit.plugin.java.JavaPlugin
@@ -40,7 +40,7 @@ class PaperMain : SuspendingJavaPlugin() {
 
         buildingWorldCommand()
 
-        BuildingWorldService.cacheAllBuildingWorlds()
+        WorldConfigManager.cacheAllBuildingWorlds()
     }
 
     val menuItem = buildItem(Material.COMPASS) {
