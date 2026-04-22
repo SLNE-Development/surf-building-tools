@@ -1,6 +1,5 @@
 package dev.slne.surf.building.listener
 
-import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.font.toSmallCaps
 import dev.slne.surf.api.core.messages.adventure.playSound
 import dev.slne.surf.api.core.messages.adventure.showTitle
@@ -9,7 +8,6 @@ import dev.slne.surf.building.plugin
 import dev.slne.surf.building.service.WorldPlayerDataManager
 import dev.slne.surf.building.util.currentBuildingWorld
 import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent
-import kotlinx.coroutines.delay
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Sound
@@ -18,7 +16,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import kotlin.time.Duration.Companion.milliseconds
 
 @Suppress("UnstableApiUsage")
 object ConnectionListener : Listener {
@@ -51,9 +48,7 @@ object ConnectionListener : Listener {
         event.player.inventory.heldItemSlot = 4
         event.player.inventory.setItem(4, plugin.menuItem)
 
-        plugin.launch {
-            playWelcomeSound(event.player)
-        }
+        playWelcomeSound(event.player)
     }
 
     @EventHandler
@@ -63,37 +58,13 @@ object ConnectionListener : Listener {
         }
     }
 
-    suspend fun playWelcomeSound(player: Player) {
+    fun playWelcomeSound(player: Player) {
         player.playSound(true) {
-            type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.0f)
-            volume(1f)
+            type(Sound.ENTITY_FIREWORK_ROCKET_TWINKLE)
         }
 
-        delay(150.milliseconds)
-
         player.playSound(true) {
-            type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.3348f)
-            volume(1f)
-        }
-
-        delay(120.milliseconds)
-
-        player.playSound(true) {
-            type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.1225f)
-            volume(1f)
-        }
-
-        delay(180.milliseconds)
-
-        player.playSound(true) {
-            type(Sound.BLOCK_NOTE_BLOCK_BELL)
-            pitch(1.0f)
-            volume(1f)
+            type(Sound.ENTITY_FIREWORK_ROCKET_BLAST)
         }
     }
-
-
 }
