@@ -35,7 +35,11 @@ data class BuildingWorld(
         PUBLISHED("Veröffentlicht", Material.LIME_CANDLE, false),
     }
 
-    enum class Type {
-        FLAT, VOID
+    enum class Type(val displayName: String) {
+        VOID("Leer"), FLAT("Flach");
+
+
+        fun next() = entries[(ordinal + 1) % entries.size]
+        fun previous() = entries[(ordinal - 1 + entries.size) % entries.size]
     }
 }

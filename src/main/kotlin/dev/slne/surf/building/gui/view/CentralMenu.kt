@@ -39,7 +39,7 @@ object CentralMenu : View() {
 
     private val paginationState = buildLazyPaginationState { context ->
         getBuildingWorlds(
-            context.player.guiState().currentSort,
+            context.player.guiState().currentSortOrDefault,
             context.player.guiState().currentSearch
         ).toMutableList()
     }.elementFactory { context, builder, _, world ->
@@ -144,7 +144,7 @@ object CentralMenu : View() {
     }
 
     private fun getBuildingWorlds(
-        sortType: GuiState.Sorting?,
+        sortType: GuiState.Sorting,
         search: String?
     ): List<BuildingWorld> {
         val base = BuildingWorldService.findBuildingWorlds()

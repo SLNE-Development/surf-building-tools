@@ -5,6 +5,8 @@ import dev.slne.surf.api.paper.dialog.base
 import dev.slne.surf.api.paper.dialog.builder.actionButton
 import dev.slne.surf.api.paper.dialog.dialog
 import dev.slne.surf.api.paper.dialog.type
+import dev.slne.surf.api.paper.inventory.framework.viewFrame
+import dev.slne.surf.building.gui.view.world.WorldCreateView
 import dev.slne.surf.building.util.primaryColored
 import dev.slne.surf.building.world.BuildingWorld
 import org.bukkit.Material
@@ -46,6 +48,13 @@ fun showBuildingWorldCreateNameDialog(
                 action {
                     customPlayerClick { _, player ->
                         player.closeDialog()
+                        viewFrame.open(
+                            WorldCreateView::class.java, player, mutableMapOf(
+                                "name" to name,
+                                "type" to type,
+                                "displayItem" to displayItem
+                            )
+                        )
                     }
                 }
             }, actionButton {
@@ -58,6 +67,13 @@ fun showBuildingWorldCreateNameDialog(
                         val name = response.getText("bworld_name")?.trim()?.replace(" ", "-")
 
                         player.closeDialog()
+                        viewFrame.open(
+                            WorldCreateView::class.java, player, mutableMapOf(
+                                "name" to name,
+                                "type" to type,
+                                "displayItem" to displayItem
+                            )
+                        )
                     }
                 }
             })

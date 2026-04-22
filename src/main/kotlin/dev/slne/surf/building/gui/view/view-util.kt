@@ -2,6 +2,7 @@ package dev.slne.surf.building.gui.view
 
 import dev.slne.surf.api.core.messages.adventure.playSound
 import dev.slne.surf.api.core.messages.builder.SurfComponentBuilder
+import dev.slne.surf.api.core.util.dateTimeFormatter
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -104,6 +105,12 @@ fun View.createWorldItem(buildingWorld: BuildingWorld) = buildItem(buildingWorld
             variableValue(buildingWorld.status.displayName)
         }
         emptyLine()
+        line {
+            spacer("»")
+            appendSpace()
+            spacer("Erstellt am: ")
+            spacer(buildingWorld.createdAt.format(dateTimeFormatter))
+        }
         line {
             spacer("#${buildingWorld.buildingWorldId}")
         }

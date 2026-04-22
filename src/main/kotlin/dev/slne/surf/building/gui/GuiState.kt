@@ -42,10 +42,7 @@ data class GuiState(
         fun sort(worlds: List<BuildingWorld>): List<BuildingWorld> = sortList(worlds)
 
         companion object {
-            fun sort(list: Collection<BuildingWorld>, sort: Sorting?): List<BuildingWorld> {
-                if (sort == null) return list.toList()
-                return sort.sort(list.toList())
-            }
+            fun sort(list: Collection<BuildingWorld>, sort: Sorting) = sort.sort(list.toList())
         }
     }
 }

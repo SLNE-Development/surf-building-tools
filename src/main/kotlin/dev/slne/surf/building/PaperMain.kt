@@ -10,7 +10,7 @@ import dev.slne.surf.building.config.BuildingConfigHolder
 import dev.slne.surf.building.gui.view.CentralMenu
 import dev.slne.surf.building.gui.view.warp.WarpView
 import dev.slne.surf.building.gui.view.warp.WarpsView
-import dev.slne.surf.building.gui.view.world.WorldView
+import dev.slne.surf.building.gui.view.world.*
 import dev.slne.surf.building.listener.*
 import dev.slne.surf.building.service.BuildingWorldService
 import dev.slne.surf.building.util.primaryColored
@@ -25,6 +25,10 @@ class PaperMain : SuspendingJavaPlugin() {
         WorldView.register()
         WarpsView.register()
         WarpView.register()
+        WorldCreateView.register()
+        WorldCreateItemView.register()
+        WorldDeleteView.register()
+        WorldEditItemView.register()
     }
 
     override suspend fun onEnableAsync() {
