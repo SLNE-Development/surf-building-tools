@@ -13,7 +13,8 @@ import org.bukkit.Sound
 
 @Suppress("UnstableApiUsage")
 fun showBuildingWorldEditNameDialog(
-    buildingWorld: BuildingWorld
+    buildingWorld: BuildingWorld,
+    onComplete: (String?) -> Unit
 ) = dialog {
     base {
         title { primaryColored("Bau-Welt umbenennen") }
@@ -44,6 +45,7 @@ fun showBuildingWorldEditNameDialog(
                 action {
                     customPlayerClick { _, player ->
                         player.closeDialog()
+                        onComplete(null)
                     }
                 }
             }, actionButton {
@@ -63,9 +65,13 @@ fun showBuildingWorldEditNameDialog(
                             player.playSound(true) {
                                 type(Sound.ENTITY_VILLAGER_NO)
                             }
+                            player.closeDialog()
+                            onComplete(null)
+                            return@customPlayerClick
                         }
 
                         player.closeDialog()
+                        onComplete(name)
                     }
                 }
             })

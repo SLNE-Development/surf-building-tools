@@ -29,11 +29,18 @@ object WorldView : View() {
         val world = worldHolder.get(render)
 
         render.layoutSlot('O', outlineItem)
-        render.layoutSlot('D', deleteItem)
+        render.layoutSlot('D', deleteItem).onClick { click ->
+            click.playGeneralClickSound()
+            click.openForPlayer(WorldDeleteView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+        }
         render.layoutSlot('I', createWorldItem(world))
         render.layoutSlot('S').renderWith {
             statusItem(world.status)
         }.updateOnClick()
+        render.layoutSlot('W', editItem).onClick { click ->
+            click.playGeneralClickSound()
+            click.openForPlayer(WorldEditView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+        }
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
             click.openForPlayer(CentralMenu::class.java)
@@ -43,6 +50,12 @@ object WorldView : View() {
     private val deleteItem = MenuHeads.DELETE.clone().apply {
         displayName {
             variableValue("Bauwelt löschen")
+        }
+    }
+
+    private val editItem = MenuHeads.WRITABLE_BOOK.clone().apply {
+        displayName {
+            variableValue("Bauwelt bearbeiten")
         }
     }
 

@@ -62,6 +62,33 @@ object WorldConfigManager {
         }
     }
 
+    fun updateWorldConfig(buildingWorld: BuildingWorld) {
+        buildingWorldConfigManagers[buildingWorld.buildingWorldId]?.apply {
+            config.buildingWorldName = buildingWorld.buildingWorldName
+            config.buildingWorldId = buildingWorld.buildingWorldId
+            config.worldName = buildingWorld.worldName
+            config.worldUuid = buildingWorld.worldUuid
+            config.authorName = buildingWorld.authorName
+            config.authorUuid = buildingWorld.authorUuid
+            config.status = buildingWorld.status.name
+            config.createdAtString = buildingWorld.createdAt.toString()
+            config.worldType = buildingWorld.type.name
+            config.displayItemName = buildingWorld.displayItem.name
+            config.warps = buildingWorld.warps.map { warp ->
+                WarpConfig(
+                    name = warp.name,
+                    x = warp.x,
+                    y = warp.y,
+                    z = warp.z,
+                    pitch = warp.pitch,
+                    yaw = warp.yaw,
+                    displayItemName = warp.displayItem.name
+                )
+            }.toMutableList()
+            this.save()
+        }
+    }
+
     fun invalidate(buildingWorldId: String) = buildingWorldConfigManagers.remove(buildingWorldId)
 
     fun cacheAllBuildingWorlds() {

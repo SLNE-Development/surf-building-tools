@@ -8,6 +8,7 @@ import dev.slne.surf.building.util.addGeneratorToBukkitYml
 import dev.slne.surf.building.util.generateBuildingWorldId
 import dev.slne.surf.building.util.removeGeneratorFromBukkitYml
 import dev.slne.surf.building.world.BuildingWorld
+import dev.slne.surf.building.world.Warp
 import dev.slne.surf.building.world.generator.BuildingWorldGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -103,8 +104,38 @@ object WorldManager {
     }
 
     fun saveBuildingWorld(buildingWorld: BuildingWorld) {
-        WorldConfigManager.saveWorld(buildingWorld, buildingWorld.world)
         buildingWorldsMap[buildingWorld.buildingWorldId] = buildingWorld
+        WorldConfigManager.updateWorldConfig(buildingWorld)
+    }
+
+    fun renameWorld(buildingWorld: BuildingWorld, name: String): BuildingWorld {
+        val updated = buildingWorld.copy(buildingWorldName = name)
+        saveBuildingWorld(updated)
+        return updated
+    }
+
+    fun changeDisplayItem(buildingWorld: BuildingWorld, displayItem: Material): BuildingWorld {
+        val updated = buildingWorld.copy(displayItem = displayItem)
+        saveBuildingWorld(updated)
+        return updated
+    }
+
+    fun addWarp(buildingWorld: BuildingWorld, warp: Warp): BuildingWorld {
+        val updated = buildingWorld.copy(warps = buildingWorld.warps + warp)
+        saveBuildingWorld(updated)
+        return updated
+    }
+
+    fun updateWarp(buildingWorld: BuildingWorld, oldWarp: Warp, newWarp: Warp): BuildingWorld {
+        val updated = buildingWorld.copy(warps = buildingWorld.warps.map { if (it == oldWarp) newWarp else it })
+        saveBuildingWorld(updated)
+        return updated
+    }
+
+    fun deleteWarp(buildingWorld: BuildingWorld, warp: Warp): BuildingWorld {
+        val updated = buildingWorld.copy(warps = buildingWorld.warps.filter { it != warp })
+        saveBuildingWorld(updated)
+        return updated
     }
 
     fun getBuildingWorldByWorld(world: World) = buildingWorlds
