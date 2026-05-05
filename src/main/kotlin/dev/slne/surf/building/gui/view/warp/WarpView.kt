@@ -36,8 +36,34 @@ object WarpView : View() {
         val warp = warpHolder.get(render)
 
         render.layoutSlot('O', outlineItem)
-        render.layoutSlot('D', deleteItem(render.player))
+        render.layoutSlot('D', deleteItem(render.player)).onClick { click ->
+            click.playGeneralClickSound()
+            if (click.player.canModifyBuildingWorld()) {
+                click.openForPlayer(
+                    WarpDeleteView::class.java,
+                    mutableMapOf("world" to worldHolder.get(click), "warp" to warpHolder.get(click))
+                )
+            } else {
+                click.playLockedSound()
+            }
+        }
         render.layoutSlot('I', createWarpItem(warp))
+        render.layoutSlot('S', editItem(render.player)).onClick { click ->
+            click.playGeneralClickSound()
+            if (click.player.canModifyBuildingWorld()) {
+                click.openForPlayer(
+                    WarpEditView::class.java,
+                    mutableMapOf(
+                        "world" to worldHolder.get(click),
+                        "warp" to warpHolder.get(click),
+                        "name" to null,
+                        "displayItem" to null
+                    )
+                )
+            } else {
+                click.playLockedSound()
+            }
+        }
         render.layoutSlot('W', teleportItem).onClick { click ->
             click.player.teleportAsync(warp.location(world.world)).thenRun {
                 click.player.playSound(true) {
@@ -47,7 +73,7 @@ object WarpView : View() {
         }
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WarpsView::class.java)
+            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to worldHolder.get(click)))
         }
     }
 
@@ -60,6 +86,26 @@ object WarpView : View() {
             emptyLine()
             line {
                 variableValue("Klicke, um dich zu diesem Warp zu teleportieren")
+            }
+        }
+    }
+
+    private fun editItem(player: Player) = MenuHeads.WRITABLE_BOOK.clone().apply {
+        displayName {
+            variableValue("Warp bearbeiten")
+        }
+
+        buildLore {
+            emptyLine()
+            if (player.canModifyBuildingWorld()) {
+                line {
+                    appendBlob()
+                    variableValue("Klicke, um diesen Warp zu bearbeiten")
+                }
+            } else {
+                line {
+                    error("Nur Builder können diesen Warp bearbeiten!")
+                }
             }
         }
     }

@@ -10,6 +10,10 @@ import dev.slne.surf.building.config.BuildingConfigHolder
 import dev.slne.surf.building.gui.view.CentralMenu
 import dev.slne.surf.building.gui.view.warp.WarpView
 import dev.slne.surf.building.gui.view.warp.WarpsView
+import dev.slne.surf.building.gui.view.warp.WarpCreateView
+import dev.slne.surf.building.gui.view.warp.WarpEditView
+import dev.slne.surf.building.gui.view.warp.WarpDeleteView
+import dev.slne.surf.building.gui.view.warp.WarpEditItemView
 import dev.slne.surf.building.gui.view.world.*
 import dev.slne.surf.building.listener.*
 import dev.slne.surf.building.service.WorldConfigManager
@@ -25,9 +29,14 @@ class PaperMain : SuspendingJavaPlugin() {
         WorldView.register()
         WarpsView.register()
         WarpView.register()
+        WarpCreateView.register()
+        WarpEditView.register()
+        WarpDeleteView.register()
+        WarpEditItemView.register()
         WorldCreateView.register()
         WorldCreateItemView.register()
         WorldDeleteView.register()
+        WorldEditView.register()
         WorldEditItemView.register()
     }
 

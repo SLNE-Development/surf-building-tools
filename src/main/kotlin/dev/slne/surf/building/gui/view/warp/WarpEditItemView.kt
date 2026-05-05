@@ -1,19 +1,30 @@
-package dev.slne.surf.building.gui.view.world
+package dev.slne.surf.building.gui.view.warp
 
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.displayName
 import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
-import dev.slne.surf.building.gui.view.*
-import dev.slne.surf.building.service.WorldManager
+import dev.slne.surf.building.gui.view.backItem
+import dev.slne.surf.building.gui.view.nextItem
+import dev.slne.surf.building.gui.view.playGeneralClickSound
+import dev.slne.surf.building.gui.view.playNewPageSound
+import dev.slne.surf.building.gui.view.previousItem
 import dev.slne.surf.building.world.BuildingWorld
+import dev.slne.surf.building.world.Warp
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
 import org.bukkit.Material
 
-object WorldEditItemView : View() {
+/**
+ * Item picker used by both WarpCreateView (warpHolder = null) and WarpEditView (warpHolder set).
+ * States passed in: "world", "warp" (nullable), "name" (nullable), "displayItem" (nullable)
+ */
+object WarpEditItemView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
+    private val warpHolder = initialState<Warp?>("warp")
+    private val nameHolder = initialState<String?>("name")
+    private val displayItemHolder = initialState<Material?>("displayItem")
 
     private val validMaterials = Material.entries.filter { !it.isLegacy && it.isItem && !it.isAir }
         .sortedBy { it.name }
@@ -39,12 +50,20 @@ object WorldEditItemView : View() {
             }
         }).onClick { context ->
             context.playGeneralClickSound()
-            val currentWorld = worldHolder.get(context)
-            val updated = WorldManager.changeDisplayItem(currentWorld, material)
-            context.openForPlayer(
-                WorldEditView::class.java,
-                mutableMapOf("world" to updated)
-            )
+            val world = worldHolder.get(context)
+            val warp = warpHolder.get(context)
+            val name = nameHolder.get(context)
+            if (warp != null) {
+                context.openForPlayer(
+                    WarpEditView::class.java,
+                    mutableMapOf("world" to world, "warp" to warp, "name" to name, "displayItem" to material)
+                )
+            } else {
+                context.openForPlayer(
+                    WarpCreateView::class.java,
+                    mutableMapOf("world" to world, "name" to name, "displayItem" to material)
+                )
+            }
         }
     }.layoutTarget('R').build()
 
@@ -53,11 +72,22 @@ object WorldEditItemView : View() {
 
         render.layoutSlot('O', outlineItem)
         render.layoutSlot('B', backItem).onClick { click ->
-            click.openForPlayer(
-                WorldEditView::class.java,
-                mutableMapOf("world" to worldHolder.get(click))
-            )
             click.playGeneralClickSound()
+            val world = worldHolder.get(click)
+            val warp = warpHolder.get(click)
+            val name = nameHolder.get(click)
+            val displayItem = displayItemHolder.get(click)
+            if (warp != null) {
+                click.openForPlayer(
+                    WarpEditView::class.java,
+                    mutableMapOf("world" to world, "warp" to warp, "name" to name, "displayItem" to displayItem)
+                )
+            } else {
+                click.openForPlayer(
+                    WarpCreateView::class.java,
+                    mutableMapOf("world" to world, "name" to name, "displayItem" to displayItem)
+                )
+            }
         }
         render
             .layoutSlot('P')
@@ -73,7 +103,6 @@ object WorldEditItemView : View() {
                 if (!pagination.canBack()) {
                     return@onClick
                 }
-
                 context.playNewPageSound()
                 pagination.back()
             }
@@ -92,7 +121,6 @@ object WorldEditItemView : View() {
                 if (!pagination.canAdvance()) {
                     return@onClick
                 }
-
                 context.playNewPageSound()
                 pagination.advance()
             }

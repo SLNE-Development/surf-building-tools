@@ -1,13 +1,17 @@
 package dev.slne.surf.building.gui.view.warp
 
+import dev.slne.surf.api.paper.builder.buildItem
+import dev.slne.surf.api.paper.builder.buildLore
+import dev.slne.surf.api.paper.builder.displayName
+import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
-import dev.slne.surf.building.gui.view.canModifyBuildingWorld
-import dev.slne.surf.building.gui.view.createWarpItem
-import dev.slne.surf.building.gui.view.playGeneralClickSound
+import dev.slne.surf.building.gui.view.*
+import dev.slne.surf.building.gui.view.world.WorldView
 import dev.slne.surf.building.world.BuildingWorld
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
+import org.bukkit.Material
 
 object WarpsView : View() {
     private val world = initialState<BuildingWorld>("world")
@@ -27,7 +31,7 @@ object WarpsView : View() {
 
             context.playGeneralClickSound()
         }
-    }.layoutTarget('R').build()
+    }.layoutTarget('W').build()
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(5).layout(
@@ -35,7 +39,7 @@ object WarpsView : View() {
             "OWWWWWWWO",
             "OWWWWWWWO",
             "OWWWWWWWO",
-            "OOOOBNOOO"
+            "OPCOBNOOO"
         ).titleBuilder {
             variableValue("Warps")
         }.cancelInteractions()
@@ -43,5 +47,72 @@ object WarpsView : View() {
 
     override fun onFirstRender(render: RenderContext) {
         val pagination = paginationState.get(render)
+
+        render.layoutSlot('O', outlineItem)
+        render.layoutSlot('B', backItem).onClick { click ->
+            click.playGeneralClickSound()
+            click.openForPlayer(WorldView::class.java, mutableMapOf("world" to world.get(click)))
+        }
+        render.layoutSlot('C', createWarpButton).onClick { click ->
+            if (!click.player.canModifyBuildingWorld()) {
+                click.playLockedSound()
+                return@onClick
+            }
+            click.playGeneralClickSound()
+            click.openForPlayer(
+                WarpCreateView::class.java,
+                mutableMapOf("world" to world.get(click), "name" to null, "displayItem" to null)
+            )
+        }
+        render
+            .layoutSlot('P')
+            .renderWith {
+                if (pagination.canBack()) {
+                    previousItem
+                } else {
+                    outlineItem
+                }
+            }
+            .watch(paginationState)
+            .onClick { context ->
+                if (!pagination.canBack()) {
+                    return@onClick
+                }
+                context.playNewPageSound()
+                pagination.back()
+            }
+
+        render
+            .layoutSlot('N')
+            .renderWith {
+                if (pagination.canAdvance()) {
+                    nextItem
+                } else {
+                    outlineItem
+                }
+            }
+            .watch(paginationState)
+            .onClick { context ->
+                if (!pagination.canAdvance()) {
+                    return@onClick
+                }
+                context.playNewPageSound()
+                pagination.advance()
+            }
+    }
+
+    private val createWarpButton = buildItem(Material.GREEN_CONCRETE) {
+        displayName {
+            success("Warp erstellen")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                spacer("Klicke, um einen neuen Warp zu erstellen")
+            }
+        }
     }
 }
