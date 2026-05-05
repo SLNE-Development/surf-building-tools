@@ -94,13 +94,14 @@ object WorldManager {
         this.setGameRule(GameRules.RANDOM_TICK_SPEED, 0)
     }
 
-    fun changeStatus(buildingWorld: BuildingWorld, status: BuildingWorld.Status): Boolean {
+    fun changeStatus(buildingWorld: BuildingWorld, status: BuildingWorld.Status): BuildingWorld? {
         if (buildingWorld.status == status) {
-            return false
+            return null
         }
 
-        saveBuildingWorld(buildingWorld.copy(status = status))
-        return true
+        val updated = buildingWorld.copy(status = status)
+        saveBuildingWorld(updated)
+        return updated
     }
 
     fun saveBuildingWorld(buildingWorld: BuildingWorld) {

@@ -71,9 +71,8 @@ object WorldEditView : View() {
                     statusEntries[(currentIndex - 1 + statusEntries.size) % statusEntries.size]
                 }
                 val updated = WorldManager.changeStatus(currentWorld, newStatus)
-                if (updated) {
-                    val savedWorld = WorldManager.findBuildingWorldById(currentWorld.buildingWorldId) ?: currentWorld
-                    worldHolder.set(savedWorld, render)
+                if (updated != null) {
+                    worldHolder.set(updated, render)
                 }
             }
         render.layoutSlot('W').renderWith { warpsItem(worldHolder.get(render)) }.onClick { click ->
