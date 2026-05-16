@@ -28,11 +28,36 @@ data class BuildingWorld(
     val world get() = worldOrNull ?: error("Die Welt mit der UUID $worldUuid existiert nicht.")
 
     @ConfigSerializable
-    enum class Status(val displayName: String, val material: Material, val allowBuild: Boolean) {
-        UNKNOWN("Unbekannt", Material.LIGHT_GRAY_CANDLE, false),
-        EDITING("In Bearbeitung", Material.YELLOW_CANDLE, true),
-        DONE("Fertiggestellt", Material.LIGHT_BLUE_CANDLE, false),
-        PUBLISHED("Veröffentlicht", Material.LIME_CANDLE, false),
+    enum class Status(
+        val displayName: String,
+        val material: Material,
+        val allowBuild: Boolean,
+        val description: String
+    ) {
+        UNKNOWN(
+            "Unbekannt",
+            Material.LIGHT_GRAY_CANDLE,
+            false,
+            "Der Status der Bau-Welt ist unbekannt. Es könnte ein Fehler vorliegen."
+        ),
+        EDITING(
+            "In Bearbeitung",
+            Material.YELLOW_CANDLE,
+            true,
+            "Die Bau-Welt befindet sich in Bearbeitung. Builder/Mitglieder können beitreten und bauen."
+        ),
+        DONE(
+            "Fertiggestellt",
+            Material.LIGHT_BLUE_CANDLE,
+            false,
+            "Die Bau-Welt ist fertiggestellt. Builder/Mitglieder können beitreten, aber nicht mehr bauen."
+        ),
+        PUBLISHED(
+            "Veröffentlicht",
+            Material.LIME_CANDLE,
+            false,
+            "Die Bau-Welt ist veröffentlicht. Builder/Mitglieder können beitreten, aber nicht mehr bauen."
+        ),
     }
 
     enum class Type(val displayName: String) {

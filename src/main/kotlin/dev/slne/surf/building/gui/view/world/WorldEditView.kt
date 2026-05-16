@@ -152,6 +152,10 @@ object WorldEditView : View() {
             }
             emptyLine()
             line {
+                spacer(status.description)
+            }
+            emptyLine()
+            line {
                 spacer("»")
                 appendSpace()
                 primary("Linksklick: ")
@@ -203,6 +207,23 @@ object WorldEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
+                variableValue(
+                    "Warps sind Teleportationspunkte innerhalb der Bau-Welt,",
+                    TextDecoration.BOLD
+                )
+            }
+            line {
+                spacer("»")
+                appendSpace()
+                variableValue(
+                    "die von den Mitgliedern der Welt genutzt werden können.",
+                    TextDecoration.BOLD
+                )
+            }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
                 white("Klicke, um die Warps dieser Welt zu verwalten")
             }
         }
@@ -229,19 +250,22 @@ object WorldEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                white("Mitglieder können, neben den normalen Buildern,")
+                variableValue(
+                    "Mitglieder können, neben den normalen Buildern,",
+                    TextDecoration.BOLD
+                )
             }
 
             line {
                 spacer("»")
                 appendSpace()
-                white("ebenso in der Bau-Welt bauen und interagieren")
+                variableValue("ebenso in der Bau-Welt bauen und interagieren", TextDecoration.BOLD)
             }
 
             line {
                 spacer("»")
                 appendSpace()
-                white("(solange diese als bebaubar makiert ist)")
+                variableValue("(solange diese als bebaubar makiert ist)", TextDecoration.BOLD)
             }
             emptyLine()
             line {
