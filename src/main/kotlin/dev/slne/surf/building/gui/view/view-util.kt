@@ -19,21 +19,48 @@ import org.bukkit.entity.Player
 val View.backItem
     get() = buildItem(Material.BARRIER) {
         displayName {
-            spacer("Zurück")
+            white("Zurück")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um zurückzugehen")
+            }
         }
     }
 
 val View.previousItem
     get() = buildItem(Material.ARROW) {
         displayName {
-            spacer("Zurück")
+            white("← Vorherige Seite")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um zur vorherigen Seite zu wechseln")
+            }
         }
     }
 
 val View.nextItem
     get() = buildItem(Material.ARROW) {
         displayName {
-            spacer("Weiter")
+            white("Nächste Seite →")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um zur nächsten Seite zu wechseln")
+            }
         }
     }
 
@@ -108,11 +135,11 @@ fun View.createWorldItem(buildingWorld: BuildingWorld) = buildItem(buildingWorld
         line {
             spacer("»")
             appendSpace()
-            spacer("Erstellt am: ")
-            spacer(buildingWorld.createdAt.format(dateTimeFormatter))
+            variableKey("Erstellt am: ")
+            variableValue(buildingWorld.createdAt.format(dateTimeFormatter))
         }
         line {
-            spacer("#${buildingWorld.buildingWorldId}")
+            white("#${buildingWorld.buildingWorldId}")
         }
     }
 }

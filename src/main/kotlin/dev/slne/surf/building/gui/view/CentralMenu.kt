@@ -195,6 +195,15 @@ object CentralMenu : View() {
         displayName {
             variableValue("Welt erstellen")
         }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um eine neue Bauwelt zu erstellen")
+            }
+        }
     }
 
     private fun searchItem(player: Player) = buildItem(Material.BRUSH) {
@@ -210,7 +219,7 @@ object CentralMenu : View() {
             if (search != null) {
                 line {
                     appendBlob()
-                    spacer("Aktueller Suchbegriff: ".toSmallCaps())
+                    primary("Aktueller Suchbegriff: ".toSmallCaps())
                     variableValue(search)
                 }
 
@@ -220,7 +229,7 @@ object CentralMenu : View() {
             line {
                 appendBlob()
                 white("SHIFT".toSmallCaps())
-                spacer(" zum resetten".toSmallCaps())
+                white(" zum Zurücksetzen".toSmallCaps())
             }
         }
     }
@@ -234,21 +243,32 @@ object CentralMenu : View() {
 
         buildLore {
             emptyLine()
-            line { variableValue("Sortierung".toSmallCaps(), TextDecoration.BOLD) }
+            line { primary("Sortierung".toSmallCaps(), TextDecoration.BOLD) }
 
             GuiState.Sorting.entries.forEach {
                 line {
                     if (it == sort) {
-                        appendSpace()
-                        spacer("-")
+                        spacer("✔")
                         appendSpace()
                         append(it.displayName).decorate(TextDecoration.BOLD)
                     } else {
-                        spacer("-")
+                        spacer("»")
                         appendSpace()
                         append(it.displayName)
                     }
                 }
+            }
+
+            emptyLine()
+            line {
+                appendBlob()
+                primary("Linksklick: ".toSmallCaps())
+                white("nächste Sortierung".toSmallCaps())
+            }
+            line {
+                appendBlob()
+                primary("Rechtsklick: ".toSmallCaps())
+                white("vorherige Sortierung".toSmallCaps())
             }
         }
     }
