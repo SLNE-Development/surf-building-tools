@@ -98,7 +98,7 @@ object WarpCreateView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um den Namen des Warps festzulegen")
+                white("Klicke, um den Namen des Warps festzulegen")
             }
         }
     }
@@ -118,7 +118,7 @@ object WarpCreateView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um das Anzeigeitem des Warps festzulegen")
+                white("Klicke, um das Anzeigeitem des Warps festzulegen")
             }
         }
     }
@@ -130,36 +130,33 @@ object WarpCreateView : View() {
             }
 
             buildLore {
+                emptyLine()
                 line {
                     spacer("»")
                     appendSpace()
-                    info("Name: ")
-                    note(name ?: "Nicht gesetzt")
+                    variableKey("Name: ")
+                    variableValue(name ?: "Nicht gesetzt")
                 }
                 line {
                     spacer("»")
                     appendSpace()
-                    info("Anzeigeitem: ")
+                    variableKey("Anzeigeitem: ")
                     if (displayItem != null) {
                         translatable(displayItem.translationKey())
                     } else {
-                        note("Nicht gesetzt")
+                        variableValue("Nicht gesetzt")
                     }
                 }
 
                 if (name == null || displayItem == null) {
                     emptyLine()
                     line {
-                        spacer("»")
-                        appendSpace()
-                        spacer("Bitte alle Werte festlegen, um den Warp erstellen zu können")
+                        error("✘ Bitte alle Werte festlegen, um den Warp erstellen zu können")
                     }
                 } else {
                     emptyLine()
                     line {
-                        spacer("»")
-                        appendSpace()
-                        spacer("Klicke, um den Warp an deiner aktuellen Position zu erstellen")
+                        success("✔ Klicke, um den Warp an deiner aktuellen Position zu erstellen")
                     }
                 }
             }

@@ -85,7 +85,9 @@ object WarpView : View() {
         buildLore {
             emptyLine()
             line {
-                variableValue("Klicke, um dich zu diesem Warp zu teleportieren")
+                spacer("»")
+                appendSpace()
+                white("Klicke, um dich zu diesem Warp zu teleportieren")
             }
         }
     }
@@ -99,12 +101,13 @@ object WarpView : View() {
             emptyLine()
             if (player.canModifyBuildingWorld()) {
                 line {
-                    appendBlob()
-                    variableValue("Klicke, um diesen Warp zu bearbeiten")
+                    spacer("»")
+                    appendSpace()
+                    white("Klicke, um diesen Warp zu bearbeiten")
                 }
             } else {
                 line {
-                    error("Nur Builder können diesen Warp bearbeiten!")
+                    error("✘ Nur Builder können diesen Warp bearbeiten!")
                 }
             }
         }
@@ -119,12 +122,17 @@ object WarpView : View() {
             emptyLine()
             if (player.canModifyBuildingWorld()) {
                 line {
-                    appendBlob()
-                    variableValue("Klicke, um diesen Warp zu löschen")
+                    spacer("»")
+                    appendSpace()
+                    white("Klicke, um diesen Warp zu löschen")
+                }
+                emptyLine()
+                line {
+                    error("✘ Diese Aktion kann nicht rückgängig gemacht werden!")
                 }
             } else {
                 line {
-                    error("Nur Builder können diesen Warp löschen!")
+                    error("✘ Nur Builder können diesen Warp löschen!")
                 }
             }
         }

@@ -127,7 +127,7 @@ object WarpsView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um einen neuen Warp zu erstellen")
+                white("Klicke, um einen neuen Warp zu erstellen")
             }
         }
     }

@@ -51,11 +51,33 @@ object WorldView : View() {
         displayName {
             variableValue("Bauwelt löschen")
         }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um diese Bauwelt dauerhaft zu löschen")
+            }
+            emptyLine()
+            line {
+                error("✘ Diese Aktion kann nicht rückgängig gemacht werden!")
+            }
+        }
     }
 
     private val editItem = MenuHeads.WRITABLE_BOOK.clone().apply {
         displayName {
             variableValue("Bauwelt bearbeiten")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um diese Bauwelt zu bearbeiten")
+            }
         }
     }
 

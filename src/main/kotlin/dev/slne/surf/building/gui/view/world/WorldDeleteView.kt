@@ -74,7 +74,7 @@ object WorldDeleteView : View() {
 
     private val confirmItem = buildItem(Material.LIME_STAINED_GLASS_PANE) {
         displayName {
-            success("Welt löschen")
+            success("✔ Welt löschen")
         }
 
         buildLore {
@@ -82,14 +82,18 @@ object WorldDeleteView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke hier, um die Welt zu löschen.")
+                white("Klicke hier, um die Welt zu löschen.")
+            }
+            emptyLine()
+            line {
+                error("✘ Diese Aktion kann nicht rückgängig gemacht werden!")
             }
         }
     }
 
     private val cancelItem = buildItem(Material.RED_STAINED_GLASS_PANE) {
         displayName {
-            error("Abbrechen")
+            error("✘ Abbrechen")
         }
 
         buildLore {
@@ -97,7 +101,7 @@ object WorldDeleteView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke hier, um abzubrechen.")
+                white("Klicke hier, um abzubrechen.")
             }
         }
     }

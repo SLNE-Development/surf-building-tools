@@ -115,7 +115,7 @@ object WorldEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um den Namen der Welt zu ändern")
+                white("Klicke, um den Namen der Welt zu ändern")
             }
         }
     }
@@ -131,14 +131,13 @@ object WorldEditView : View() {
             BuildingWorld.Status.entries.forEach {
                 line {
                     if (it == status) {
-                        appendSpace()
-                        spacer("-")
+                        spacer("✔")
                         appendSpace()
                         variableValue(it.displayName, TextDecoration.BOLD)
                     } else {
                         spacer("»")
                         appendSpace()
-                        variableValue(it.displayName)
+                        white(it.displayName)
                     }
                 }
             }
@@ -146,12 +145,14 @@ object WorldEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Linksklick: nächster Status")
+                primary("Linksklick: ")
+                white("nächster Status")
             }
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Rechtsklick: vorheriger Status")
+                primary("Rechtsklick: ")
+                white("vorheriger Status")
             }
         }
     }
@@ -167,7 +168,7 @@ object WorldEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um den Anzeigeblock der Welt zu ändern")
+                white("Klicke, um den Anzeigeblock der Welt zu ändern")
             }
         }
     }
@@ -193,7 +194,7 @@ object WorldEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um die Warps dieser Welt zu verwalten")
+                white("Klicke, um die Warps dieser Welt zu verwalten")
             }
         }
     }

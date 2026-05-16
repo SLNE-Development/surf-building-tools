@@ -107,7 +107,7 @@ object WarpEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um den Namen des Warps zu ändern")
+                white("Klicke, um den Namen des Warps zu ändern")
             }
         }
     }
@@ -123,14 +123,14 @@ object WarpEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um das Anzeigeitem des Warps zu ändern")
+                white("Klicke, um das Anzeigeitem des Warps zu ändern")
             }
         }
     }
 
     private val saveItem = buildItem(Material.GREEN_CONCRETE) {
         displayName {
-            success("Änderungen speichern")
+            success("✔ Änderungen speichern")
         }
 
         buildLore {
@@ -138,7 +138,7 @@ object WarpEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um die Änderungen zu speichern")
+                white("Klicke, um die Änderungen zu speichern")
             }
         }
     }

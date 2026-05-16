@@ -137,7 +137,7 @@ object WorldCreateView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um den Namen der Welt festzulegen")
+                white("Klicke, um den Namen der Welt festzulegen")
             }
         }
     }
@@ -153,17 +153,28 @@ object WorldCreateView : View() {
             BuildingWorld.Type.entries.forEach {
                 line {
                     if (current == it) {
-                        appendSpace()
-                        appendSpace()
-                        spacer("-")
+                        spacer("✔")
                         appendSpace()
                         variableValue(it.displayName, TextDecoration.BOLD)
                     } else {
                         spacer("»")
                         appendSpace()
-                        variableValue(it.displayName)
+                        white(it.displayName)
                     }
                 }
+            }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                primary("Linksklick: ")
+                white("nächster Typ")
+            }
+            line {
+                spacer("»")
+                appendSpace()
+                primary("Rechtsklick: ")
+                white("vorheriger Typ")
             }
         }
     }
@@ -183,7 +194,7 @@ object WorldCreateView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                spacer("Klicke, um den Anzeigeblock der Welt festzulegen")
+                white("Klicke, um den Anzeigeblock der Welt festzulegen")
             }
         }
     }
@@ -195,42 +206,41 @@ object WorldCreateView : View() {
             }
 
             buildLore {
+                emptyLine()
                 line {
                     spacer("»")
                     appendSpace()
-                    info("Name: ")
-                    note(name ?: "Nicht gesetzt")
+                    variableKey("Name: ")
+                    variableValue(name ?: "Nicht gesetzt")
                 }
 
                 line {
                     spacer("»")
                     appendSpace()
-                    info("Typ: ")
-                    note(type?.displayName ?: "Nicht gesetzt")
+                    variableKey("Typ: ")
+                    variableValue(type?.displayName ?: "Nicht gesetzt")
                 }
 
                 line {
                     spacer("»")
                     appendSpace()
-                    info("Anzeigeblock: ")
+                    variableKey("Anzeigeblock: ")
                     if (displayItem != null) {
                         translatable(displayItem.translationKey())
                     } else {
-                        note("Nicht gesetzt")
+                        variableValue("Nicht gesetzt")
                     }
                 }
 
                 if (name == null || type == null || displayItem == null) {
+                    emptyLine()
                     line {
-                        spacer("»")
-                        appendSpace()
-                        spacer("Bitte alle Werte festlegen, um die Welt erstellen zu können")
+                        error("✘ Bitte alle Werte festlegen, um die Welt erstellen zu können")
                     }
                 } else {
+                    emptyLine()
                     line {
-                        spacer("»")
-                        appendSpace()
-                        spacer("Klicke, um die Welt mit den angegebenen Werten zu erstellen")
+                        success("✔ Klicke, um die Welt mit den angegebenen Werten zu erstellen")
                     }
                 }
             }
