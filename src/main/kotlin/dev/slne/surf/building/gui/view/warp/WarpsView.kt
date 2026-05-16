@@ -2,11 +2,11 @@ package dev.slne.surf.building.gui.view.warp
 
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.core.util.random
-import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
 import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
+import dev.slne.surf.building.gui.util.MenuHeads
 import dev.slne.surf.building.gui.view.*
 import dev.slne.surf.building.gui.view.world.WorldView
 import dev.slne.surf.building.world.BuildingWorld
@@ -117,7 +117,7 @@ object WarpsView : View() {
             }
     }
 
-    private val createWarpButton = buildItem(Material.GREEN_CONCRETE) {
+    private val createWarpButton = MenuHeads.CREATE_BUTTON.clone().apply {
         displayName {
             success("Warp erstellen")
         }

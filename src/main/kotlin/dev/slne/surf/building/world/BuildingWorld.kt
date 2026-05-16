@@ -19,9 +19,9 @@ data class BuildingWorld(
     val createdAt: OffsetDateTime,
     val type: Type = Type.FLAT,
     val displayItem: Material = Material.GRASS_BLOCK,
-    val warps: List<Warp> = emptyList()
+    val warps: List<Warp> = emptyList(),
+    val members: List<UUID> = emptyList()
 ) {
-    val members = mutableObjectSetOf<UUID>()
     val currentPlayers = mutableObjectSetOf<UUID>()
     val folder = plugin.server.worldContainer.resolve(worldName)
     val worldOrNull get() = Bukkit.getWorld(worldUuid)

@@ -50,7 +50,7 @@ object CentralMenu : View() {
             context.playGeneralClickSound()
 
             if (context.player.canModifyBuildingWorld()) {
-                if (context.isRightClick) {
+                if (context.isLeftClick) {
                     context.openForPlayer(WorldView::class.java, mutableMapOf("world" to world))
                 } else {
                     plugin.launch {

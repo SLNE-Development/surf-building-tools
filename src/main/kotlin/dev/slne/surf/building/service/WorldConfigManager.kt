@@ -70,6 +70,7 @@ object WorldConfigManager {
                 displayItemName = warp.displayItem.name
             )
         }.toMutableList()
+        config.members = buildingWorld.members.toMutableList()
     }
 
     fun invalidate(buildingWorldId: String) = buildingWorldConfigManagers.remove(buildingWorldId)
@@ -132,6 +133,7 @@ object WorldConfigManager {
                     Material.COMPASS
                 }
             )
-        }
+        },
+        members = config.members
     )
 }

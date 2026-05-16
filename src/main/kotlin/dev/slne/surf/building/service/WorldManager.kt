@@ -139,6 +139,19 @@ object WorldManager {
         return updated
     }
 
+    fun addMember(buildingWorld: BuildingWorld, memberUuid: UUID): BuildingWorld {
+        if (memberUuid in buildingWorld.members) return buildingWorld
+        val updated = buildingWorld.copy(members = buildingWorld.members + memberUuid)
+        saveBuildingWorld(updated)
+        return updated
+    }
+
+    fun removeMember(buildingWorld: BuildingWorld, memberUuid: UUID): BuildingWorld {
+        val updated = buildingWorld.copy(members = buildingWorld.members - memberUuid)
+        saveBuildingWorld(updated)
+        return updated
+    }
+
     fun getBuildingWorldByWorld(world: World) = buildingWorlds
         .firstOrNull { it.worldUuid == world.uid }
 

@@ -13,8 +13,11 @@ import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.context.SlotClickContext
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.meta.SkullMeta
+import java.util.*
 
 val View.backItem
     get() = buildItem(Material.BARRIER) {
@@ -198,3 +201,32 @@ fun SlotClickContext.playNewPageSound() {
 fun Player.canModifyBuildingWorld() = this.hasPermission(
     PermissionRegistry.BUILDER
 )
+
+fun createMemberItem(memberUuid: UUID, removable: Boolean = false) =
+    buildItem(Material.PLAYER_HEAD) {
+        val offlinePlayer = Bukkit.getOfflinePlayer(memberUuid)
+        val name = offlinePlayer.name ?: memberUuid.toString()
+
+        displayName {
+            variableValue(name)
+        }
+
+        editMeta(SkullMeta::class.java) {
+            it.owningPlayer = offlinePlayer
+        }
+
+        buildLore {
+            line {
+                spacer("» $memberUuid")
+            }
+
+            if (removable) {
+                emptyLine()
+                line {
+                    spacer("»")
+                    appendSpace()
+                    white("Klicke, um dieses Mitglied zu entfernen")
+                }
+            }
+        }
+    }

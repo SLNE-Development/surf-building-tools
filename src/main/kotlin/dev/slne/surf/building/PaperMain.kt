@@ -6,14 +6,12 @@ import dev.slne.surf.api.paper.builder.displayName
 import dev.slne.surf.api.paper.event.register
 import dev.slne.surf.api.paper.inventory.framework.register
 import dev.slne.surf.building.command.buildingWorldCommand
+import dev.slne.surf.building.command.lobbyCommand
 import dev.slne.surf.building.config.BuildingConfigHolder
 import dev.slne.surf.building.gui.view.CentralMenu
-import dev.slne.surf.building.gui.view.warp.WarpView
-import dev.slne.surf.building.gui.view.warp.WarpsView
-import dev.slne.surf.building.gui.view.warp.WarpCreateView
-import dev.slne.surf.building.gui.view.warp.WarpEditView
-import dev.slne.surf.building.gui.view.warp.WarpDeleteView
-import dev.slne.surf.building.gui.view.warp.WarpEditItemView
+import dev.slne.surf.building.gui.view.member.MemberRemoveView
+import dev.slne.surf.building.gui.view.member.MembersView
+import dev.slne.surf.building.gui.view.warp.*
 import dev.slne.surf.building.gui.view.world.*
 import dev.slne.surf.building.listener.*
 import dev.slne.surf.building.service.WorldConfigManager
@@ -38,6 +36,8 @@ class PaperMain : SuspendingJavaPlugin() {
         WorldDeleteView.register()
         WorldEditView.register()
         WorldEditItemView.register()
+        MembersView.register()
+        MemberRemoveView.register()
     }
 
     override suspend fun onEnableAsync() {
@@ -48,6 +48,7 @@ class PaperMain : SuspendingJavaPlugin() {
         PlayerWorldStatusListener.register()
 
         buildingWorldCommand()
+        lobbyCommand()
 
         WorldConfigManager.cacheAllBuildingWorlds()
     }

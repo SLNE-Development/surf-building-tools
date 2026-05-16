@@ -8,6 +8,7 @@ import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.api.paper.inventory.framework.viewFrame
 import dev.slne.surf.building.gui.dialog.showBuildingWorldEditNameDialog
 import dev.slne.surf.building.gui.view.backItem
+import dev.slne.surf.building.gui.view.member.MembersView
 import dev.slne.surf.building.gui.view.playGeneralClickSound
 import dev.slne.surf.building.gui.view.warp.WarpsView
 import dev.slne.surf.building.service.WorldManager
@@ -18,15 +19,15 @@ import me.devnatan.inventoryframework.context.RenderContext
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_EXPLICIT_TYPE_ARGUMENTS_FOR_JAVA")
 object WorldEditView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
     private val updatableWorldHolder = mutableState<BuildingWorld?>(null)
 
     override fun onInit(config: ViewConfigBuilder) {
-        config.size(4).layout(
+        config.size(3).layout(
             "OOOOOOOOO",
-            "ON  S  IO",
-            "OW      O",
+            "ON SMW IO",
             "OOOOBOOOO"
         ).titleBuilder {
             variableValue("Welt bearbeiten")
@@ -92,6 +93,14 @@ object WorldEditView : View() {
                 click.playGeneralClickSound()
                 click.openForPlayer(
                     WarpsView::class.java,
+                    mutableMapOf("world" to updatableWorldHolder.get(click))
+                )
+            }
+        render.layoutSlot('M').renderWith { membersItem(updatableWorldHolder.get(render)) }
+            .onClick { click ->
+                click.playGeneralClickSound()
+                click.openForPlayer(
+                    MembersView::class.java,
                     mutableMapOf("world" to updatableWorldHolder.get(click))
                 )
             }
@@ -195,6 +204,32 @@ object WorldEditView : View() {
                 spacer("»")
                 appendSpace()
                 white("Klicke, um die Warps dieser Welt zu verwalten")
+            }
+        }
+    }
+
+    private fun membersItem(world: BuildingWorld) = buildItem(Material.PLAYER_HEAD) {
+        displayName {
+            primary("Mitglieder verwalten")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Mitglieder: ")
+                if (world.members.isEmpty()) {
+                    error("Keine")
+                } else {
+                    warning(world.members.size)
+                }
+            }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um die Mitglieder dieser Welt zu verwalten")
             }
         }
     }
