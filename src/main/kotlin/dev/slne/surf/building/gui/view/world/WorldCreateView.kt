@@ -8,6 +8,7 @@ import dev.slne.surf.api.paper.builder.displayName
 import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.building.gui.dialog.showBuildingWorldCreateNameDialog
+import dev.slne.surf.building.gui.util.MenuHeads
 import dev.slne.surf.building.gui.view.CentralMenu
 import dev.slne.surf.building.gui.view.backItem
 import dev.slne.surf.building.gui.view.playGeneralClickSound
@@ -21,9 +22,10 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 
 object WorldCreateView : View() {
-    private val nameHolder = initialState<String?>("name")
-    private val typeHolder = initialState<BuildingWorld.Type?>("type")
-    private val displayItemHolder = initialState<Material?>("displayItem")
+    private val nameHolder = initialState<String>("name")
+    private val typeHolder = initialState<BuildingWorld.Type>("type")
+    private val modifiedTypeHolder = mutableState(BuildingWorld.Type.VOID)
+    private val displayItemHolder = initialState<Material>("displayItem")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3)
@@ -39,6 +41,7 @@ object WorldCreateView : View() {
     }
 
     override fun onFirstRender(render: RenderContext) {
+        modifiedTypeHolder.set(typeHolder.get(render), render)
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
             click.openForPlayer(CentralMenu::class.java)
@@ -50,20 +53,22 @@ object WorldCreateView : View() {
             click.player.showDialog(
                 showBuildingWorldCreateNameDialog(
                     nameHolder.get(click),
-                    typeHolder.get(click),
+                    modifiedTypeHolder.get(click),
                     displayItemHolder.get(click)
                 )
             )
         }
-        render.layoutSlot('T').renderWith { typeItem(typeHolder.get(render)) }.updateOnClick()
+        render.layoutSlot('T').renderWith { typeItem(modifiedTypeHolder.get(render)) }
+            .updateOnClick()
             .onClick { click ->
                 click.playGeneralClickSound()
-                val currentType = typeHolder.get(click) ?: BuildingWorld.Type.entries.first()
+                val currentType =
+                    modifiedTypeHolder.get(click) ?: BuildingWorld.Type.entries.first()
 
                 if (click.isLeftClick) {
-                    typeHolder.set(currentType.next(), render)
+                    modifiedTypeHolder.set(currentType.next(), render)
                 } else {
-                    typeHolder.set(currentType.previous(), render)
+                    modifiedTypeHolder.set(currentType.previous(), render)
                 }
             }
         render.layoutSlot('I').renderWith { displayItem(displayItemHolder.get(render)) }
@@ -72,7 +77,7 @@ object WorldCreateView : View() {
                 click.openForPlayer(
                     WorldCreateItemView::class.java, mutableMapOf(
                         "name" to nameHolder.get(click),
-                        "type" to typeHolder.get(click),
+                        "type" to modifiedTypeHolder.get(click),
                         "displayItem" to displayItemHolder.get(click)
                     )
                 )
@@ -80,13 +85,13 @@ object WorldCreateView : View() {
         render.layoutSlot('C').renderWith {
             createItem(
                 nameHolder.get(render),
-                typeHolder.get(render),
+                modifiedTypeHolder.get(render),
                 displayItemHolder.get(render)
             )
         }.onClick { click ->
             click.playGeneralClickSound()
             val name = nameHolder.get(click)
-            val type = typeHolder.get(click)
+            val type = modifiedTypeHolder.get(click)
             val displayItem = displayItemHolder.get(click)
 
             if (name != null && type != null && displayItem != null) {
@@ -184,7 +189,7 @@ object WorldCreateView : View() {
     }
 
     private fun createItem(name: String?, type: BuildingWorld.Type?, displayItem: Material?) =
-        buildItem(Material.GREEN_CONCRETE) {
+        MenuHeads.CREATE_BUTTON.clone().apply {
             displayName {
                 primary("Welt erstellen")
             }

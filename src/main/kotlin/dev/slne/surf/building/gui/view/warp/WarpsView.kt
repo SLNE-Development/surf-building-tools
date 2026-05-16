@@ -1,5 +1,7 @@
 package dev.slne.surf.building.gui.view.warp
 
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.util.random
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -58,10 +60,24 @@ object WarpsView : View() {
                 click.playLockedSound()
                 return@onClick
             }
+
+            if (world.get(render).worldUuid != click.player.world.uid) {
+                click.player.sendText {
+                    appendErrorPrefix()
+                    error("Du musst in der Bau-Welt sein, um einen Warp zu erstellen!")
+                }
+                click.playLockedSound()
+                return@onClick
+            }
+
             click.playGeneralClickSound()
             click.openForPlayer(
                 WarpCreateView::class.java,
-                mutableMapOf("world" to world.get(click), "name" to null, "displayItem" to null)
+                mutableMapOf(
+                    "world" to world.get(click),
+                    "name" to "warp-${random.nextInt(0, 100000)}",
+                    "displayItem" to Material.ENDER_EYE
+                )
             )
         }
         render

@@ -4,11 +4,7 @@ import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.displayName
 import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
-import dev.slne.surf.building.gui.view.backItem
-import dev.slne.surf.building.gui.view.nextItem
-import dev.slne.surf.building.gui.view.playGeneralClickSound
-import dev.slne.surf.building.gui.view.playNewPageSound
-import dev.slne.surf.building.gui.view.previousItem
+import dev.slne.surf.building.gui.view.*
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
 import me.devnatan.inventoryframework.View
@@ -51,12 +47,17 @@ object WarpEditItemView : View() {
         }).onClick { context ->
             context.playGeneralClickSound()
             val world = worldHolder.get(context)
-            val warp = warpHolder.get(context)
+            val warp: Warp? = warpHolder.get(context)
             val name = nameHolder.get(context)
             if (warp != null) {
                 context.openForPlayer(
                     WarpEditView::class.java,
-                    mutableMapOf("world" to world, "warp" to warp, "name" to name, "displayItem" to material)
+                    mutableMapOf(
+                        "world" to world,
+                        "warp" to warp,
+                        "name" to name,
+                        "displayItem" to material
+                    )
                 )
             } else {
                 context.openForPlayer(
@@ -80,7 +81,12 @@ object WarpEditItemView : View() {
             if (warp != null) {
                 click.openForPlayer(
                     WarpEditView::class.java,
-                    mutableMapOf("world" to world, "warp" to warp, "name" to name, "displayItem" to displayItem)
+                    mutableMapOf(
+                        "world" to world,
+                        "warp" to warp,
+                        "name" to name,
+                        "displayItem" to displayItem
+                    )
                 )
             } else {
                 click.openForPlayer(

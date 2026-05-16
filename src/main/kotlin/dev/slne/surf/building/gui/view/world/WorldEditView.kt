@@ -20,6 +20,7 @@ import org.bukkit.Material
 
 object WorldEditView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
+    private val updatableWorldHolder = mutableState<BuildingWorld?>(null)
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(4).layout(
@@ -34,35 +35,46 @@ object WorldEditView : View() {
 
     override fun onFirstRender(render: RenderContext) {
         val world = worldHolder.get(render)
+        updatableWorldHolder.set(world, render)
 
         render.layoutSlot('O', outlineItem)
-        render.layoutSlot('I').renderWith { displayItemSlot(worldHolder.get(render)) }.onClick { click ->
-            click.playGeneralClickSound()
-            click.openForPlayer(
-                WorldEditItemView::class.java,
-                mutableMapOf("world" to worldHolder.get(click))
-            )
-        }
-        render.layoutSlot('N').renderWith { nameItem(worldHolder.get(render)) }.onClick { click ->
-            click.playGeneralClickSound()
-            click.closeForPlayer()
-            val currentWorld = worldHolder.get(click)
-            click.player.showDialog(
-                showBuildingWorldEditNameDialog(currentWorld) { name ->
-                    if (name != null) {
-                        val updated = WorldManager.renameWorld(currentWorld, name)
-                        viewFrame.open(WorldEditView::class.java, click.player, mutableMapOf("world" to updated))
-                    } else {
-                        viewFrame.open(WorldEditView::class.java, click.player, mutableMapOf("world" to currentWorld))
+        render.layoutSlot('I').renderWith { displayItemSlot(updatableWorldHolder.get(render)) }
+            .onClick { click ->
+                click.playGeneralClickSound()
+                click.openForPlayer(
+                    WorldEditItemView::class.java,
+                    mutableMapOf("world" to updatableWorldHolder.get(click))
+                )
+            }
+        render.layoutSlot('N').renderWith { nameItem(updatableWorldHolder.get(render)) }
+            .onClick { click ->
+                click.playGeneralClickSound()
+                click.closeForPlayer()
+                val currentWorld = updatableWorldHolder.get(click)
+                click.player.showDialog(
+                    showBuildingWorldEditNameDialog(currentWorld) { name ->
+                        if (name != null) {
+                            val updated = WorldManager.renameWorld(currentWorld, name)
+                            viewFrame.open(
+                                WorldEditView::class.java,
+                                click.player,
+                                mutableMapOf("world" to updated)
+                            )
+                        } else {
+                            viewFrame.open(
+                                WorldEditView::class.java,
+                                click.player,
+                                mutableMapOf("world" to currentWorld)
+                            )
+                        }
                     }
-                }
-            )
-        }
-        render.layoutSlot('S').renderWith { statusItem(worldHolder.get(render).status) }
+                )
+            }
+        render.layoutSlot('S').renderWith { statusItem(updatableWorldHolder.get(render).status) }
             .updateOnClick()
             .onClick { click ->
                 click.playGeneralClickSound()
-                val currentWorld = worldHolder.get(click)
+                val currentWorld = updatableWorldHolder.get(click)
                 val statusEntries = BuildingWorld.Status.entries
                 val currentIndex = statusEntries.indexOf(currentWorld.status)
                 val newStatus = if (click.isLeftClick) {
@@ -72,16 +84,23 @@ object WorldEditView : View() {
                 }
                 val updated = WorldManager.changeStatus(currentWorld, newStatus)
                 if (updated != null) {
-                    worldHolder.set(updated, render)
+                    updatableWorldHolder.set(updated, render)
                 }
             }
-        render.layoutSlot('W').renderWith { warpsItem(worldHolder.get(render)) }.onClick { click ->
-            click.playGeneralClickSound()
-            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to worldHolder.get(click)))
-        }
+        render.layoutSlot('W').renderWith { warpsItem(updatableWorldHolder.get(render)) }
+            .onClick { click ->
+                click.playGeneralClickSound()
+                click.openForPlayer(
+                    WarpsView::class.java,
+                    mutableMapOf("world" to updatableWorldHolder.get(click))
+                )
+            }
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WorldView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+            click.openForPlayer(
+                WorldView::class.java,
+                mutableMapOf("world" to updatableWorldHolder.get(click))
+            )
         }
     }
 

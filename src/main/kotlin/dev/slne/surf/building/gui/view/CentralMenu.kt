@@ -2,6 +2,7 @@ package dev.slne.surf.building.gui.view
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.util.random
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -10,6 +11,8 @@ import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.building.gui.GuiState
 import dev.slne.surf.building.gui.dialog.searchWorldDialog
 import dev.slne.surf.building.gui.guiState
+import dev.slne.surf.building.gui.util.MenuHeads
+import dev.slne.surf.building.gui.view.world.WorldCreateView
 import dev.slne.surf.building.gui.view.world.WorldView
 import dev.slne.surf.building.plugin
 import dev.slne.surf.building.service.WorldManager
@@ -141,6 +144,18 @@ object CentralMenu : View() {
                 context.playNewPageSound()
                 pagination.advance()
             }
+
+        render.layoutSlot('C', createItem).onClick { click ->
+            click.playGeneralClickSound()
+            click.openForPlayer(
+                WorldCreateView::class.java,
+                mapOf(
+                    "name" to "bauwelt-${click.player.name}-${random.nextInt(0, 100000)}",
+                    "type" to BuildingWorld.Type.VOID,
+                    "displayItem" to Material.GRASS_BLOCK
+                )
+            )
+        }
     }
 
     private fun getBuildingWorlds(
@@ -174,6 +189,12 @@ object CentralMenu : View() {
         }
 
         return GuiState.Sorting.sort(filtered, sortType)
+    }
+
+    private val createItem = MenuHeads.CREATE_BUTTON.clone().apply {
+        displayName {
+            variableValue("Welt erstellen")
+        }
     }
 
     private fun searchItem(player: Player) = buildItem(Material.BRUSH) {
