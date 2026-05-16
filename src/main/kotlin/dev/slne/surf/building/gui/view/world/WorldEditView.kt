@@ -30,7 +30,7 @@ object WorldEditView : View() {
             "ON SMW IO",
             "OOOOBOOOO"
         ).titleBuilder {
-            variableValue("Welt bearbeiten")
+            primary("Welt bearbeiten")
         }.cancelInteractions()
     }
 
