@@ -27,7 +27,7 @@ object WarpEditItemView : View() {
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(5).titleBuilder {
-            variableValue("Item auswählen")
+            primary("Item auswählen")
         }.layout(
             "OOOOOOOOO",
             "ORRRRRRRO",

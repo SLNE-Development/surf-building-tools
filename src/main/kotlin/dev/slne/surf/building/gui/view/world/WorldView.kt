@@ -1,5 +1,6 @@
 package dev.slne.surf.building.gui.view.world
 
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -7,6 +8,7 @@ import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.building.gui.util.MenuHeads
 import dev.slne.surf.building.gui.view.*
+import dev.slne.surf.building.permission.PermissionRegistry
 import dev.slne.surf.building.world.BuildingWorld
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
@@ -21,7 +23,7 @@ object WorldView : View() {
             "OSOOWOODO",
             "OOOOBOOOO"
         ).titleBuilder {
-            variableValue("Bauwelt ansehen")
+            primary("Bauwelt ansehen")
         }.cancelInteractions()
     }
 
@@ -30,8 +32,20 @@ object WorldView : View() {
 
         render.layoutSlot('O', outlineItem)
         render.layoutSlot('D', deleteItem).onClick { click ->
+            if (!click.player.hasPermission(PermissionRegistry.WORLD_DELETE)) {
+                click.playLockedSound()
+                click.player.sendText {
+                    appendErrorPrefix()
+                    error("Du hast keine Berechtigung, um diese Aktion durchzuführen!")
+                }
+                return@onClick
+            }
+
             click.playGeneralClickSound()
-            click.openForPlayer(WorldDeleteView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+            click.openForPlayer(
+                WorldDeleteView::class.java,
+                mutableMapOf("world" to worldHolder.get(click))
+            )
         }
         render.layoutSlot('I', createWorldItem(world))
         render.layoutSlot('S').renderWith {
@@ -39,7 +53,10 @@ object WorldView : View() {
         }.updateOnClick()
         render.layoutSlot('W', editItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WorldEditView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+            click.openForPlayer(
+                WorldEditView::class.java,
+                mutableMapOf("world" to worldHolder.get(click))
+            )
         }
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
@@ -94,17 +111,6 @@ object WorldView : View() {
                     success("✔ Die Welt kann derzeit bearbeitet werden")
                 } else {
                     error("✘ Die Welt kann derzeit nicht bearbeitet werden")
-                }
-            }
-            emptyLine()
-
-            BuildingWorld.Status.entries.forEach {
-                line {
-                    if (it == status) {
-                        appendSpace()
-                    }
-                    appendBlob()
-                    variableValue(it.displayName)
                 }
             }
         }

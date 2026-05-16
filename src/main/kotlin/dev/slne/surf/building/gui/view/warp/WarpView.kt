@@ -27,7 +27,7 @@ object WarpView : View() {
             "OSOOWOODO",
             "OOOOBOOOO"
         ).titleBuilder {
-            variableValue("Warp ansehen")
+            primary("Warp ansehen")
         }.cancelInteractions()
     }
 
@@ -73,7 +73,10 @@ object WarpView : View() {
         }
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+            click.openForPlayer(
+                WarpsView::class.java,
+                mutableMapOf("world" to worldHolder.get(click))
+            )
         }
     }
 

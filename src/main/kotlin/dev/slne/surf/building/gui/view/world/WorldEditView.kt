@@ -229,6 +229,24 @@ object WorldEditView : View() {
             line {
                 spacer("»")
                 appendSpace()
+                white("Mitglieder können, neben den normalen Buildern,")
+            }
+
+            line {
+                spacer("»")
+                appendSpace()
+                white("ebenso in der Bau-Welt bauen und interagieren")
+            }
+
+            line {
+                spacer("»")
+                appendSpace()
+                white("(solange diese als bebaubar makiert ist)")
+            }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
                 white("Klicke, um die Mitglieder dieser Welt zu verwalten")
             }
         }

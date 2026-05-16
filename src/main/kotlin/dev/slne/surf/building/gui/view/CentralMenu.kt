@@ -29,7 +29,7 @@ object CentralMenu : View() {
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(6).titleBuilder {
-            variableValue("Bau-Welten Übersicht")
+            primary("Bau-Welten Übersicht")
         }.layout(
             "OOOOOOOOO",
             "ORRRRRRRO",
@@ -46,7 +46,7 @@ object CentralMenu : View() {
             context.player.guiState().currentSearch
         ).toMutableList()
     }.elementFactory { context, builder, _, world ->
-        builder.withItem(createWorldItem(world)).onClick { context ->
+        builder.withItem(createWorldItem(world, true)).onClick { context ->
             context.playGeneralClickSound()
 
             if (context.player.canModifyBuildingWorld()) {

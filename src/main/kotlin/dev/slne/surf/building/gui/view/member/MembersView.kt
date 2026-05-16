@@ -39,7 +39,7 @@ object MembersView : View() {
             "OMMMMMMMO",
             "OPCOBNOOO"
         ).titleBuilder {
-            variableValue("Mitglieder")
+            primary("Mitglieder")
         }.cancelInteractions()
     }
 

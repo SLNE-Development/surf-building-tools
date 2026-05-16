@@ -28,7 +28,7 @@ object WarpCreateView : View() {
             "ON     IO",
             "BOOOCOOOO"
         ).titleBuilder {
-            variableValue("Warp erstellen")
+            primary("Warp erstellen")
         }.cancelInteractions()
     }
 
@@ -36,7 +36,10 @@ object WarpCreateView : View() {
         render.layoutSlot('O', outlineItem)
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+            click.openForPlayer(
+                WarpsView::class.java,
+                mutableMapOf("world" to worldHolder.get(click))
+            )
         }
         render.layoutSlot('N').renderWith { nameItem(nameHolder.get(render)) }.onClick { click ->
             click.playGeneralClickSound()
@@ -52,18 +55,19 @@ object WarpCreateView : View() {
                 }
             )
         }
-        render.layoutSlot('I').renderWith { displayItemSlot(displayItemHolder.get(render)) }.onClick { click ->
-            click.playGeneralClickSound()
-            click.openForPlayer(
-                WarpEditItemView::class.java,
-                mutableMapOf(
-                    "world" to worldHolder.get(click),
-                    "warp" to null,
-                    "name" to nameHolder.get(click),
-                    "displayItem" to displayItemHolder.get(click)
+        render.layoutSlot('I').renderWith { displayItemSlot(displayItemHolder.get(render)) }
+            .onClick { click ->
+                click.playGeneralClickSound()
+                click.openForPlayer(
+                    WarpEditItemView::class.java,
+                    mutableMapOf(
+                        "world" to worldHolder.get(click),
+                        "warp" to null,
+                        "name" to nameHolder.get(click),
+                        "displayItem" to displayItemHolder.get(click)
+                    )
                 )
-            )
-        }
+            }
         render.layoutSlot('C').renderWith {
             createItem(nameHolder.get(render), displayItemHolder.get(render))
         }.onClick { click ->

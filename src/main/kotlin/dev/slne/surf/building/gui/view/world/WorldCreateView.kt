@@ -30,7 +30,7 @@ object WorldCreateView : View() {
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3)
             .titleBuilder {
-                variableValue("Welt erstellen")
+                primary("Welt erstellen")
             }
             .layout(
                 "OOOOOOOOO",

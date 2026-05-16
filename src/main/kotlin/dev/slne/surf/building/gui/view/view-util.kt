@@ -67,85 +67,105 @@ val View.nextItem
         }
     }
 
-fun View.createWorldItem(buildingWorld: BuildingWorld) = buildItem(buildingWorld.displayItem) {
-    displayName {
-        variableValue(buildingWorld.buildingWorldName)
-    }
+fun createWorldItem(buildingWorld: BuildingWorld, joinOrEdit: Boolean = false) =
+    buildItem(buildingWorld.displayItem) {
+        displayName {
+            variableValue(buildingWorld.buildingWorldName)
+        }
 
-    buildLore {
-        emptyLine()
-        line {
-            if (buildingWorld.status.allowBuild) {
-                success("✔ Die Welt wird derzeit bearbeitet")
-            } else {
-                error("✘ Die Welt wird derzeit nicht bearbeitet")
+        buildLore {
+            emptyLine()
+            line {
+                if (buildingWorld.status.allowBuild) {
+                    success("✔ Die Welt wird derzeit bearbeitet")
+                } else {
+                    error("✘ Die Welt wird derzeit nicht bearbeitet")
+                }
             }
-        }
-        emptyLine()
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Ersteller: ")
-            variableValue(buildingWorld.authorName)
-        }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Ersteller: ")
+                variableValue(buildingWorld.authorName)
+            }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Mitglieder: ")
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Mitglieder: ")
 
-            if (buildingWorld.members.isEmpty()) {
-                error("Keine")
-            } else {
-                spacer("(")
-                warning(buildingWorld.members.size)
-                spacer(") ")
+                if (buildingWorld.members.isEmpty()) {
+                    error("Keine")
+                } else {
+                    spacer("(")
+                    warning(buildingWorld.members.size)
+                    spacer(") ")
+                    variableValue(
+                        buildingWorld.members.toOfflinePlayers()
+                            .joinToString(", ") { it.name ?: "#null" })
+                }
+            }
+
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Warps: ")
+
+                if (buildingWorld.warps.isEmpty()) {
+                    error("Keine")
+                } else {
+                    spacer("(")
+                    warning(buildingWorld.warps.size)
+                    spacer(") ")
+                    variableValue(buildingWorld.warps.joinToString { it.name })
+                }
+            }
+
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Typ: ")
                 variableValue(
-                    buildingWorld.members.toOfflinePlayers()
-                        .joinToString(", ") { it.name ?: "#null" })
+                    buildingWorld.type.name.lowercase().replaceFirstChar { it.uppercase() })
             }
-        }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Warps: ")
-
-            if (buildingWorld.warps.isEmpty()) {
-                error("Keine")
-            } else {
-                spacer("(")
-                warning(buildingWorld.warps.size)
-                spacer(") ")
-                variableValue(buildingWorld.warps.joinToString { it.name })
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Status: ")
+                variableValue(buildingWorld.status.displayName)
             }
-        }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Erstellt am: ")
+                variableValue(buildingWorld.createdAt.format(dateTimeFormatter))
+            }
+            line {
+                white("#${buildingWorld.buildingWorldId}")
+            }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Typ: ")
-            variableValue(buildingWorld.type.name.lowercase().replaceFirstChar { it.uppercase() })
-        }
+            if (joinOrEdit) {
+                emptyLine()
+                line {
+                    spacer("»")
+                    appendSpace()
+                    variableValue("Linksklick: ")
+                    white("Bearbeiten")
+                    darkSpacer(" (nur für Ersteller und Builder)")
+                }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Status: ")
-            variableValue(buildingWorld.status.displayName)
-        }
-        emptyLine()
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Erstellt am: ")
-            variableValue(buildingWorld.createdAt.format(dateTimeFormatter))
-        }
-        line {
-            white("#${buildingWorld.buildingWorldId}")
+                line {
+                    spacer("»")
+                    appendSpace()
+                    variableValue("Rechtsklick: ")
+                    white("Betreten")
+                }
+            }
         }
     }
-}
 
 fun View.createWarpItem(warp: Warp) = buildItem(warp.displayItem) {
     displayName {

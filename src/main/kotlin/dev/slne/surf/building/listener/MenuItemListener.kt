@@ -7,6 +7,7 @@ import dev.slne.surf.building.plugin
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
@@ -44,6 +45,13 @@ object MenuItemListener : Listener {
     @EventHandler
     fun onDrop(event: PlayerDropItemEvent) {
         if (event.itemDrop.itemStack == plugin.menuItem) {
+            event.cancel()
+        }
+    }
+
+    @EventHandler
+    fun onDrag(event: InventoryDragEvent) {
+        if (event.oldCursor == plugin.menuItem || event.newItems.any { it.value.isSimilar(plugin.menuItem) }) {
             event.cancel()
         }
     }

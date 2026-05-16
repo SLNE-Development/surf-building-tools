@@ -43,7 +43,7 @@ object WarpsView : View() {
             "OWWWWWWWO",
             "OPCOBNOOO"
         ).titleBuilder {
-            variableValue("Warps")
+            primary("Warps")
         }.cancelInteractions()
     }
 

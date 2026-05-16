@@ -30,7 +30,7 @@ object WarpEditView : View() {
             "ON     DO",
             "BOOOSOOOO"
         ).titleBuilder {
-            variableValue("Warp bearbeiten")
+            primary("Warp bearbeiten")
         }.cancelInteractions()
     }
 
@@ -46,7 +46,8 @@ object WarpEditView : View() {
                 mutableMapOf("world" to worldHolder.get(click), "warp" to warpHolder.get(click))
             )
         }
-        render.layoutSlot('N').renderWith { nameItem(nameHolder.get(render) ?: warpHolder.get(render).name) }
+        render.layoutSlot('N')
+            .renderWith { nameItem(nameHolder.get(render) ?: warpHolder.get(render).name) }
             .onClick { click ->
                 click.playGeneralClickSound()
                 click.closeForPlayer()
@@ -67,7 +68,11 @@ object WarpEditView : View() {
                     }
                 )
             }
-        render.layoutSlot('D').renderWith { displayItemSlot(displayItemHolder.get(render) ?: warpHolder.get(render).displayItem) }
+        render.layoutSlot('D').renderWith {
+            displayItemSlot(
+                displayItemHolder.get(render) ?: warpHolder.get(render).displayItem
+            )
+        }
             .onClick { click ->
                 click.playGeneralClickSound()
                 click.openForPlayer(
