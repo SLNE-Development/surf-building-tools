@@ -1,5 +1,6 @@
 package dev.slne.surf.building.gui.view.world
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
@@ -9,10 +10,13 @@ import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.building.gui.util.MenuHeads
 import dev.slne.surf.building.gui.view.*
 import dev.slne.surf.building.permission.PermissionRegistry
+import dev.slne.surf.building.plugin
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
+import org.bukkit.Material
 
 object WorldView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
@@ -20,7 +24,7 @@ object WorldView : View() {
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(
             "OOOOIOOOO",
-            "OSOOWOODO",
+            "OSOJOWODO",
             "OOOOBOOOO"
         ).titleBuilder {
             primary("Bauwelt ansehen")
@@ -61,6 +65,32 @@ object WorldView : View() {
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
             click.openForPlayer(CentralMenu::class.java)
+        }
+        render.layoutSlot('J', joinItem).onClick { click ->
+            click.playGeneralClickSound()
+            click.closeForPlayer()
+
+            plugin.launch {
+                WorldManager.joinAndOrLoadBuildingWorld(
+                    click.player,
+                    world.buildingWorldId
+                )
+            }
+        }
+    }
+
+    private val joinItem = buildItem(Material.ENDER_EYE) {
+        displayName {
+            variableValue("Bauwelt betreten")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um diese Bauwelt zu betreten")
+            }
         }
     }
 

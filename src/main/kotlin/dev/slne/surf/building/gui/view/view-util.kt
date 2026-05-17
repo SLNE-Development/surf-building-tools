@@ -22,7 +22,7 @@ import java.util.*
 val View.backItem
     get() = buildItem(Material.BARRIER) {
         displayName {
-            white("Zurück")
+            error("Zurück")
         }
 
         buildLore {
