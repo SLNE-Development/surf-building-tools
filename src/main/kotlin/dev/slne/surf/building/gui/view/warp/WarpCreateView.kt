@@ -20,9 +20,9 @@ import org.bukkit.Material
 
 object WarpCreateView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
-    private val nameHolder = initialState<String?>("name")
+    private val nameHolder = initialState<String>("name")
     private val displayItemHolder = initialState<Material?>("displayItem")
-    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
+    private val categoryPathHolder = initialState<List<WarpCategory>>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(
@@ -98,7 +98,10 @@ object WarpCreateView : View() {
             )
             val path = categoryPathHolder.get(click) ?: emptyList()
             val updated = WorldManager.addWarpAtPath(world, path, warp)
-            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to updated, "categoryPath" to path))
+            click.openForPlayer(
+                WarpsView::class.java,
+                mutableMapOf("world" to updated, "categoryPath" to path)
+            )
         }
     }
 
