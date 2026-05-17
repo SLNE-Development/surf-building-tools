@@ -93,7 +93,10 @@ object WorldEditView : View() {
                 click.playGeneralClickSound()
                 click.openForPlayer(
                     WarpsView::class.java,
-                    mutableMapOf("world" to updatableWorldHolder.get(click))
+                    mutableMapOf(
+                        "world" to updatableWorldHolder.get(click),
+                        "categoryPath" to emptyList<Any>()
+                    )
                 )
             }
         render.layoutSlot('M').renderWith { membersItem(updatableWorldHolder.get(render)) }

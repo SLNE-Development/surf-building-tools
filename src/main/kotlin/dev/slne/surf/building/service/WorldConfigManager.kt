@@ -8,6 +8,8 @@ import dev.slne.surf.building.plugin
 import dev.slne.surf.building.util.parseWorldType
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
+import dev.slne.surf.building.world.WarpCategory
+import dev.slne.surf.building.world.WarpCategoryConfig
 import dev.slne.surf.building.world.WarpConfig
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -71,6 +73,7 @@ object WorldConfigManager {
             )
         }.toMutableList()
         config.members = buildingWorld.members.toMutableList()
+        config.categories = buildingWorld.categories.map { it.toConfig() }.toMutableList()
     }
 
     fun invalidate(buildingWorldId: String) = buildingWorldConfigManagers.remove(buildingWorldId)
@@ -134,6 +137,50 @@ object WorldConfigManager {
                 }
             )
         },
-        members = config.members
+        members = config.members,
+        categories = config.categories.map { it.toModel() }
+    )
+
+    private fun WarpCategoryConfig.toModel(): WarpCategory = WarpCategory(
+        name = name,
+        displayItem = try {
+            Material.valueOf(displayItemName)
+        } catch (e: IllegalArgumentException) {
+            plugin.logger.warning("Invalid category display item '$displayItemName' for category '$name', using default CHEST")
+            Material.CHEST
+        },
+        warps = warps.map { wc ->
+            Warp(
+                name = wc.name,
+                x = wc.x,
+                y = wc.y,
+                z = wc.z,
+                pitch = wc.pitch,
+                yaw = wc.yaw,
+                displayItem = try {
+                    Material.valueOf(wc.displayItemName)
+                } catch (e: IllegalArgumentException) {
+                    Material.COMPASS
+                }
+            )
+        },
+        subCategories = subCategories.map { it.toModel() }
+    )
+
+    private fun WarpCategory.toConfig(): WarpCategoryConfig = WarpCategoryConfig(
+        name = name,
+        displayItemName = displayItem.name,
+        warps = warps.map { w ->
+            WarpConfig(
+                name = w.name,
+                x = w.x,
+                y = w.y,
+                z = w.z,
+                pitch = w.pitch,
+                yaw = w.yaw,
+                displayItemName = w.displayItem.name
+            )
+        }.toMutableList(),
+        subCategories = subCategories.map { it.toConfig() }.toMutableList()
     )
 }

@@ -11,6 +11,7 @@ import dev.slne.surf.building.gui.util.MenuHeads
 import dev.slne.surf.building.gui.view.*
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
+import dev.slne.surf.building.world.WarpCategory
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
@@ -20,6 +21,7 @@ import org.bukkit.entity.Player
 object WarpView : View() {
     private val warpHolder = initialState<Warp>("warp")
     private val worldHolder = initialState<BuildingWorld>("world")
+    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(
@@ -41,7 +43,11 @@ object WarpView : View() {
             if (click.player.canModifyBuildingWorld()) {
                 click.openForPlayer(
                     WarpDeleteView::class.java,
-                    mutableMapOf("world" to worldHolder.get(click), "warp" to warpHolder.get(click))
+                    mutableMapOf(
+                        "world" to worldHolder.get(click),
+                        "warp" to warpHolder.get(click),
+                        "categoryPath" to (categoryPathHolder.get(click) ?: emptyList<WarpCategory>())
+                    )
                 )
             } else {
                 click.playLockedSound()
@@ -57,7 +63,8 @@ object WarpView : View() {
                         "world" to worldHolder.get(click),
                         "warp" to warpHolder.get(click),
                         "name" to null,
-                        "displayItem" to null
+                        "displayItem" to null,
+                        "categoryPath" to (categoryPathHolder.get(click) ?: emptyList<WarpCategory>())
                     )
                 )
             } else {
@@ -75,7 +82,10 @@ object WarpView : View() {
             click.playGeneralClickSound()
             click.openForPlayer(
                 WarpsView::class.java,
-                mutableMapOf("world" to worldHolder.get(click))
+                mutableMapOf(
+                    "world" to worldHolder.get(click),
+                    "categoryPath" to (categoryPathHolder.get(click) ?: emptyList<WarpCategory>())
+                )
             )
         }
     }

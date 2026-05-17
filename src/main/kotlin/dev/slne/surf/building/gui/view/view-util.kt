@@ -11,6 +11,7 @@ import dev.slne.surf.api.paper.util.toOfflinePlayers
 import dev.slne.surf.building.permission.PermissionRegistry
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
+import dev.slne.surf.building.world.WarpCategory
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.context.SlotClickContext
 import org.bukkit.Bukkit
@@ -191,6 +192,35 @@ fun View.createWarpItem(warp: Warp) = buildItem(warp.displayItem) {
             appendSpace()
             variableKey("Z: ")
             variableValue(warp.z)
+        }
+    }
+}
+
+fun View.createCategoryItem(category: WarpCategory) = buildItem(category.displayItem) {
+    displayName {
+        primary("📁 ")
+        variableValue(category.name)
+    }
+
+    buildLore {
+        emptyLine()
+        line {
+            spacer("»")
+            appendSpace()
+            variableKey("Warps: ")
+            warning(category.warps.size)
+        }
+        line {
+            spacer("»")
+            appendSpace()
+            variableKey("Unterkategorien: ")
+            warning(category.subCategories.size)
+        }
+        emptyLine()
+        line {
+            spacer("»")
+            appendSpace()
+            white("Klicke, um die Kategorie zu öffnen")
         }
     }
 }
