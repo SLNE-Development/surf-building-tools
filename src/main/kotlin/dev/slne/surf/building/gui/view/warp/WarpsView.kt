@@ -153,7 +153,7 @@ object WarpsView : View() {
                 mutableMapOf(
                     "world" to world.get(click),
                     "categoryPath" to path,
-                    "editingCategory" to listOf<WarpCategory>(),
+                    "editingCategory" to emptyList<WarpCategory>(),
                     "name" to "category-${random.nextInt(0, 100000)}",
                     "displayItem" to Material.CHEST
                 )
