@@ -21,7 +21,7 @@ import org.bukkit.entity.Player
 object WarpView : View() {
     private val warpHolder = initialState<Warp>("warp")
     private val worldHolder = initialState<BuildingWorld>("world")
-    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
+    private val categoryPathHolder = initialState<List<WarpCategory>>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(

@@ -14,10 +14,10 @@ import org.bukkit.Material
 
 object WarpCategoryEditItemView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
-    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
-    private val editingCategoryHolder = initialState<WarpCategory?>("editingCategory")
-    private val nameHolder = initialState<String?>("name")
-    private val displayItemHolder = initialState<Material?>("displayItem")
+    private val categoryPathHolder = initialState<List<WarpCategory>>("categoryPath")
+    private val editingCategoryHolder = initialState<WarpCategory>("editingCategory")
+    private val nameHolder = initialState<String>("name")
+    private val displayItemHolder = initialState<Material>("displayItem")
 
     private val validMaterials = Material.entries.filter { !it.isLegacy && it.isItem && !it.isAir }
         .sortedBy { it.name }

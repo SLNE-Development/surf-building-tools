@@ -19,7 +19,7 @@ object WarpCategoryView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
     private val categoryHolder = initialState<WarpCategory>("category")
 
-    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
+    private val categoryPathHolder = initialState<List<WarpCategory>>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(

@@ -16,5 +16,9 @@ data class WarpCategory(
     val displayItem: Material = Material.CHEST,
     val warps: List<Warp> = emptyList(),
     val subCategories: List<WarpCategory> = emptyList()
-)
+) {
+    companion object {
+        fun empty() = WarpCategory("#empty", Material.BARRIER, emptyList(), emptyList())
+    }
+}
 

@@ -1,5 +1,6 @@
 package dev.slne.surf.building.gui.view.warp
 
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -9,6 +10,7 @@ import dev.slne.surf.api.paper.inventory.framework.viewFrame
 import dev.slne.surf.building.gui.dialog.showWarpCategoryNameDialog
 import dev.slne.surf.building.gui.view.backItem
 import dev.slne.surf.building.gui.view.playGeneralClickSound
+import dev.slne.surf.building.gui.view.playLockedSound
 import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.WarpCategory
@@ -38,8 +40,8 @@ object WarpCategoryCreateView : View() {
         render.layoutSlot('O', outlineItem)
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            val path = categoryPathHolder.get(click) ?: emptyList()
-            val editing = editingCategoryHolder.get(click)
+            val path = categoryPathHolder.get(click)
+            val editing: WarpCategory? = editingCategoryHolder.get(click)
             if (editing != null) {
                 click.openForPlayer(
                     WarpCategoryView::class.java,
@@ -62,7 +64,7 @@ object WarpCategoryCreateView : View() {
             click.closeForPlayer()
             val world = worldHolder.get(click)
             val path = categoryPathHolder.get(click)
-            val editing = editingCategoryHolder.get(click)
+            val editing: WarpCategory? = editingCategoryHolder.get(click)
             val displayItem = displayItemHolder.get(click)
             click.player.showDialog(
                 showWarpCategoryNameDialog(editing) { name ->
@@ -106,8 +108,17 @@ object WarpCategoryCreateView : View() {
             val name = nameHolder.get(click) ?: return@onClick
             val displayItem = displayItemHolder.get(click) ?: return@onClick
             val world = worldHolder.get(click)
-            val path = categoryPathHolder.get(click) ?: emptyList()
-            val editing = editingCategoryHolder.get(click)
+            val path = categoryPathHolder.get(click)
+            val editing: WarpCategory? = editingCategoryHolder.get(click)
+
+            if (name == "#empty") {
+                click.player.sendText {
+                    appendErrorPrefix()
+                    error("Der Name darf nicht '#empty' sein!")
+                }
+                click.playLockedSound()
+                return@onClick
+            }
 
             val newCategory = (editing ?: WarpCategory(name = name)).copy(
                 name = name,

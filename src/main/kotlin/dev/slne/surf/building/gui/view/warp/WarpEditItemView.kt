@@ -14,9 +14,9 @@ import org.bukkit.Material
 
 object WarpEditItemView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
-    private val warpHolder = initialState<Warp?>("warp")
-    private val nameHolder = initialState<String?>("name")
-    private val displayItemHolder = initialState<Material?>("displayItem")
+    private val warpHolder = initialState<Warp>("warp")
+    private val nameHolder = initialState<String>("name")
+    private val displayItemHolder = initialState<Material>("displayItem")
 
     private val validMaterials = Material.entries.filter { !it.isLegacy && it.isItem && !it.isAir }
         .sortedBy { it.name }

@@ -13,6 +13,7 @@ import dev.slne.surf.building.gui.view.playGeneralClickSound
 import dev.slne.surf.building.gui.view.warp.WarpsView
 import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
+import dev.slne.surf.building.world.WarpCategory
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
@@ -95,7 +96,7 @@ object WorldEditView : View() {
                     WarpsView::class.java,
                     mutableMapOf(
                         "world" to updatableWorldHolder.get(click),
-                        "categoryPath" to emptyList<Any>()
+                        "categoryPath" to listOf<WarpCategory>()
                     )
                 )
             }

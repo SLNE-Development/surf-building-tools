@@ -21,7 +21,7 @@ import org.bukkit.Material
 object WarpCreateView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
     private val nameHolder = initialState<String>("name")
-    private val displayItemHolder = initialState<Material?>("displayItem")
+    private val displayItemHolder = initialState<Material>("displayItem")
     private val categoryPathHolder = initialState<List<WarpCategory>>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {

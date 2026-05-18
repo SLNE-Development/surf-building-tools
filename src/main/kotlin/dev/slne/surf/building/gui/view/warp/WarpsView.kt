@@ -93,14 +93,13 @@ object WarpsView : View() {
         render.layoutSlot('O', outlineItem)
 
         render.layoutSlot('I').renderWith {
-            val path = categoryPathHolder.get(render) ?: emptyList()
+            val path = categoryPathHolder.get(render)
             if (path.isEmpty()) outlineItem else breadcrumbItem(path)
         }.watch(categoryPathHolder)
 
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            val path = categoryPathHolder.get(click) ?: emptyList()
-            if (path.isEmpty()) {
+            if (categoryPathHolder.get(click).isEmpty()) {
                 click.openForPlayer(
                     WorldView::class.java,
                     mutableMapOf("world" to world.get(click))
@@ -108,7 +107,10 @@ object WarpsView : View() {
             } else {
                 click.openForPlayer(
                     WarpsView::class.java,
-                    mutableMapOf("world" to world.get(click), "categoryPath" to path.dropLast(1))
+                    mutableMapOf(
+                        "world" to world.get(click),
+                        "categoryPath" to categoryPathHolder.get(click).dropLast(1)
+                    )
                 )
             }
         }
@@ -129,14 +131,13 @@ object WarpsView : View() {
             }
 
             click.playGeneralClickSound()
-            val path = categoryPathHolder.get(click) ?: emptyList()
             click.openForPlayer(
                 WarpCreateView::class.java,
                 mutableMapOf(
                     "world" to world.get(click),
                     "name" to "warp-${random.nextInt(0, 100000)}",
                     "displayItem" to Material.ENDER_EYE,
-                    "categoryPath" to path
+                    "categoryPath" to categoryPathHolder.get(click)
                 )
             )
         }
@@ -147,13 +148,12 @@ object WarpsView : View() {
                 return@onClick
             }
             click.playGeneralClickSound()
-            val path = categoryPathHolder.get(click) ?: emptyList()
             click.openForPlayer(
                 WarpCategoryCreateView::class.java,
                 mutableMapOf(
                     "world" to world.get(click),
-                    "categoryPath" to path,
-                    "editingCategory" to listOf<WarpCategory>(),
+                    "categoryPath" to categoryPathHolder.get(click),
+                    "editingCategory" to null,
                     "name" to "category-${random.nextInt(0, 100000)}",
                     "displayItem" to Material.CHEST
                 )

@@ -22,9 +22,9 @@ import org.bukkit.Material
 object WarpEditView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
     private val warpHolder = initialState<Warp>("warp")
-    private val nameHolder = initialState<String?>("name")
-    private val displayItemHolder = initialState<Material?>("displayItem")
-    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
+    private val nameHolder = initialState<String>("name")
+    private val displayItemHolder = initialState<Material>("displayItem")
+    private val categoryPathHolder = initialState<List<WarpCategory>>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(
