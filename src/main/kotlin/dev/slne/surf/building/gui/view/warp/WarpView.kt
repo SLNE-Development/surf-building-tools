@@ -1,5 +1,6 @@
 package dev.slne.surf.building.gui.view.warp
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.messages.adventure.playSound
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
@@ -9,6 +10,8 @@ import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.api.paper.util.BukkitSound
 import dev.slne.surf.building.gui.util.MenuHeads
 import dev.slne.surf.building.gui.view.*
+import dev.slne.surf.building.plugin
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
 import me.devnatan.inventoryframework.View
@@ -65,7 +68,12 @@ object WarpView : View() {
             }
         }
         render.layoutSlot('W', teleportItem).onClick { click ->
-            click.player.teleportAsync(warp.location(world.world)).thenRun {
+            plugin.launch {
+                WorldManager.joinAndOrLoadAndTeleport(
+                    click.player,
+                    world.buildingWorldId,
+                    warp.location()
+                )
                 click.player.playSound(true) {
                     type(BukkitSound.ENTITY_ENDERMAN_TELEPORT)
                 }

@@ -128,7 +128,8 @@ object WorldManager {
     }
 
     fun updateWarp(buildingWorld: BuildingWorld, oldWarp: Warp, newWarp: Warp): BuildingWorld {
-        val updated = buildingWorld.copy(warps = buildingWorld.warps.map { if (it == oldWarp) newWarp else it })
+        val updated =
+            buildingWorld.copy(warps = buildingWorld.warps.map { if (it == oldWarp) newWarp else it })
         saveBuildingWorld(updated)
         return updated
     }
@@ -186,6 +187,32 @@ object WorldManager {
         } ?: return false
 
         player.teleportAsync(world.spawnLocation)
+
+        return true
+    }
+
+    suspend fun joinAndOrLoadAndTeleport(
+        player: Player,
+        buildingWorldId: String,
+        location: Location
+    ): Boolean {
+        val buildingWorld = buildingWorlds
+            .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
+
+        val world = Bukkit.getWorld(buildingWorld.worldName) ?: run {
+            val worldCreator = WorldCreator.name(buildingWorld.worldName)
+            if (buildingWorld.type == BuildingWorld.Type.VOID) {
+                worldCreator.generator(BuildingWorldGenerator)
+            }
+            withContext(plugin.globalRegionDispatcher) {
+                Bukkit.createWorld(worldCreator)
+            }
+
+        } ?: return false
+
+        player.teleportAsync(location.apply {
+            this.world = world
+        })
 
         return true
     }
