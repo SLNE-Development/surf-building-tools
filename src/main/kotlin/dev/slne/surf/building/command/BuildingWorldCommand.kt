@@ -142,7 +142,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                     bWorld, BuildingWorld.Status.DONE
                 )
 
-                if (success) {
+                if (success != null) {
                     player.sendText {
                         appendSuccessPrefix()
                         success("Die Bau-Welt wurde erfolgreich als ")
@@ -168,7 +168,7 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                     bWorld, BuildingWorld.Status.PUBLISHED
                 )
 
-                if (success) {
+                if (success != null) {
                     player.sendText {
                         appendSuccessPrefix()
                         success("Die Bau-Welt wurde erfolgreich als ")

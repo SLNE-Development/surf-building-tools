@@ -2,6 +2,7 @@ package dev.slne.surf.building.gui.view
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.util.random
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -10,6 +11,8 @@ import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.building.gui.GuiState
 import dev.slne.surf.building.gui.dialog.searchWorldDialog
 import dev.slne.surf.building.gui.guiState
+import dev.slne.surf.building.gui.util.MenuHeads
+import dev.slne.surf.building.gui.view.world.WorldCreateView
 import dev.slne.surf.building.gui.view.world.WorldView
 import dev.slne.surf.building.plugin
 import dev.slne.surf.building.service.WorldManager
@@ -26,7 +29,7 @@ object CentralMenu : View() {
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(6).titleBuilder {
-            variableValue("Bau-Welten Übersicht")
+            primary("Bau-Welten Übersicht")
         }.layout(
             "OOOOOOOOO",
             "ORRRRRRRO",
@@ -43,11 +46,11 @@ object CentralMenu : View() {
             context.player.guiState().currentSearch
         ).toMutableList()
     }.elementFactory { context, builder, _, world ->
-        builder.withItem(createWorldItem(world)).onClick { context ->
+        builder.withItem(createWorldItem(world, true)).onClick { context ->
             context.playGeneralClickSound()
 
             if (context.player.canModifyBuildingWorld()) {
-                if (context.isRightClick) {
+                if (context.isLeftClick) {
                     context.openForPlayer(WorldView::class.java, mutableMapOf("world" to world))
                 } else {
                     plugin.launch {
@@ -141,6 +144,18 @@ object CentralMenu : View() {
                 context.playNewPageSound()
                 pagination.advance()
             }
+
+        render.layoutSlot('C', createItem).onClick { click ->
+            click.playGeneralClickSound()
+            click.openForPlayer(
+                WorldCreateView::class.java,
+                mapOf(
+                    "name" to "bauwelt-${click.player.name}-${random.nextInt(0, 100000)}",
+                    "type" to BuildingWorld.Type.VOID,
+                    "displayItem" to Material.GRASS_BLOCK
+                )
+            )
+        }
     }
 
     private fun getBuildingWorlds(
@@ -176,6 +191,21 @@ object CentralMenu : View() {
         return GuiState.Sorting.sort(filtered, sortType)
     }
 
+    private val createItem = MenuHeads.CREATE_BUTTON.clone().apply {
+        displayName {
+            variableValue("Welt erstellen")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um eine neue Bauwelt zu erstellen")
+            }
+        }
+    }
+
     private fun searchItem(player: Player) = buildItem(Material.BRUSH) {
         displayName {
             variableValue("Suchen")
@@ -189,7 +219,7 @@ object CentralMenu : View() {
             if (search != null) {
                 line {
                     appendBlob()
-                    spacer("Aktueller Suchbegriff: ".toSmallCaps())
+                    primary("Aktueller Suchbegriff: ".toSmallCaps())
                     variableValue(search)
                 }
 
@@ -199,7 +229,7 @@ object CentralMenu : View() {
             line {
                 appendBlob()
                 white("SHIFT".toSmallCaps())
-                spacer(" zum resetten".toSmallCaps())
+                white(" zum Zurücksetzen".toSmallCaps())
             }
         }
     }
@@ -213,21 +243,32 @@ object CentralMenu : View() {
 
         buildLore {
             emptyLine()
-            line { variableValue("Sortierung".toSmallCaps(), TextDecoration.BOLD) }
+            line { primary("Sortierung".toSmallCaps(), TextDecoration.BOLD) }
 
             GuiState.Sorting.entries.forEach {
                 line {
                     if (it == sort) {
-                        appendSpace()
-                        spacer("-")
+                        spacer("✔")
                         appendSpace()
                         append(it.displayName).decorate(TextDecoration.BOLD)
                     } else {
-                        spacer("-")
+                        spacer("»")
                         appendSpace()
                         append(it.displayName)
                     }
                 }
+            }
+
+            emptyLine()
+            line {
+                appendBlob()
+                primary("Linksklick: ".toSmallCaps())
+                white("nächste Sortierung".toSmallCaps())
+            }
+            line {
+                appendBlob()
+                primary("Rechtsklick: ".toSmallCaps())
+                white("vorherige Sortierung".toSmallCaps())
             }
         }
     }

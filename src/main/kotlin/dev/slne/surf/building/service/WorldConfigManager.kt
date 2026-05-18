@@ -36,30 +36,41 @@ object WorldConfigManager {
             )
 
         buildingWorldConfigManagers[buildingWorld.buildingWorldId]?.apply {
-            config.buildingWorldName = buildingWorld.buildingWorldName
-            config.buildingWorldId = buildingWorld.buildingWorldId
-            config.worldName = buildingWorld.worldName
-            config.worldUuid = buildingWorld.worldUuid
-            config.authorName = buildingWorld.authorName
-            config.authorUuid = buildingWorld.authorUuid
-            config.status = buildingWorld.status.name
-            config.createdAtString = buildingWorld.createdAt.toString()
-            config.worldType = buildingWorld.type.name
-            config.displayItemName = buildingWorld.displayItem.name
-            config.warps = buildingWorld.warps.map { warp ->
-                WarpConfig(
-                    name = warp.name,
-                    x = warp.x,
-                    y = warp.y,
-                    z = warp.z,
-                    pitch = warp.pitch,
-                    yaw = warp.yaw,
-                    displayItemName = warp.displayItem.name
-                )
-            }.toMutableList()
-
+            applyBuildingWorld(buildingWorld)
             this.save()
         }
+    }
+
+    fun updateWorldConfig(buildingWorld: BuildingWorld) {
+        buildingWorldConfigManagers[buildingWorld.buildingWorldId]?.apply {
+            applyBuildingWorld(buildingWorld)
+            this.save()
+        }
+    }
+
+    private fun SpongeConfigManager<BuildingWorldConfig>.applyBuildingWorld(buildingWorld: BuildingWorld) {
+        config.buildingWorldName = buildingWorld.buildingWorldName
+        config.buildingWorldId = buildingWorld.buildingWorldId
+        config.worldName = buildingWorld.worldName
+        config.worldUuid = buildingWorld.worldUuid
+        config.authorName = buildingWorld.authorName
+        config.authorUuid = buildingWorld.authorUuid
+        config.status = buildingWorld.status.name
+        config.createdAtString = buildingWorld.createdAt.toString()
+        config.worldType = buildingWorld.type.name
+        config.displayItemName = buildingWorld.displayItem.name
+        config.warps = buildingWorld.warps.map { warp ->
+            WarpConfig(
+                name = warp.name,
+                x = warp.x,
+                y = warp.y,
+                z = warp.z,
+                pitch = warp.pitch,
+                yaw = warp.yaw,
+                displayItemName = warp.displayItem.name
+            )
+        }.toMutableList()
+        config.members = buildingWorld.members.toMutableList()
     }
 
     fun invalidate(buildingWorldId: String) = buildingWorldConfigManagers.remove(buildingWorldId)
@@ -122,6 +133,7 @@ object WorldConfigManager {
                     Material.COMPASS
                 }
             )
-        }
+        },
+        members = config.members
     )
 }

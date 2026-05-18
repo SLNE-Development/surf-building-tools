@@ -13,109 +13,159 @@ import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.context.SlotClickContext
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.meta.SkullMeta
+import java.util.*
 
 val View.backItem
     get() = buildItem(Material.BARRIER) {
         displayName {
-            spacer("Zurück")
+            error("Zurück")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um zurückzugehen")
+            }
         }
     }
 
 val View.previousItem
     get() = buildItem(Material.ARROW) {
         displayName {
-            spacer("Zurück")
+            white("← Vorherige Seite")
+        }
+
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um zur vorherigen Seite zu wechseln")
+            }
         }
     }
 
 val View.nextItem
     get() = buildItem(Material.ARROW) {
         displayName {
-            spacer("Weiter")
+            white("Nächste Seite →")
         }
-    }
 
-fun View.createWorldItem(buildingWorld: BuildingWorld) = buildItem(buildingWorld.displayItem) {
-    displayName {
-        variableValue(buildingWorld.buildingWorldName)
-    }
-
-    buildLore {
-        emptyLine()
-        line {
-            if (buildingWorld.status.allowBuild) {
-                success("✔ Die Welt wird derzeit bearbeitet")
-            } else {
-                error("✘ Die Welt wird derzeit nicht bearbeitet")
+        buildLore {
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                white("Klicke, um zur nächsten Seite zu wechseln")
             }
         }
-        emptyLine()
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Ersteller: ")
-            variableValue(buildingWorld.authorName)
+    }
+
+fun createWorldItem(buildingWorld: BuildingWorld, joinOrEdit: Boolean = false) =
+    buildItem(buildingWorld.displayItem) {
+        displayName {
+            variableValue(buildingWorld.buildingWorldName)
         }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Mitglieder: ")
+        buildLore {
+            emptyLine()
+            line {
+                if (buildingWorld.status.allowBuild) {
+                    success("✔ Die Welt wird derzeit bearbeitet")
+                } else {
+                    error("✘ Die Welt wird derzeit nicht bearbeitet")
+                }
+            }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Ersteller: ")
+                variableValue(buildingWorld.authorName)
+            }
 
-            if (buildingWorld.members.isEmpty()) {
-                error("Keine")
-            } else {
-                spacer("(")
-                warning(buildingWorld.members.size)
-                spacer(") ")
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Mitglieder: ")
+
+                if (buildingWorld.members.isEmpty()) {
+                    error("Keine")
+                } else {
+                    spacer("(")
+                    warning(buildingWorld.members.size)
+                    spacer(") ")
+                    variableValue(
+                        buildingWorld.members.toOfflinePlayers()
+                            .joinToString(", ") { it.name ?: "#null" })
+                }
+            }
+
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Warps: ")
+
+                if (buildingWorld.warps.isEmpty()) {
+                    error("Keine")
+                } else {
+                    spacer("(")
+                    warning(buildingWorld.warps.size)
+                    spacer(") ")
+                    variableValue(buildingWorld.warps.joinToString { it.name })
+                }
+            }
+
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Typ: ")
                 variableValue(
-                    buildingWorld.members.toOfflinePlayers()
-                        .joinToString(", ") { it.name ?: "#null" })
+                    buildingWorld.type.name.lowercase().replaceFirstChar { it.uppercase() })
             }
-        }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Warps: ")
-
-            if (buildingWorld.warps.isEmpty()) {
-                error("Keine")
-            } else {
-                spacer("(")
-                warning(buildingWorld.warps.size)
-                spacer(") ")
-                variableValue(buildingWorld.warps.joinToString { it.name })
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Status: ")
+                variableValue(buildingWorld.status.displayName)
             }
-        }
+            emptyLine()
+            line {
+                spacer("»")
+                appendSpace()
+                variableKey("Erstellt am: ")
+                variableValue(buildingWorld.createdAt.format(dateTimeFormatter))
+            }
+            line {
+                white("#${buildingWorld.buildingWorldId}")
+            }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Typ: ")
-            variableValue(buildingWorld.type.name.lowercase().replaceFirstChar { it.uppercase() })
-        }
+            if (joinOrEdit) {
+                emptyLine()
+                line {
+                    spacer("»")
+                    appendSpace()
+                    variableValue("Linksklick: ")
+                    white("Bearbeiten")
+                    darkSpacer(" (nur für Ersteller und Builder)")
+                }
 
-        line {
-            spacer("»")
-            appendSpace()
-            variableKey("Status: ")
-            variableValue(buildingWorld.status.displayName)
-        }
-        emptyLine()
-        line {
-            spacer("»")
-            appendSpace()
-            spacer("Erstellt am: ")
-            spacer(buildingWorld.createdAt.format(dateTimeFormatter))
-        }
-        line {
-            spacer("#${buildingWorld.buildingWorldId}")
+                line {
+                    spacer("»")
+                    appendSpace()
+                    variableValue("Rechtsklick: ")
+                    white("Betreten")
+                }
+            }
         }
     }
-}
 
 fun View.createWarpItem(warp: Warp) = buildItem(warp.displayItem) {
     displayName {
@@ -171,3 +221,32 @@ fun SlotClickContext.playNewPageSound() {
 fun Player.canModifyBuildingWorld() = this.hasPermission(
     PermissionRegistry.BUILDER
 )
+
+fun createMemberItem(memberUuid: UUID, removable: Boolean = false) =
+    buildItem(Material.PLAYER_HEAD) {
+        val offlinePlayer = Bukkit.getOfflinePlayer(memberUuid)
+        val name = offlinePlayer.name ?: memberUuid.toString()
+
+        displayName {
+            variableValue(name)
+        }
+
+        editMeta(SkullMeta::class.java) {
+            it.owningPlayer = offlinePlayer
+        }
+
+        buildLore {
+            line {
+                spacer("» $memberUuid")
+            }
+
+            if (removable) {
+                emptyLine()
+                line {
+                    spacer("»")
+                    appendSpace()
+                    white("Klicke, um dieses Mitglied zu entfernen")
+                }
+            }
+        }
+    }

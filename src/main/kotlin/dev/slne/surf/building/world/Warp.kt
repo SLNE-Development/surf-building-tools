@@ -26,4 +26,5 @@ data class Warp(
     val displayItem: Material
 ) {
     fun location(world: World) = Location(world, x, y, z, yaw, pitch)
+    fun location() = Location(null, x, y, z, yaw, pitch)
 }

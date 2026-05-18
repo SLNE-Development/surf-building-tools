@@ -1,5 +1,6 @@
 package dev.slne.surf.building.gui.view.warp
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.messages.adventure.playSound
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
@@ -9,6 +10,8 @@ import dev.slne.surf.api.paper.inventory.framework.titleBuilder
 import dev.slne.surf.api.paper.util.BukkitSound
 import dev.slne.surf.building.gui.util.MenuHeads
 import dev.slne.surf.building.gui.view.*
+import dev.slne.surf.building.plugin
+import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
 import me.devnatan.inventoryframework.View
@@ -27,7 +30,7 @@ object WarpView : View() {
             "OSOOWOODO",
             "OOOOBOOOO"
         ).titleBuilder {
-            variableValue("Warp ansehen")
+            primary("Warp ansehen")
         }.cancelInteractions()
     }
 
@@ -36,10 +39,41 @@ object WarpView : View() {
         val warp = warpHolder.get(render)
 
         render.layoutSlot('O', outlineItem)
-        render.layoutSlot('D', deleteItem(render.player))
+        render.layoutSlot('D', deleteItem(render.player)).onClick { click ->
+            click.playGeneralClickSound()
+            if (click.player.canModifyBuildingWorld()) {
+                click.openForPlayer(
+                    WarpDeleteView::class.java,
+                    mutableMapOf("world" to worldHolder.get(click), "warp" to warpHolder.get(click))
+                )
+            } else {
+                click.playLockedSound()
+            }
+        }
         render.layoutSlot('I', createWarpItem(warp))
+        render.layoutSlot('S', editItem(render.player)).onClick { click ->
+            click.playGeneralClickSound()
+            if (click.player.canModifyBuildingWorld()) {
+                click.openForPlayer(
+                    WarpEditView::class.java,
+                    mutableMapOf(
+                        "world" to worldHolder.get(click),
+                        "warp" to warpHolder.get(click),
+                        "name" to null,
+                        "displayItem" to null
+                    )
+                )
+            } else {
+                click.playLockedSound()
+            }
+        }
         render.layoutSlot('W', teleportItem).onClick { click ->
-            click.player.teleportAsync(warp.location(world.world)).thenRun {
+            plugin.launch {
+                WorldManager.joinAndOrLoadAndTeleport(
+                    click.player,
+                    world.buildingWorldId,
+                    warp.location()
+                )
                 click.player.playSound(true) {
                     type(BukkitSound.ENTITY_ENDERMAN_TELEPORT)
                 }
@@ -47,7 +81,10 @@ object WarpView : View() {
         }
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WarpsView::class.java)
+            click.openForPlayer(
+                WarpsView::class.java,
+                mutableMapOf("world" to worldHolder.get(click))
+            )
         }
     }
 
@@ -59,7 +96,30 @@ object WarpView : View() {
         buildLore {
             emptyLine()
             line {
-                variableValue("Klicke, um dich zu diesem Warp zu teleportieren")
+                spacer("»")
+                appendSpace()
+                white("Klicke, um dich zu diesem Warp zu teleportieren")
+            }
+        }
+    }
+
+    private fun editItem(player: Player) = MenuHeads.WRITABLE_BOOK.clone().apply {
+        displayName {
+            variableValue("Warp bearbeiten")
+        }
+
+        buildLore {
+            emptyLine()
+            if (player.canModifyBuildingWorld()) {
+                line {
+                    spacer("»")
+                    appendSpace()
+                    white("Klicke, um diesen Warp zu bearbeiten")
+                }
+            } else {
+                line {
+                    error("✘ Nur Builder können diesen Warp bearbeiten!")
+                }
             }
         }
     }
@@ -73,12 +133,17 @@ object WarpView : View() {
             emptyLine()
             if (player.canModifyBuildingWorld()) {
                 line {
-                    appendBlob()
-                    variableValue("Klicke, um diesen Warp zu löschen")
+                    spacer("»")
+                    appendSpace()
+                    white("Klicke, um diesen Warp zu löschen")
+                }
+                emptyLine()
+                line {
+                    error("✘ Diese Aktion kann nicht rückgängig gemacht werden!")
                 }
             } else {
                 line {
-                    error("Nur Builder können diesen Warp löschen!")
+                    error("✘ Nur Builder können diesen Warp löschen!")
                 }
             }
         }

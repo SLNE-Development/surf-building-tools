@@ -1,80 +1,66 @@
-package dev.slne.surf.building.gui.view.world
+package dev.slne.surf.building.gui.view.warp
 
-import com.github.shynixn.mccoroutine.folia.launch
-import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
 import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
-import dev.slne.surf.building.gui.view.CentralMenu
 import dev.slne.surf.building.gui.view.backItem
-import dev.slne.surf.building.gui.view.createWorldItem
+import dev.slne.surf.building.gui.view.createWarpItem
 import dev.slne.surf.building.gui.view.playGeneralClickSound
-import dev.slne.surf.building.plugin
 import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
+import dev.slne.surf.building.world.Warp
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
 import org.bukkit.Material
 
-object WorldDeleteView : View() {
+object WarpDeleteView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
+    private val warpHolder = initialState<Warp>("warp")
 
     override fun onInit(config: ViewConfigBuilder) {
-        config.size(3)
-            .titleBuilder {
-                primary("Welt löschen")
-            }
-            .layout(
-                "OOOOOOOOO",
-                "OOAOIOCOO",
-                "OOOOBOOOO"
-            ).cancelInteractions()
+        config.size(3).layout(
+            "OOOOOOOOO",
+            "OOAOIOCOO",
+            "OOOOBOOOO"
+        ).titleBuilder {
+            primary("Warp löschen")
+        }.cancelInteractions()
     }
 
     override fun onFirstRender(render: RenderContext) {
-        val world = worldHolder.get(render)
+        val warp = warpHolder.get(render)
 
         render.layoutSlot('O', outlineItem)
+        render.layoutSlot('I', createWarpItem(warp))
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WorldView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+            click.openForPlayer(
+                WarpView::class.java,
+                mutableMapOf("world" to worldHolder.get(click), "warp" to warpHolder.get(click))
+            )
         }
         render.layoutSlot('A', cancelItem).onClick { click ->
             click.playGeneralClickSound()
-            click.openForPlayer(WorldView::class.java, mutableMapOf("world" to worldHolder.get(click)))
+            click.openForPlayer(
+                WarpView::class.java,
+                mutableMapOf("world" to worldHolder.get(click), "warp" to warpHolder.get(click))
+            )
         }
         render.layoutSlot('C', confirmItem).onClick { click ->
             click.playGeneralClickSound()
-            val targetWorld = worldHolder.get(click)
-            click.openForPlayer(CentralMenu::class.java)
-            click.player.sendText {
-                appendInfoPrefix()
-                info("Die Welt wird gelöscht...")
-            }
-            plugin.launch {
-                val success = WorldManager.deleteBuildingWorld(targetWorld.buildingWorldId)
-                if (success) {
-                    click.player.sendText {
-                        appendSuccessPrefix()
-                        success("Die Welt wurde erfolgreich gelöscht!")
-                    }
-                } else {
-                    click.player.sendText {
-                        appendErrorPrefix()
-                        error("Die Welt konnte nicht gelöscht werden. Bitte versuche es später erneut.")
-                    }
-                }
-            }
+            val world = worldHolder.get(click)
+            val warpToDelete = warpHolder.get(click)
+            val updatedWorld = WorldManager.deleteWarp(world, warpToDelete)
+            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to updatedWorld))
         }
-        render.layoutSlot('I', createWorldItem(world))
     }
 
     private val confirmItem = buildItem(Material.LIME_STAINED_GLASS_PANE) {
         displayName {
-            success("✔ Welt löschen")
+            success("✔ Warp löschen")
         }
 
         buildLore {
@@ -82,7 +68,7 @@ object WorldDeleteView : View() {
             line {
                 spacer("»")
                 appendSpace()
-                white("Klicke hier, um die Welt zu löschen.")
+                white("Klicke hier, um den Warp zu löschen.")
             }
             emptyLine()
             line {

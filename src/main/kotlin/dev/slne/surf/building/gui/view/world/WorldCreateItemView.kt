@@ -4,11 +4,7 @@ import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.displayName
 import dev.slne.surf.api.paper.inventory.framework.outlineItem
 import dev.slne.surf.api.paper.inventory.framework.titleBuilder
-import dev.slne.surf.building.gui.view.backItem
-import dev.slne.surf.building.gui.view.nextItem
-import dev.slne.surf.building.gui.view.playGeneralClickSound
-import dev.slne.surf.building.gui.view.playNewPageSound
-import dev.slne.surf.building.gui.view.previousItem
+import dev.slne.surf.building.gui.view.*
 import dev.slne.surf.building.world.BuildingWorld
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
@@ -16,16 +12,16 @@ import me.devnatan.inventoryframework.context.RenderContext
 import org.bukkit.Material
 
 object WorldCreateItemView : View() {
-    private val nameHolder = initialState<String?>("name")
-    private val typeHolder = initialState<BuildingWorld.Type?>("type")
-    private val displayItemHolder = initialState<Material?>("displayItem")
+    private val nameHolder = initialState<String>("name")
+    private val typeHolder = initialState<BuildingWorld.Type>("type")
+    private val displayItemHolder = initialState<Material>("displayItem")
 
     private val validMaterials = Material.entries.filter { !it.isLegacy && it.isItem && !it.isAir }
         .sortedBy { it.name }
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(5).titleBuilder {
-            variableValue("Item auswählen")
+            primary("Item auswählen")
         }.layout(
             "OOOOOOOOO",
             "ORRRRRRRO",

@@ -18,5 +18,6 @@ data class BuildingWorldConfig(
     var createdAtString: String = OffsetDateTime.MIN.toString(),
     var worldType: String = BuildingWorld.Type.FLAT.name,
     var displayItemName: String = "GRASS_BLOCK",
-    var warps: MutableList<WarpConfig> = mutableListOf()
+    var warps: MutableList<WarpConfig> = mutableListOf(),
+    var members: MutableList<UUID> = mutableListOf()
 )
