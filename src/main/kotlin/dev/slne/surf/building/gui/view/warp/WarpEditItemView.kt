@@ -12,6 +12,10 @@ import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
 import org.bukkit.Material
 
+/**
+ * Item picker used by both WarpCreateView (warpHolder = null) and WarpEditView (warpHolder set).
+ * States passed in: "world", "warp" (nullable), "name" (nullable), "displayItem" (nullable)
+ */
 object WarpEditItemView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
     private val warpHolder = initialState<Warp?>("warp")

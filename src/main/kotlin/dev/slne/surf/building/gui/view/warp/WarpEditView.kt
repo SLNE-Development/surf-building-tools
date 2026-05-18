@@ -13,7 +13,6 @@ import dev.slne.surf.building.gui.view.playGeneralClickSound
 import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
-import dev.slne.surf.building.world.WarpCategory
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
@@ -24,7 +23,6 @@ object WarpEditView : View() {
     private val warpHolder = initialState<Warp>("warp")
     private val nameHolder = initialState<String?>("name")
     private val displayItemHolder = initialState<Material?>("displayItem")
-    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(
@@ -45,11 +43,7 @@ object WarpEditView : View() {
             click.playGeneralClickSound()
             click.openForPlayer(
                 WarpView::class.java,
-                mutableMapOf(
-                    "world" to worldHolder.get(click),
-                    "warp" to warpHolder.get(click),
-                    "categoryPath" to (categoryPathHolder.get(click) ?: emptyList<WarpCategory>())
-                )
+                mutableMapOf("world" to worldHolder.get(click), "warp" to warpHolder.get(click))
             )
         }
         render.layoutSlot('N')
@@ -60,7 +54,6 @@ object WarpEditView : View() {
                 val world = worldHolder.get(click)
                 val originalWarp = warpHolder.get(click)
                 val displayItem = displayItemHolder.get(click)
-                val path = categoryPathHolder.get(click)
                 click.player.showDialog(
                     showWarpNameDialog(world, originalWarp) { name ->
                         viewFrame.open(
@@ -69,8 +62,7 @@ object WarpEditView : View() {
                                 "world" to world,
                                 "warp" to originalWarp,
                                 "name" to (name ?: originalWarp.name),
-                                "displayItem" to displayItem,
-                                "categoryPath" to path
+                                "displayItem" to displayItem
                             )
                         )
                     }
@@ -89,8 +81,7 @@ object WarpEditView : View() {
                         "world" to worldHolder.get(click),
                         "warp" to warpHolder.get(click),
                         "name" to nameHolder.get(click),
-                        "displayItem" to displayItemHolder.get(click),
-                        "categoryPath" to (categoryPathHolder.get(click) ?: emptyList<WarpCategory>())
+                        "displayItem" to displayItemHolder.get(click)
                     )
                 )
             }

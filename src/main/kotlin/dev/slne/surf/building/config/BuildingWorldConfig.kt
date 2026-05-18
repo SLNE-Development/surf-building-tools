@@ -1,7 +1,6 @@
 package dev.slne.surf.building.config
 
 import dev.slne.surf.building.world.BuildingWorld
-import dev.slne.surf.building.world.WarpCategoryConfig
 import dev.slne.surf.building.world.WarpConfig
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import java.time.OffsetDateTime
@@ -20,6 +19,5 @@ data class BuildingWorldConfig(
     var worldType: String = BuildingWorld.Type.FLAT.name,
     var displayItemName: String = "GRASS_BLOCK",
     var warps: MutableList<WarpConfig> = mutableListOf(),
-    var members: MutableList<UUID> = mutableListOf(),
-    var categories: MutableList<WarpCategoryConfig> = mutableListOf()
+    var members: MutableList<UUID> = mutableListOf()
 )

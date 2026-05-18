@@ -12,7 +12,6 @@ import dev.slne.surf.building.gui.view.playGeneralClickSound
 import dev.slne.surf.building.service.WorldManager
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
-import dev.slne.surf.building.world.WarpCategory
 import me.devnatan.inventoryframework.View
 import me.devnatan.inventoryframework.ViewConfigBuilder
 import me.devnatan.inventoryframework.context.RenderContext
@@ -22,7 +21,6 @@ object WarpCreateView : View() {
     private val worldHolder = initialState<BuildingWorld>("world")
     private val nameHolder = initialState<String?>("name")
     private val displayItemHolder = initialState<Material?>("displayItem")
-    private val categoryPathHolder = initialState<List<WarpCategory>?>("categoryPath")
 
     override fun onInit(config: ViewConfigBuilder) {
         config.size(3).layout(
@@ -38,10 +36,9 @@ object WarpCreateView : View() {
         render.layoutSlot('O', outlineItem)
         render.layoutSlot('B', backItem).onClick { click ->
             click.playGeneralClickSound()
-            val path = categoryPathHolder.get(click) ?: emptyList()
             click.openForPlayer(
                 WarpsView::class.java,
-                mutableMapOf("world" to worldHolder.get(click), "categoryPath" to path)
+                mutableMapOf("world" to worldHolder.get(click))
             )
         }
         render.layoutSlot('N').renderWith { nameItem(nameHolder.get(render)) }.onClick { click ->
@@ -49,17 +46,11 @@ object WarpCreateView : View() {
             click.closeForPlayer()
             val world = worldHolder.get(click)
             val displayItem = displayItemHolder.get(click)
-            val path = categoryPathHolder.get(click)
             click.player.showDialog(
                 showWarpNameDialog(world, null) { name ->
                     viewFrame.open(
                         WarpCreateView::class.java, click.player,
-                        mutableMapOf(
-                            "world" to world,
-                            "name" to name,
-                            "displayItem" to displayItem,
-                            "categoryPath" to path
-                        )
+                        mutableMapOf("world" to world, "name" to name, "displayItem" to displayItem)
                     )
                 }
             )
@@ -73,8 +64,7 @@ object WarpCreateView : View() {
                         "world" to worldHolder.get(click),
                         "warp" to null,
                         "name" to nameHolder.get(click),
-                        "displayItem" to displayItemHolder.get(click),
-                        "categoryPath" to categoryPathHolder.get(click)
+                        "displayItem" to displayItemHolder.get(click)
                     )
                 )
             }
@@ -96,9 +86,8 @@ object WarpCreateView : View() {
                 yaw = location.yaw,
                 displayItem = displayItem
             )
-            val path = categoryPathHolder.get(click) ?: emptyList()
-            val updated = WorldManager.addWarpAtPath(world, path, warp)
-            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to updated, "categoryPath" to path))
+            val updated = WorldManager.addWarp(world, warp)
+            click.openForPlayer(WarpsView::class.java, mutableMapOf("world" to updated))
         }
     }
 

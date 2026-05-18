@@ -9,7 +9,6 @@ import dev.slne.surf.building.util.generateBuildingWorldId
 import dev.slne.surf.building.util.removeGeneratorFromBukkitYml
 import dev.slne.surf.building.world.BuildingWorld
 import dev.slne.surf.building.world.Warp
-import dev.slne.surf.building.world.WarpCategory
 import dev.slne.surf.building.world.generator.BuildingWorldGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -122,122 +121,22 @@ object WorldManager {
         return updated
     }
 
-    fun addWarp(buildingWorld: BuildingWorld, warp: Warp): BuildingWorld =
-        addWarpAtPath(buildingWorld, emptyList(), warp)
-
-    fun updateWarp(buildingWorld: BuildingWorld, oldWarp: Warp, newWarp: Warp): BuildingWorld =
-        updateWarpAtPath(buildingWorld, emptyList(), oldWarp, newWarp)
-
-    fun deleteWarp(buildingWorld: BuildingWorld, warp: Warp): BuildingWorld =
-        deleteWarpAtPath(buildingWorld, emptyList(), warp)
-
-    fun addWarpAtPath(
-        buildingWorld: BuildingWorld,
-        path: List<WarpCategory>,
-        warp: Warp
-    ): BuildingWorld {
-        val updated = updateAtPath(buildingWorld, path) { warps, cats -> Pair(warps + warp, cats) }
+    fun addWarp(buildingWorld: BuildingWorld, warp: Warp): BuildingWorld {
+        val updated = buildingWorld.copy(warps = buildingWorld.warps + warp)
         saveBuildingWorld(updated)
         return updated
     }
 
-    fun updateWarpAtPath(
-        buildingWorld: BuildingWorld,
-        path: List<WarpCategory>,
-        oldWarp: Warp,
-        newWarp: Warp
-    ): BuildingWorld {
-        val updated = updateAtPath(buildingWorld, path) { warps, cats ->
-            Pair(warps.map { if (it == oldWarp) newWarp else it }, cats)
-        }
+    fun updateWarp(buildingWorld: BuildingWorld, oldWarp: Warp, newWarp: Warp): BuildingWorld {
+        val updated = buildingWorld.copy(warps = buildingWorld.warps.map { if (it == oldWarp) newWarp else it })
         saveBuildingWorld(updated)
         return updated
     }
 
-    fun deleteWarpAtPath(
-        buildingWorld: BuildingWorld,
-        path: List<WarpCategory>,
-        warp: Warp
-    ): BuildingWorld {
-        val updated = updateAtPath(buildingWorld, path) { warps, cats ->
-            Pair(warps.filter { it != warp }, cats)
-        }
+    fun deleteWarp(buildingWorld: BuildingWorld, warp: Warp): BuildingWorld {
+        val updated = buildingWorld.copy(warps = buildingWorld.warps.filter { it != warp })
         saveBuildingWorld(updated)
         return updated
-    }
-
-    fun addCategoryAtPath(
-        buildingWorld: BuildingWorld,
-        parentPath: List<WarpCategory>,
-        category: WarpCategory
-    ): BuildingWorld {
-        val updated =
-            updateAtPath(buildingWorld, parentPath) { warps, cats -> Pair(warps, cats + category) }
-        saveBuildingWorld(updated)
-        return updated
-    }
-
-    fun updateCategoryAtPath(
-        buildingWorld: BuildingWorld,
-        parentPath: List<WarpCategory>,
-        oldCategory: WarpCategory,
-        updatedCategory: WarpCategory
-    ): BuildingWorld {
-        val updated = updateAtPath(buildingWorld, parentPath) { warps, cats ->
-            Pair(warps, cats.map { if (it.name == oldCategory.name) updatedCategory else it })
-        }
-        saveBuildingWorld(updated)
-        return updated
-    }
-
-    fun deleteCategoryAtPath(
-        buildingWorld: BuildingWorld,
-        parentPath: List<WarpCategory>,
-        categoryToDelete: WarpCategory
-    ): BuildingWorld {
-        val updated = updateAtPath(buildingWorld, parentPath) { warps, cats ->
-            Pair(warps, cats.filter { it.name != categoryToDelete.name })
-        }
-        saveBuildingWorld(updated)
-        return updated
-    }
-
-    private fun updateAtPath(
-        buildingWorld: BuildingWorld,
-        path: List<WarpCategory>,
-        transform: (List<Warp>, List<WarpCategory>) -> Pair<List<Warp>, List<WarpCategory>>
-    ): BuildingWorld {
-        if (path.isEmpty()) {
-            val (newWarps, newCategories) = transform(buildingWorld.warps, buildingWorld.categories)
-            return buildingWorld.copy(warps = newWarps, categories = newCategories)
-        }
-        val newCategories = updateCategoryListAtPath(buildingWorld.categories, path, transform)
-        return buildingWorld.copy(categories = newCategories)
-    }
-
-    private fun updateCategoryListAtPath(
-        categories: List<WarpCategory>,
-        path: List<WarpCategory>,
-        transform: (List<Warp>, List<WarpCategory>) -> Pair<List<Warp>, List<WarpCategory>>
-    ): List<WarpCategory> {
-        val head = path.first()
-        val tail = path.drop(1)
-        return categories.map { cat ->
-            if (cat.name == head.name) {
-                if (tail.isEmpty()) {
-                    val (newWarps, newSubCats) = transform(cat.warps, cat.subCategories)
-                    cat.copy(warps = newWarps, subCategories = newSubCats)
-                } else {
-                    cat.copy(
-                        subCategories = updateCategoryListAtPath(
-                            cat.subCategories,
-                            tail,
-                            transform
-                        )
-                    )
-                }
-            } else cat
-        }
     }
 
     fun addMember(buildingWorld: BuildingWorld, memberUuid: UUID): BuildingWorld {

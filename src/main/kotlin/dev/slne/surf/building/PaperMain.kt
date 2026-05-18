@@ -38,11 +38,6 @@ class PaperMain : SuspendingJavaPlugin() {
         WorldEditItemView.register()
         MembersView.register()
         MemberRemoveView.register()
-
-        WarpCategoryCreateView.register()
-        WarpCategoryDeleteView.register()
-        WarpCategoryEditItemView.register()
-        WarpCategoryView.register()
     }
 
     override suspend fun onEnableAsync() {
