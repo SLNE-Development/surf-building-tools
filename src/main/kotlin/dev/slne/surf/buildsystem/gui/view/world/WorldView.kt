@@ -51,7 +51,7 @@ val worldView: AbstractSurfView = surfView("Bau-Welt") {
         }
 
         slot(2, 6, editItem).onClick { click ->
-            if (!click.player.canModifyBuildingWorld()) {
+            if (!click.player.canManageWarps(worldState[click])) {
                 click.playLockedSound()
                 return@onClick
             }

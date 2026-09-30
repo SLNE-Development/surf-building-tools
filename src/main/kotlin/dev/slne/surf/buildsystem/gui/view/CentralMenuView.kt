@@ -45,7 +45,7 @@ val centralMenu: AbstractSurfView = paginatedSurfView("Bau-Welten") {
             withItem(createWorldItem(world, true)).onClick { context ->
                 context.playGeneralClickSound()
 
-                if (context.player.canModifyBuildingWorld() && context.isLeftClick) {
+                if (context.player.canManageWarps(world) && context.isLeftClick) {
                     context.openForPlayer(worldView::class.java, mapOf("world" to world))
                     return@onClick
                 }

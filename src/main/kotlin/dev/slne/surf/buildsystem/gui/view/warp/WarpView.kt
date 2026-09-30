@@ -55,7 +55,7 @@ val warpView: AbstractSurfView = surfView("Warp") {
         }
 
         slot(2, 5, editItem).onClick { click ->
-            if (!click.player.canModifyBuildingWorld()) {
+            if (!click.player.canManageWarps(worldState[click])) {
                 click.playLockedSound()
                 return@onClick
             }
@@ -68,7 +68,7 @@ val warpView: AbstractSurfView = surfView("Warp") {
         }
 
         slot(2, 7, deleteItem).onClick { click ->
-            if (!click.player.canModifyBuildingWorld()) {
+            if (!click.player.canManageWarps(worldState[click])) {
                 click.playLockedSound()
                 return@onClick
             }

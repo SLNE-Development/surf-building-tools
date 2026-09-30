@@ -52,6 +52,11 @@ val worldEditView: AbstractSurfView = surfView("Bau-Welt bearbeiten") {
         slot(1, 5).renderWith { createWorldItem(current()) }
 
         slot(2, 2).renderWith { nameItem(current()) }.onClick { click ->
+            if (!click.player.canModifyBuildingWorld()) {
+                click.playLockedSound()
+                return@onClick
+            }
+
             click.playGeneralClickSound()
             click.closeForPlayer()
 
@@ -70,6 +75,11 @@ val worldEditView: AbstractSurfView = surfView("Bau-Welt bearbeiten") {
         }
 
         slot(2, 3).renderWith { displayItemSlot(current()) }.onClick { click ->
+            if (!click.player.canModifyBuildingWorld()) {
+                click.playLockedSound()
+                return@onClick
+            }
+
             click.playGeneralClickSound()
 
             val currentWorld = current()
@@ -90,6 +100,11 @@ val worldEditView: AbstractSurfView = surfView("Bau-Welt bearbeiten") {
         slot(2, 5)
             .renderWith { statusItem(current().status) }
             .onClick { click ->
+                if (!click.player.canModifyBuildingWorld()) {
+                    click.playLockedSound()
+                    return@onClick
+                }
+
                 click.playGeneralClickSound()
 
                 val currentWorld = current()
@@ -106,6 +121,11 @@ val worldEditView: AbstractSurfView = surfView("Bau-Welt bearbeiten") {
             }
 
         slot(2, 7).renderWith { membersItem(current()) }.onClick { click ->
+            if (!click.player.canModifyBuildingWorld()) {
+                click.playLockedSound()
+                return@onClick
+            }
+
             click.playGeneralClickSound()
             click.openForPlayer(membersView::class.java, mapOf("world" to current()))
         }

@@ -230,3 +230,6 @@ fun SlotClickContext.playGeneralClickSound() {
 fun Player.canModifyBuildingWorld() = this.hasPermission(
     PermissionRegistry.BUILDER
 )
+
+fun Player.canManageWarps(buildingWorld: BuildingWorld) =
+    canModifyBuildingWorld() || uniqueId in buildingWorld.members

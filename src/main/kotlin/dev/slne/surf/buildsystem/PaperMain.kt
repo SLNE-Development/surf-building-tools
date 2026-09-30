@@ -10,6 +10,7 @@ import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIconColor
 import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIconType
 import dev.slne.surf.buildsystem.command.buildingWorldCommand
 import dev.slne.surf.buildsystem.command.lobbyCommand
+import dev.slne.surf.buildsystem.command.worldCommands
 import dev.slne.surf.buildsystem.config.BuildingConfigHolder
 import dev.slne.surf.buildsystem.gui.view.centralMenu
 import dev.slne.surf.buildsystem.gui.view.hint
@@ -62,6 +63,7 @@ class PaperMain : SuspendingJavaPlugin() {
 
         buildingWorldCommand()
         lobbyCommand()
+        worldCommands()
 
         WorldConfigManager.cacheAllBuildingWorlds()
     }

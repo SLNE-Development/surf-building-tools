@@ -50,7 +50,7 @@ val warpsView: AbstractSurfView = paginatedSurfView("Warps") {
         }
 
         slot(5, 9, createWarpButton).onClick { click ->
-            if (!click.player.canModifyBuildingWorld()) {
+            if (!click.player.canManageWarps(worldState[click])) {
                 click.playLockedSound()
                 return@onClick
             }
