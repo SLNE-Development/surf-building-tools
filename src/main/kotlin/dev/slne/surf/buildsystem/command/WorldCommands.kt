@@ -24,7 +24,8 @@ private val warpSuggestions = ArgumentSuggestions.stringCollection<CommandSender
 }
 
 private val memberSuggestions = ArgumentSuggestions.stringCollection<CommandSender> { info ->
-    (info.sender as? Player)?.currentBuildingWorld()?.members?.toOfflinePlayers()?.mapNotNull { it.name }
+    (info.sender as? Player)?.currentBuildingWorld()?.members?.toOfflinePlayers()
+        ?.mapNotNull { it.name }
         ?: emptyList()
 }
 
@@ -43,7 +44,6 @@ private fun Player.sendSuccess(message: String) = sendText {
     success(message)
 }
 
-/** Returns the player's current building world, or sends an error and returns null. */
 private fun Player.requireBuildingWorld(): BuildingWorld? =
     currentBuildingWorld() ?: run {
         sendError("Du befindest dich in keiner Bau-Welt!")

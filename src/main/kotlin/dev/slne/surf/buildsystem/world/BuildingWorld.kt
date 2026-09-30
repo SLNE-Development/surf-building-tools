@@ -1,10 +1,10 @@
 package dev.slne.surf.buildsystem.world
 
 import dev.slne.surf.api.core.util.mutableObjectSetOf
-import dev.slne.surf.buildsystem.plugin
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
+import java.io.File
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -20,10 +20,10 @@ data class BuildingWorld(
     val type: Type = Type.FLAT,
     val displayItem: Material = Material.GRASS_BLOCK,
     val warps: List<Warp> = emptyList(),
-    val members: List<UUID> = emptyList()
+    val members: List<UUID> = emptyList(),
+    val folder: File
 ) {
     val currentPlayers = mutableObjectSetOf<UUID>()
-    val folder = plugin.server.worldContainer.resolve(worldName)
     val worldOrNull get() = Bukkit.getWorld(worldUuid)
     val world get() = worldOrNull ?: error("World $worldName ($worldUuid) is not loaded")
 

@@ -12,6 +12,7 @@ import dev.slne.surf.buildsystem.world.WarpConfig
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
+import java.io.File
 import java.nio.file.Files
 import java.time.OffsetDateTime
 import kotlin.io.path.isDirectory
@@ -89,7 +90,7 @@ object WorldConfigManager {
                 )
 
                 val config = configManager.config
-                val bWorld = createWorld(config)
+                val bWorld = createWorld(config, it.toFile())
 
                 WorldManager.cacheWorld(bWorld)
                 buildingWorldConfigManagers[config.buildingWorldId] =
@@ -102,7 +103,7 @@ object WorldConfigManager {
         plugin.logger.info("Finished loading Building Worlds. Total: ${WorldManager.buildingWorlds.size}")
     }
 
-    fun createWorld(config: BuildingWorldConfig) = BuildingWorld(
+    fun createWorld(config: BuildingWorldConfig, folder: File) = BuildingWorld(
         buildingWorldName = config.buildingWorldName,
         buildingWorldId = config.buildingWorldId,
         worldName = config.worldName,
@@ -134,6 +135,7 @@ object WorldConfigManager {
                 }
             )
         },
-        members = config.members
+        members = config.members,
+        folder = folder
     )
 }

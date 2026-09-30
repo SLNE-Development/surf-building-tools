@@ -2,6 +2,7 @@ package dev.slne.surf.buildsystem.gui.view.world
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.showTitle
 import dev.slne.surf.api.paper.inventory.framework.view.AbstractSurfView
 import dev.slne.surf.api.paper.inventory.framework.view.containerDefaults
 import dev.slne.surf.api.paper.inventory.framework.view.container.dsl.blockRow
@@ -11,8 +12,11 @@ import dev.slne.surf.api.paper.inventory.framework.view.state.get
 import dev.slne.surf.api.paper.inventory.framework.view.state.initialState
 import dev.slne.surf.api.paper.inventory.framework.view.surfView
 import dev.slne.surf.buildsystem.gui.view.*
+import dev.slne.surf.buildsystem.lobby.LobbyService
 import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.service.WorldManager
+import dev.slne.surf.buildsystem.util.appendBitmapTitle
+import dev.slne.surf.buildsystem.util.buildSecondary
 import dev.slne.surf.buildsystem.world.BuildingWorld
 
 val worldDeleteView: AbstractSurfView = surfView("Bau-Welt löschen") {
@@ -40,16 +44,24 @@ val worldDeleteView: AbstractSurfView = surfView("Bau-Welt löschen") {
             click.playGeneralClickSound()
 
             val targetWorld = worldState[click]
-            click.openForPlayer(centralMenu::class.java)
-            click.player.sendText {
-                appendInfoPrefix()
-                info("Die Bau-Welt wird gelöscht...")
+            val player = click.player
+            click.closeForPlayer()
+            player.showTitle {
+                title { appendBitmapTitle("Bau-Welt") }
+                subtitle { buildSecondary("Wird gelöscht...") }
+
+                times {
+                    fadeIn(10)
+                    stay(20 * 60)
+                    fadeOut(10)
+                }
             }
 
             plugin.launch {
                 val success = WorldManager.deleteBuildingWorld(targetWorld.buildingWorldId)
 
-                click.player.sendText {
+                player.clearTitle()
+                player.sendText {
                     if (success) {
                         appendSuccessPrefix()
                         success("Die Bau-Welt wurde erfolgreich gelöscht!")
@@ -58,6 +70,8 @@ val worldDeleteView: AbstractSurfView = surfView("Bau-Welt löschen") {
                         error("Die Bau-Welt konnte nicht gelöscht werden. Bitte versuche es später erneut.")
                     }
                 }
+
+                LobbyService.openMenuLater(player)
             }
         }
     }

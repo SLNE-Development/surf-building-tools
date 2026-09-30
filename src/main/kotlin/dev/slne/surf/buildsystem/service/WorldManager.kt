@@ -11,6 +11,7 @@ import dev.slne.surf.buildsystem.world.BuildingWorld
 import dev.slne.surf.buildsystem.world.Warp
 import dev.slne.surf.buildsystem.world.generator.BuildingWorldGenerator
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
 import org.bukkit.*
 import org.bukkit.block.BlockType
@@ -18,7 +19,6 @@ import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import java.time.OffsetDateTime
 import java.util.*
-import java.util.concurrent.CompletableFuture
 
 object WorldManager {
     private val buildingWorldsMap = mutableObject2ObjectMapOf<String, BuildingWorld>()
@@ -68,7 +68,8 @@ object WorldManager {
             status = BuildingWorld.Status.EDITING,
             createdAt = OffsetDateTime.now(),
             type = type,
-            displayItem = displayItem
+            displayItem = displayItem,
+            folder = world.worldFolder
         )
 
         buildingWorldsMap[bWorld.buildingWorldId] = bWorld
@@ -233,39 +234,36 @@ object WorldManager {
         return true
     }
 
-    suspend fun deleteBuildingWorld(buildingWorldId: String): Boolean =
-        withContext(Dispatchers.IO) {
-            val buildingWorld = buildingWorlds
-                .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return@withContext false
+    suspend fun deleteBuildingWorld(buildingWorldId: String): Boolean {
+        val buildingWorld = buildingWorldsMap.remove(buildingWorldId) ?: return false
+        val configManager = WorldConfigManager.invalidate(buildingWorldId)
 
-            val world = Bukkit.getWorld(buildingWorld.worldName)
-
+        val unloaded = withContext(plugin.globalRegionDispatcher) {
+            val world = buildingWorld.worldOrNull ?: return@withContext true
             val lobbySpawn = LobbyService.spawnLocation
 
-            val futures = mutableListOf<CompletableFuture<Boolean>>()
-
-            world?.players?.forEach {
-                futures.add(it.teleportAsync(lobbySpawn))
-            }
-
-            CompletableFuture.allOf(*futures.toTypedArray()).thenRun {
-                world?.let {
-                    if (!Bukkit.unloadWorld(it, false)) {
-                        error("Failed to unload world ${world.name}")
-                    }
-                }
-
-                if (!buildingWorld.folder.exists() || !buildingWorld.folder.isDirectory) {
-                    error("World folder for world ${buildingWorld.worldName} does not exist")
-                }
-
-                buildingWorld.folder.deleteRecursively()
-                removeGeneratorFromBukkitYml(buildingWorld.worldName)
-            }
-
-            WorldConfigManager.invalidate(buildingWorldId)
-            buildingWorldsMap.remove(buildingWorldId)
-
-            return@withContext true
+            world.players.map { it.teleportAsync(lobbySpawn) }.forEach { it.await() }
+            Bukkit.unloadWorld(world, false)
         }
+
+        if (!unloaded) {
+            plugin.logger.warning("Failed to unload world ${buildingWorld.worldName}, aborting deletion")
+            buildingWorldsMap[buildingWorldId] = buildingWorld
+            configManager?.let { WorldConfigManager.buildingWorldConfigManagers[buildingWorldId] = it }
+            return false
+        }
+
+        return withContext(Dispatchers.IO) {
+            val legacyFolder = Bukkit.getWorldContainer().resolve(buildingWorld.worldName)
+
+            for (folder in listOf(buildingWorld.folder, legacyFolder)) {
+                if (folder.isDirectory && !folder.deleteRecursively()) {
+                    plugin.logger.warning("Could not fully delete world folder ${folder.path}")
+                }
+            }
+            removeGeneratorFromBukkitYml(buildingWorld.worldName)
+
+            !buildingWorld.folder.exists()
+        }
+    }
 }
