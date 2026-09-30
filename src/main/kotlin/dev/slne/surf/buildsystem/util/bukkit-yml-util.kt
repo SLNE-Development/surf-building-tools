@@ -4,16 +4,14 @@ import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.world.generator.BuildingWorldGenerator
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
+import java.io.IOException
 
 private val GENERATOR_NAME = "${plugin.name}:${BuildingWorldGenerator::class.java.simpleName}"
 
 private val LEGACY_PLUGIN_NAMES = listOf("surf-building-tools")
 
-private fun bukkitYmlFile(): File {
-    val worldContainer = plugin.server.worldContainer
-    return worldContainer.parentFile?.let { File(it, "bukkit.yml") }
-        ?: File(worldContainer.absolutePath, "../bukkit.yml").canonicalFile
-}
+// bukkit.yml lives in the server's working directory, independent of the world container
+private fun bukkitYmlFile(): File = File("bukkit.yml").absoluteFile
 
 fun migrateGeneratorsInBukkitYml() {
     val bukkitYmlFile = bukkitYmlFile()
@@ -42,14 +40,14 @@ fun migrateGeneratorsInBukkitYml() {
 fun addGeneratorToBukkitYml(worldName: String) {
     val bukkitYmlFile = bukkitYmlFile()
 
-    if (!bukkitYmlFile.exists()) {
-        bukkitYmlFile.createNewFile()
+    try {
+        val config = YamlConfiguration.loadConfiguration(bukkitYmlFile)
+
+        config.set("worlds.$worldName.generator", GENERATOR_NAME)
+        config.save(bukkitYmlFile)
+    } catch (e: IOException) {
+        plugin.logger.warning("Could not write generator for '$worldName' to ${bukkitYmlFile.path}: ${e.message}")
     }
-
-    val config = YamlConfiguration.loadConfiguration(bukkitYmlFile)
-
-    config.set("worlds.$worldName.generator", GENERATOR_NAME)
-    config.save(bukkitYmlFile)
 }
 
 fun removeGeneratorFromBukkitYml(worldName: String) {

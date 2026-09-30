@@ -2,6 +2,7 @@ package dev.slne.surf.buildsystem.gui.view.world
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.showTitle
 import dev.slne.surf.api.paper.builder.buildItem
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -22,6 +23,7 @@ import dev.slne.surf.buildsystem.gui.dialog.showBuildingWorldCreateNameDialog
 import dev.slne.surf.buildsystem.gui.view.*
 import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.service.WorldManager
+import dev.slne.surf.buildsystem.util.appendBitmapTitle
 import dev.slne.surf.buildsystem.util.buildPrimary
 import dev.slne.surf.buildsystem.util.buildSecondary
 import dev.slne.surf.buildsystem.util.translatable
@@ -111,10 +113,16 @@ val worldCreateView: AbstractSurfView = surfView("Bau-Welt erstellen") {
                 }
 
                 val player = click.player
-                click.openForPlayer(centralMenu::class.java)
-                player.sendText {
-                    appendInfoPrefix()
-                    info("Die Bau-Welt wird erstellt...")
+                click.closeForPlayer()
+                player.showTitle {
+                    title { appendBitmapTitle("Bau-Welt") }
+                    subtitle { buildSecondary("Wird erstellt...") }
+
+                    times {
+                        fadeIn(10)
+                        stay(20 * 60)
+                        fadeOut(10)
+                    }
                 }
 
                 plugin.launch {
@@ -126,14 +134,23 @@ val worldCreateView: AbstractSurfView = surfView("Bau-Welt erstellen") {
                         displayItem
                     )
 
-                    player.sendText {
-                        if (world == null) {
+                    player.clearTitle()
+
+                    if (world == null) {
+                        player.sendText {
                             appendErrorPrefix()
                             error("Die Bau-Welt konnte nicht erstellt werden. Bitte versuche es später erneut.")
-                        } else {
-                            appendSuccessPrefix()
-                            success("Die Bau-Welt wurde erfolgreich erstellt!")
                         }
+                        return@launch
+                    }
+
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Die Bau-Welt wurde erfolgreich erstellt!")
+                    }
+
+                    if (player.isOnline) {
+                        WorldManager.joinAndOrLoadBuildingWorld(player, world.buildingWorldId)
                     }
                 }
             }
