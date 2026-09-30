@@ -66,6 +66,7 @@ object LobbyService {
         player.teleportAsync(spawnLocation)
 
     fun prepare(player: Player) {
+        player.gameMode = GameMode.ADVENTURE
         player.inventory.clear()
         player.inventory.heldItemSlot = 4
         player.inventory.setItem(4, plugin.menuItem)

@@ -14,6 +14,7 @@ import dev.slne.surf.buildsystem.util.buildPrimary
 import dev.slne.surf.buildsystem.util.buildSecondary
 import dev.slne.surf.buildsystem.util.isBuildingWorld
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -39,6 +40,7 @@ object PlayerWorldListener : Listener {
         }
 
         if (toWorld.isBuildingWorld()) {
+            player.gameMode = GameMode.CREATIVE
             showScoreboard(player)
 
             player.currentBuildingWorld()?.let {
