@@ -1,3 +1,5 @@
+rootProject.name = "surf-build-system"
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
