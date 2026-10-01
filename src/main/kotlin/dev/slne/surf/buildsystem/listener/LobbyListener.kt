@@ -10,20 +10,10 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 
 object LobbyListener : Listener {
-
-    @EventHandler
-    fun onInventoryClose(event: InventoryCloseEvent) {
-        val player = event.player as? Player ?: return
-        if (event.reason != InventoryCloseEvent.Reason.PLAYER) return
-        if (!LobbyService.isInLobby(player)) return
-
-        LobbyService.openMenuLater(player)
-    }
 
     @EventHandler
     fun onMove(event: PlayerMoveEvent) {

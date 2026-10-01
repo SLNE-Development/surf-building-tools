@@ -1,18 +1,15 @@
 package dev.slne.surf.buildsystem.gui.view
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.util.random
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
-import dev.slne.surf.api.paper.inventory.framework.view.AbstractSurfView
+import dev.slne.surf.api.paper.inventory.framework.view.*
 import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIcon
 import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIconColor
 import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIconType
-import dev.slne.surf.api.paper.inventory.framework.view.layoutTarget
-import dev.slne.surf.api.paper.inventory.framework.view.onFirstRender
-import dev.slne.surf.api.paper.inventory.framework.view.paginatedSurfView
 import dev.slne.surf.api.paper.inventory.framework.view.pagination.pagination
-import dev.slne.surf.api.paper.inventory.framework.view.settings
 import dev.slne.surf.api.paper.inventory.framework.view.settings.PaginationViewRows
 import dev.slne.surf.buildsystem.gui.GuiState
 import dev.slne.surf.buildsystem.gui.dialog.searchWorldDialog
@@ -45,7 +42,7 @@ val centralMenu: AbstractSurfView = paginatedSurfView("Bau-Welten") {
             withItem(createWorldItem(world, true)).onClick { context ->
                 context.playGeneralClickSound()
 
-                if (context.player.canManageWarps(world) && context.isLeftClick) {
+                if (context.player.canManageWarps(world) && context.isRightClick) {
                     context.openForPlayer(worldView::class.java, mapOf("world" to world))
                     return@onClick
                 }
@@ -83,13 +80,25 @@ val centralMenu: AbstractSurfView = paginatedSurfView("Bau-Welten") {
             }
 
             context.closeForPlayer()
-            context.player.showDialog(searchWorldDialog(context.player.guiState().currentSearch ?: ""))
+            context.player.showDialog(
+                searchWorldDialog(
+                    context.player.guiState().currentSearch ?: ""
+                )
+            )
         }
 
         if (!LobbyService.isInLobby(player)) {
             slot(6, 8, closeItem).onClick { context ->
                 context.playGeneralClickSound()
                 context.closeForPlayer()
+            }
+        } else {
+            slot(6, 8, leaveServerItem).onClick { context ->
+                context.playGeneralClickSound()
+                context.closeForPlayer()
+                context.player.kick(buildText {
+                    info("Du hast den Bau-Server verlassen.")
+                })
             }
         }
 
@@ -155,6 +164,18 @@ private val createItem
         buildLore {
             emptyLine()
             hint("Klicke, um eine neue Bau-Welt zu erstellen.")
+        }
+    }
+
+private val leaveServerItem
+    get() = ViewIcon(ViewIconType.CROSS, ViewIconColor.RED).build {
+        displayName {
+            error("Server verlassen")
+        }
+
+        buildLore {
+            emptyLine()
+            hint("Klicke, um den Server zu verlassen.")
         }
     }
 

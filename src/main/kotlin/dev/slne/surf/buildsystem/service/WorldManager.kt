@@ -17,8 +17,13 @@ import org.bukkit.*
 import org.bukkit.block.BlockType
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
+import java.nio.file.Path
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.name
 
 object WorldManager {
     private val buildingWorldsMap = mutableObject2ObjectMapOf<String, BuildingWorld>()
@@ -69,6 +74,56 @@ object WorldManager {
             createdAt = OffsetDateTime.now(),
             type = type,
             displayItem = displayItem,
+            folder = world.worldFolder
+        )
+
+        buildingWorldsMap[bWorld.buildingWorldId] = bWorld
+
+        WorldConfigManager.saveWorld(bWorld, world)
+        return@withContext bWorld
+    }
+
+    private val VANILLA_DIMENSIONS = setOf("overworld", "the_nether", "the_end")
+
+    val importableWorldsFolder: Path
+        get() = Bukkit.getServer().levelDirectory.resolve("dimensions").resolve("minecraft")
+
+    fun findImportableWorldFolders(): List<String> {
+        val folder = importableWorldsFolder
+        if (!folder.isDirectory()) return emptyList()
+
+        return folder.listDirectoryEntries()
+            .filter { it.isDirectory() && !it.resolve("building-world-config.yml").exists() }
+            .map { it.name }
+            .filter { it !in VANILLA_DIMENSIONS && !LobbyService.isLobbyKey(NamespacedKey.minecraft(it)) }
+            .sorted()
+    }
+
+    suspend fun importWorld(
+        folderName: String,
+        authorName: String,
+        authorUuid: UUID
+    ): BuildingWorld? = withContext(plugin.globalRegionDispatcher) {
+        val key = NamespacedKey.fromString("minecraft:$folderName") ?: return@withContext null
+
+        val world = Bukkit.getWorld(key)
+            ?: WorldCreator.ofKey(key).createWorld()
+            ?: return@withContext null
+
+        if (findBuildingWorldByWorld(world) != null) {
+            return@withContext null
+        }
+
+        val bWorld = BuildingWorld(
+            buildingWorldName = folderName,
+            buildingWorldId = generateBuildingWorldId(),
+            worldName = world.name,
+            worldUuid = world.uid,
+            authorName = authorName,
+            authorUuid = authorUuid,
+            status = BuildingWorld.Status.EDITING,
+            createdAt = OffsetDateTime.now(),
+            type = BuildingWorld.Type.FLAT,
             folder = world.worldFolder
         )
 

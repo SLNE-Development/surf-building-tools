@@ -1,6 +1,7 @@
 package dev.slne.surf.buildsystem.command
 
 import com.github.shynixn.mccoroutine.folia.launch
+import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.kotlindsl.*
 import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
@@ -178,6 +179,59 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
                     player.sendText {
                         appendErrorPrefix()
                         error("Die Bau Welt ist bereits als 'Veröffentlicht' markiert!")
+                    }
+                }
+            }
+        }
+    }
+
+    literalArgument("import") {
+        withPermission(PermissionRegistry.COMMAND_IMPORT)
+
+        stringArgument("folder") {
+            replaceSuggestions(ArgumentSuggestions.stringCollection {
+                WorldManager.findImportableWorldFolders()
+            })
+
+            playerExecutorSuspend { player, args ->
+                val folder: String by args
+
+                if (folder !in WorldManager.findImportableWorldFolders()) {
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Der Ordner ")
+                        variableValue(folder)
+                        error(" existiert nicht oder wurde bereits importiert!")
+                    }
+                    return@playerExecutorSuspend
+                }
+
+                val bWorld = WorldManager.importWorld(folder, player.name, player.uniqueId)
+
+                if (bWorld != null) {
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Die Welt ")
+                        variableValue(folder)
+                        success(" wurde erfolgreich als Bau-Welt importiert!")
+                        append {
+                            spacer(" [")
+                            success("Beitreten")
+                            spacer("]")
+                            clickEvent(ClickEvent.callback {
+                                plugin.launch {
+                                    WorldManager.joinAndOrLoadBuildingWorld(
+                                        player,
+                                        bWorld.buildingWorldId
+                                    )
+                                }
+                            })
+                        }
+                    }
+                } else {
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Es ist ein Fehler beim Importieren der Welt aufgetreten!")
                     }
                 }
             }

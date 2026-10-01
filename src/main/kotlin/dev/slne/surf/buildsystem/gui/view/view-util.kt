@@ -91,20 +91,21 @@ fun LoreBuilder.action(key: String, text: String) = line {
     buildUseless(" $text".toSmallCaps())
 }
 
-fun LoreBuilder.selection(entries: List<String>, selected: Int) = entries.forEachIndexed { index, entry ->
-    line {
-        if (index == selected) {
-            appendSpace()
-            spacer("-")
-            appendSpace()
-            buildHighlight(entry)
-        } else {
-            spacer("-")
-            appendSpace()
-            white(entry)
+fun LoreBuilder.selection(entries: List<String>, selected: Int) =
+    entries.forEachIndexed { index, entry ->
+        line {
+            if (index == selected) {
+                appendSpace()
+                spacer("-")
+                appendSpace()
+                buildHighlight(entry)
+            } else {
+                spacer("-")
+                appendSpace()
+                white(entry)
+            }
         }
     }
-}
 
 fun statusIconColor(status: BuildingWorld.Status) = when (status) {
     BuildingWorld.Status.UNKNOWN -> ViewIconColor.WHITE
@@ -155,8 +156,8 @@ fun createWorldItem(buildingWorld: BuildingWorld, joinOrEdit: Boolean = false) =
 
             if (joinOrEdit) {
                 section("Aktionen")
-                action("Linksklick", "zum Bearbeiten (nur Builder)")
-                action("Rechtsklick", "zum Betreten")
+                action("Rechtsklick", "zum Bearbeiten (nur Builder)")
+                action("Linksklick", "zum Betreten")
             }
 
             emptyLine()

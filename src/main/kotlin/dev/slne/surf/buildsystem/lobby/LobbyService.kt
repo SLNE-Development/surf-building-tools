@@ -58,7 +58,9 @@ object LobbyService {
         plugin.logger.info("Lobby world '${world.name}' loaded.")
     }
 
-    fun isLobby(world: World) = world.key == lobbyKey
+    fun isLobby(world: World) = isLobbyKey(world.key)
+
+    fun isLobbyKey(key: NamespacedKey) = key == lobbyKey
 
     fun isInLobby(player: Player) = isLobby(player.world)
 
