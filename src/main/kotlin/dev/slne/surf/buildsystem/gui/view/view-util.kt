@@ -156,8 +156,8 @@ fun createWorldItem(buildingWorld: BuildingWorld, joinOrEdit: Boolean = false) =
 
             if (joinOrEdit) {
                 section("Aktionen")
-                action("Rechtsklick", "zum Bearbeiten (nur Builder)")
                 action("Linksklick", "zum Betreten")
+                action("Rechtsklick", "zum Bearbeiten (nur Builder)")
             }
 
             emptyLine()
