@@ -13,6 +13,7 @@ import dev.slne.surf.api.paper.inventory.framework.view.state.initialState
 import dev.slne.surf.api.paper.inventory.framework.view.surfView
 import dev.slne.surf.buildsystem.gui.view.*
 import dev.slne.surf.buildsystem.lobby.LobbyService
+import dev.slne.surf.buildsystem.permission.PermissionRegistry
 import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.service.WorldManager
 import dev.slne.surf.buildsystem.util.appendBitmapTitle
@@ -41,6 +42,16 @@ val worldDeleteView: AbstractSurfView = surfView("Bau-Welt löschen") {
         }
 
         slot(2, 6, confirmItem("Bau-Welt löschen")).onClick { click ->
+            if (!click.player.hasPermission(PermissionRegistry.WORLD_DELETE)) {
+                click.playLockedSound()
+                click.player.sendText {
+                    appendErrorPrefix()
+                    error("Du hast keine Berechtigung, um diese Aktion durchzuführen!")
+                }
+                click.closeForPlayer()
+                return@onClick
+            }
+
             click.playGeneralClickSound()
 
             val targetWorld = worldState[click]

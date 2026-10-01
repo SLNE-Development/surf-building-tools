@@ -24,6 +24,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("create") {
+        withPermission(PermissionRegistry.COMMAND_BUILDING_WORLD_CREATE)
+
         stringArgument("name") {
             playerExecutorSuspend { player, args ->
                 val name: String by args
@@ -63,6 +65,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("join") {
+        withPermission(PermissionRegistry.COMMAND_BUILDING_WORLD_JOIN)
+
         buildingWorldArgument("bWorld") {
             playerExecutorSuspend { player, args ->
                 val bWorld: BuildingWorld by args
@@ -86,6 +90,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("delete") {
+        withPermission(PermissionRegistry.WORLD_DELETE)
+
         buildingWorldArgument("bWorld") {
             playerExecutor { player, args ->
                 val bWorld: BuildingWorld by args
@@ -110,6 +116,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("load") {
+        withPermission(PermissionRegistry.COMMAND_BUILDING_WORLD_LOAD)
+
         buildingWorldArgument("bWorld") {
             playerExecutorSuspend { player, args ->
                 val bWorld: BuildingWorld by args
@@ -134,6 +142,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("done") {
+        withPermission(PermissionRegistry.COMMAND_BUILDING_WORLD_DONE)
+
         buildingWorldArgument("bWorld") {
             playerExecutor { player, args ->
                 val bWorld: BuildingWorld by args
@@ -160,6 +170,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("published") {
+        withPermission(PermissionRegistry.COMMAND_BUILDING_WORLD_PUBLISHED)
+
         buildingWorldArgument("bWorld") {
             playerExecutor { player, args ->
                 val bWorld: BuildingWorld by args
@@ -186,7 +198,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("import") {
-        withPermission(PermissionRegistry.COMMAND_IMPORT)
+        withPermission(PermissionRegistry.COMMAND_BUILDING_WORLD_IMPORT)
+
 
         stringArgument("folder") {
             replaceSuggestions(ArgumentSuggestions.stringCollection {
@@ -239,6 +252,8 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
     }
 
     literalArgument("lobby") {
+        withPermission(PermissionRegistry.COMMAND_BUILDING_WORLD_LOBBY)
+
         playerExecutor { player, _ ->
             LobbyService.teleportToLobby(player).thenRun {
                 player.sendText {

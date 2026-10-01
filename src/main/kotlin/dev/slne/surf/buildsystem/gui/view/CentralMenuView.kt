@@ -1,7 +1,6 @@
 package dev.slne.surf.buildsystem.gui.view
 
 import com.github.shynixn.mccoroutine.folia.launch
-import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.core.util.random
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
@@ -87,21 +86,6 @@ val centralMenu: AbstractSurfView = paginatedSurfView("Bau-Welten") {
             )
         }
 
-        if (!LobbyService.isInLobby(player)) {
-            slot(6, 8, closeItem).onClick { context ->
-                context.playGeneralClickSound()
-                context.closeForPlayer()
-            }
-        } else {
-            slot(6, 8, leaveServerItem).onClick { context ->
-                context.playGeneralClickSound()
-                context.closeForPlayer()
-                context.player.kick(buildText {
-                    info("Du hast den Bau-Server verlassen.")
-                })
-            }
-        }
-
         slot(6, 9, createItem).onClick { context ->
             context.playGeneralClickSound()
 
@@ -164,18 +148,6 @@ private val createItem
         buildLore {
             emptyLine()
             hint("Klicke, um eine neue Bau-Welt zu erstellen.")
-        }
-    }
-
-private val leaveServerItem
-    get() = ViewIcon(ViewIconType.CROSS, ViewIconColor.RED).build {
-        displayName {
-            error("Server verlassen")
-        }
-
-        buildLore {
-            emptyLine()
-            hint("Klicke, um den Server zu verlassen.")
         }
     }
 
