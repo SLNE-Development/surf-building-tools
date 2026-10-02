@@ -9,7 +9,7 @@ data class GuiState(
     val currentSort: Sorting?,
     val currentSearch: String?
 ) {
-    val currentSortOrDefault get() = currentSort ?: Sorting.CREATED_AT_DESC
+    val currentSortOrDefault get() = currentSort ?: Sorting.STATUS
 
     companion object {
         val sortingMap = mutableObject2ObjectMapOf<UUID, Sorting>()
