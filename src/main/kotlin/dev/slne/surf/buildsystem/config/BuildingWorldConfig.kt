@@ -14,7 +14,7 @@ data class BuildingWorldConfig(
     var worldUuid: UUID = UUID.randomUUID(),
     var authorName: String = "???",
     var authorUuid: UUID = UUID.randomUUID(),
-    var status: String = BuildingWorld.Status.UNKNOWN.name,
+    var status: String = BuildingWorld.Status.EDITING.name,
     var createdAtString: String = OffsetDateTime.MIN.toString(),
     var worldType: String = BuildingWorld.Type.FLAT.name,
     var displayItemName: String = "GRASS_BLOCK",

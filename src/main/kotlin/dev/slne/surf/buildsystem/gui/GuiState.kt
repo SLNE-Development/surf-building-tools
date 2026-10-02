@@ -28,11 +28,15 @@ data class GuiState(
         }
     }
 
-    enum class Sorting(val label: String, val sortList: List<BuildingWorld>.() -> List<BuildingWorld>) {
-        CREATOR("Ersteller", { sortedBy { it.authorName } }),
-        MEMBER_COUNT("Mitglieder Anzahl", { sortedByDescending { it.members.size } }),
+    enum class Sorting(
+        val label: String,
+        val sortList: List<BuildingWorld>.() -> List<BuildingWorld>
+    ) {
+        STATUS("Status", { sortedByDescending { it.status.ordinal } }),
         CREATED_AT_DESC("Erstellt am: Absteigend", { sortedByDescending { it.createdAt } }),
         CREATED_AT_ASC("Erstellt am: Aufsteigend", { sortedBy { it.createdAt } }),
+        CREATOR("Ersteller", { sortedBy { it.authorName } }),
+        MEMBER_COUNT("Mitglieder Anzahl", { sortedByDescending { it.members.size } }),
         NAME("Weltenname", { sortedBy { it.buildingWorldName } });
 
         fun previous(): Sorting = entries[(ordinal - 1 + entries.size) % entries.size]
