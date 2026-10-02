@@ -32,7 +32,9 @@ data class GuiState(
         val label: String,
         val sortList: List<BuildingWorld>.() -> List<BuildingWorld>
     ) {
-        STATUS("Status", { sortedByDescending { it.status.ordinal } }),
+        STATUS(
+            "Status",
+            { sortedWith(compareByDescending<BuildingWorld> { it.status.ordinal }.thenByDescending { it.createdAt }) }),
         CREATED_AT_DESC("Erstellt am: Absteigend", { sortedByDescending { it.createdAt } }),
         CREATED_AT_ASC("Erstellt am: Aufsteigend", { sortedBy { it.createdAt } }),
         CREATOR("Ersteller", { sortedBy { it.authorName } }),
