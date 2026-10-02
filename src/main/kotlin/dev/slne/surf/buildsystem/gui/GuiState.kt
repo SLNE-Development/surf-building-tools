@@ -34,7 +34,7 @@ data class GuiState(
     ) {
         STATUS(
             "Status",
-            { sortedWith(compareByDescending<BuildingWorld> { it.status.ordinal }.thenByDescending { it.createdAt }) }),
+            { sortedWith(compareBy<BuildingWorld> { it.status.ordinal }.thenByDescending { it.createdAt }) }),
         CREATED_AT_DESC("Erstellt am: Absteigend", { sortedByDescending { it.createdAt } }),
         CREATED_AT_ASC("Erstellt am: Aufsteigend", { sortedBy { it.createdAt } }),
         CREATOR("Ersteller", { sortedBy { it.authorName } }),
