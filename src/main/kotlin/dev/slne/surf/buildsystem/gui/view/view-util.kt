@@ -108,7 +108,6 @@ fun LoreBuilder.selection(entries: List<String>, selected: Int) =
     }
 
 fun statusIconColor(status: BuildingWorld.Status) = when (status) {
-    BuildingWorld.Status.UNKNOWN -> ViewIconColor.WHITE
     BuildingWorld.Status.EDITING -> ViewIconColor.YELLOW
     BuildingWorld.Status.DONE -> ViewIconColor.BLUE
     BuildingWorld.Status.PUBLISHED -> ViewIconColor.GREEN
@@ -123,11 +122,8 @@ fun createWorldItem(buildingWorld: BuildingWorld, joinOrEdit: Boolean = false) =
         buildLore {
             section("Status")
             line {
-                if (buildingWorld.status.allowBuild) {
-                    success("✔ ")
-                } else {
-                    error("✘ ")
-                }
+                append(buildingWorld.status.icon)
+                appendSpace()
                 buildSecondary(buildingWorld.status.displayName)
             }
 

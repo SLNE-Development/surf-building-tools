@@ -1,5 +1,6 @@
 package dev.slne.surf.buildsystem.world
 
+import dev.slne.surf.api.core.messages.builder.SurfComponentBuilder
 import dev.slne.surf.api.core.util.mutableObjectSetOf
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -32,30 +33,34 @@ data class BuildingWorld(
         val displayName: String,
         val material: Material,
         val allowBuild: Boolean,
+        val icon: SurfComponentBuilder.() -> Unit,
         val description: String
     ) {
-        UNKNOWN(
-            "Unbekannt",
-            Material.LIGHT_GRAY_CANDLE,
-            false,
-            "Der Status der Bau-Welt ist unbekannt. Es könnte ein Fehler vorliegen."
-        ),
         EDITING(
             "In Bearbeitung",
             Material.YELLOW_CANDLE,
             true,
+            {
+                success("🖋")
+            },
             "Die Bau-Welt befindet sich in Bearbeitung. Builder/Mitglieder können beitreten und bauen."
         ),
         DONE(
             "Fertiggestellt",
             Material.LIGHT_BLUE_CANDLE,
             false,
+            {
+                success("🕛")
+            },
             "Die Bau-Welt ist fertiggestellt. Builder/Mitglieder können beitreten, aber nicht mehr bauen."
         ),
         PUBLISHED(
             "Veröffentlicht",
             Material.LIME_CANDLE,
             false,
+            {
+                success("✔")
+            },
             "Die Bau-Welt ist veröffentlicht. Builder/Mitglieder können beitreten, aber nicht mehr bauen."
         );
 
