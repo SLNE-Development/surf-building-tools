@@ -1,8 +1,10 @@
 package dev.slne.surf.buildsystem.util
 
+import dev.slne.surf.buildsystem.permission.PermissionRegistry
 import dev.slne.surf.buildsystem.service.WorldManager
 import dev.slne.surf.buildsystem.world.BuildingWorld
 import org.bukkit.World
+import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 
@@ -60,5 +62,7 @@ fun World.teleportToHighestSpawn(player: Player): CompletableFuture<Boolean> {
 
 val World.buildingWorld get() = WorldManager.getBuildingWorldByWorld(this)
 
-
-
+fun HumanEntity.canAccessBuildingWorld(buildingWorld: BuildingWorld) =
+    hasPermission(PermissionRegistry.BUILDER)
+            || uniqueId == buildingWorld.authorUuid
+            || uniqueId in buildingWorld.members

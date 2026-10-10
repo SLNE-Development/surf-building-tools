@@ -228,5 +228,9 @@ fun Player.canModifyBuildingWorld() = this.hasPermission(
     PermissionRegistry.BUILDER
 )
 
+fun Player.canCreateBuildingWorld() = this.hasPermission(
+    PermissionRegistry.WORLD_CREATE
+)
+
 fun Player.canManageWarps(buildingWorld: BuildingWorld) =
     canModifyBuildingWorld() || uniqueId in buildingWorld.members

@@ -2,9 +2,11 @@ package dev.slne.surf.buildsystem.service
 
 import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
 import dev.slne.surf.api.core.util.mutableObject2ObjectMapOf
+import dev.slne.surf.buildsystem.listener.BuildingWorldAccessListener
 import dev.slne.surf.buildsystem.lobby.LobbyService
 import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.util.addGeneratorToBukkitYml
+import dev.slne.surf.buildsystem.util.canAccessBuildingWorld
 import dev.slne.surf.buildsystem.util.generateBuildingWorldId
 import dev.slne.surf.buildsystem.util.removeGeneratorFromBukkitYml
 import dev.slne.surf.buildsystem.world.BuildingWorld
@@ -206,6 +208,14 @@ object WorldManager {
     fun removeMember(buildingWorld: BuildingWorld, memberUuid: UUID): BuildingWorld {
         val updated = buildingWorld.copy(members = buildingWorld.members - memberUuid)
         saveBuildingWorld(updated)
+
+        Bukkit.getPlayer(memberUuid)
+            ?.takeIf { it.world.uid == updated.worldUuid && !it.canAccessBuildingWorld(updated) }
+            ?.let {
+                BuildingWorldAccessListener.sendNoAccess(it)
+                LobbyService.teleportToLobby(it)
+            }
+
         return updated
     }
 
@@ -231,6 +241,11 @@ object WorldManager {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
 
+        if (!player.canAccessBuildingWorld(buildingWorld)) {
+            (player as? Player)?.let { BuildingWorldAccessListener.sendNoAccess(it) }
+            return false
+        }
+
         val world = Bukkit.getWorld(buildingWorld.worldName) ?: run {
             val worldCreator = WorldCreator.name(buildingWorld.worldName)
             if (buildingWorld.type == BuildingWorld.Type.VOID) {
@@ -254,6 +269,11 @@ object WorldManager {
     ): Boolean {
         val buildingWorld = buildingWorlds
             .firstOrNull { it.buildingWorldId == buildingWorldId } ?: return false
+
+        if (!player.canAccessBuildingWorld(buildingWorld)) {
+            BuildingWorldAccessListener.sendNoAccess(player)
+            return false
+        }
 
         val world = Bukkit.getWorld(buildingWorld.worldName) ?: run {
             val worldCreator = WorldCreator.name(buildingWorld.worldName)

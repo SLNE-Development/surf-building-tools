@@ -8,10 +8,12 @@ import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
 import dev.slne.surf.api.paper.inventory.framework.open
 import dev.slne.surf.buildsystem.command.argument.buildingWorldArgument
 import dev.slne.surf.buildsystem.gui.view.centralMenu
+import dev.slne.surf.buildsystem.listener.BuildingWorldAccessListener
 import dev.slne.surf.buildsystem.lobby.LobbyService
 import dev.slne.surf.buildsystem.permission.PermissionRegistry
 import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.service.WorldManager
+import dev.slne.surf.buildsystem.util.canAccessBuildingWorld
 import dev.slne.surf.buildsystem.world.BuildingWorld
 import net.kyori.adventure.text.event.ClickEvent
 
@@ -70,6 +72,11 @@ fun buildingWorldCommand() = commandTree("buildingworld") {
         buildingWorldArgument("bWorld") {
             playerExecutorSuspend { player, args ->
                 val bWorld: BuildingWorld by args
+
+                if (!player.canAccessBuildingWorld(bWorld)) {
+                    BuildingWorldAccessListener.sendNoAccess(player)
+                    return@playerExecutorSuspend
+                }
 
                 val success =
                     WorldManager.joinAndOrLoadBuildingWorld(player, bWorld.buildingWorldId)

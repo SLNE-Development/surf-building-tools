@@ -1,8 +1,8 @@
 package dev.slne.surf.buildsystem.listener
 
 import dev.slne.surf.api.core.messages.adventure.sendText
-import dev.slne.surf.buildsystem.permission.PermissionRegistry
 import dev.slne.surf.buildsystem.util.buildingWorld
+import dev.slne.surf.buildsystem.util.canAccessBuildingWorld
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -27,30 +27,34 @@ object PlayerWorldStatusListener : Listener {
     private const val MESSAGE_COOLDOWN_MILLIS = 1000L
     private val lastMessage = ConcurrentHashMap<UUID, Long>()
 
+    fun buildDeniedReason(world: World, player: Player): String? {
+        val buildingWorld = world.buildingWorld ?: return null
+
+        if (!buildingWorld.status.allowBuild) {
+            return "Bauen ist in dieser Welt deaktiviert."
+        }
+
+        if (!player.canAccessBuildingWorld(buildingWorld)) {
+            return "Du hast keine Berechtigung, in dieser Welt zu bauen."
+        }
+
+        return null
+    }
+
     private fun canBuildInWorld(
         event: Cancellable,
         world: World,
         player: Player,
         notify: Boolean = true
     ): Boolean {
-        val buildingWorld = world.buildingWorld ?: return true
+        val reason = buildDeniedReason(world, player) ?: return true
 
-        if (!buildingWorld.status.allowBuild) {
-            event.isCancelled = true
-            if (notify) sendDenied(player, "Bauen ist in dieser Welt deaktiviert.")
-            return false
-        }
-
-        if (!player.hasPermission(PermissionRegistry.BUILDER) && player.uniqueId !in buildingWorld.members) {
-            event.isCancelled = true
-            if (notify) sendDenied(player, "Du hast keine Berechtigung, in dieser Welt zu bauen.")
-            return false
-        }
-
-        return true
+        event.isCancelled = true
+        if (notify) sendDenied(player, reason)
+        return false
     }
 
-    private fun sendDenied(player: Player, message: String) {
+    fun sendDenied(player: Player, message: String) {
         val now = System.currentTimeMillis()
         val last = lastMessage[player.uniqueId]
         if (last != null && now - last < MESSAGE_COOLDOWN_MILLIS) return

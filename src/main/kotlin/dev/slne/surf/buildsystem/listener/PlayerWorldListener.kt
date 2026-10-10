@@ -12,6 +12,8 @@ import dev.slne.surf.buildsystem.util.currentBuildingWorld
 import dev.slne.surf.buildsystem.util.appendBitmapTitle
 import dev.slne.surf.buildsystem.util.buildPrimary
 import dev.slne.surf.buildsystem.util.buildSecondary
+import dev.slne.surf.buildsystem.util.buildingWorld
+import dev.slne.surf.buildsystem.util.canAccessBuildingWorld
 import dev.slne.surf.buildsystem.util.isBuildingWorld
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.GameMode
@@ -31,6 +33,9 @@ object PlayerWorldListener : Listener {
         val toWorld = event.player.world
 
         hideScoreboard(player)
+        if (LobbyService.isLobby(event.from)) {
+            LobbyService.hideNoAccessTitle(player)
+        }
         WorldManager.buildingWorlds.forEach { it.currentPlayers.remove(player.uniqueId) }
 
         if (event.from.isBuildingWorld()) {
@@ -39,7 +44,14 @@ object PlayerWorldListener : Listener {
             }
         }
 
-        if (toWorld.isBuildingWorld()) {
+        val toBuildingWorld = toWorld.buildingWorld
+        if (toBuildingWorld != null && !player.canAccessBuildingWorld(toBuildingWorld)) {
+            BuildingWorldAccessListener.sendNoAccess(player)
+            LobbyService.teleportToLobby(player)
+            return
+        }
+
+        if (toBuildingWorld != null) {
             player.gameMode = GameMode.CREATIVE
             showScoreboard(player)
 

@@ -1,18 +1,26 @@
 package dev.slne.surf.buildsystem.lobby
 
 import com.github.shynixn.mccoroutine.folia.globalRegionDispatcher
+import dev.slne.surf.api.core.font.toSmallCaps
+import dev.slne.surf.api.core.messages.adventure.buildText
 import dev.slne.surf.api.paper.inventory.framework.open
 import dev.slne.surf.buildsystem.buildingConfig
 import dev.slne.surf.buildsystem.gui.view.centralMenu
+import dev.slne.surf.buildsystem.permission.PermissionRegistry
 import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.world.generator.BuildingWorldGenerator
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import kotlinx.coroutines.withContext
+import net.kyori.adventure.title.Title
 import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.BlockType
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
+import java.time.Duration
+import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 object LobbyService {
     private val lobbyConfig get() = buildingConfig.lobby
@@ -71,21 +79,72 @@ object LobbyService {
         player.gameMode = GameMode.ADVENTURE
         player.inventory.clear()
         player.inventory.heldItemSlot = 4
-        player.inventory.setItem(4, plugin.menuItem)
         player.health = player.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
         player.foodLevel = 20
         player.saturation = 20f
         player.fallDistance = 0f
 
-        openMenuLater(player)
+        if (player.hasMenuAccess()) {
+            player.inventory.setItem(4, plugin.menuItem)
+            openMenuLater(player)
+        } else {
+            showNoAccessTitleLater(player)
+        }
     }
+
+    fun Player.hasMenuAccess() = hasPermission(PermissionRegistry.COMMAND)
 
     fun openMenuLater(player: Player, delayTicks: Long = 2) {
         player.scheduler.runDelayed(plugin, {
             if (!player.isOnline || !isInLobby(player)) return@runDelayed
+            if (!player.hasMenuAccess()) return@runDelayed
             if (player.openInventory.topInventory.type != InventoryType.CRAFTING) return@runDelayed
 
             centralMenu.open(player)
         }, null, delayTicks)
+    }
+
+    private const val NO_ACCESS_TITLE_INTERVAL_TICKS = 40L
+    private val noAccessTitleTasks = ConcurrentHashMap<UUID, ScheduledTask>()
+
+    private val noAccessTitle
+        get() = Title.title(
+            buildText {
+                error("Kein Zugriff")
+            },
+            buildText {
+                error("Du hast keinen Zugriff auf die Bau-Welten.".toSmallCaps())
+            },
+            Title.Times.times(Duration.ZERO, Duration.ofSeconds(5), Duration.ofMillis(500))
+        )
+
+    fun showNoAccessTitleLater(player: Player, delayTicks: Long = 2) {
+        noAccessTitleTasks.remove(player.uniqueId)?.cancel()
+
+        val task = player.scheduler.runAtFixedRate(
+            plugin,
+            { task ->
+                if (!player.isOnline || !isInLobby(player) || player.hasMenuAccess()) {
+                    task.cancel()
+                    noAccessTitleTasks.remove(player.uniqueId, task)
+                    player.clearTitle()
+                    return@runAtFixedRate
+                }
+
+                player.showTitle(noAccessTitle)
+            },
+            { noAccessTitleTasks.remove(player.uniqueId) },
+            delayTicks,
+            NO_ACCESS_TITLE_INTERVAL_TICKS
+        )
+
+        task?.let { noAccessTitleTasks[player.uniqueId] = it }
+    }
+
+    fun hideNoAccessTitle(player: Player) {
+        val task = noAccessTitleTasks.remove(player.uniqueId) ?: return
+
+        task.cancel()
+        player.clearTitle()
     }
 }

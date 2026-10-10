@@ -107,7 +107,7 @@ val worldCreateView: AbstractSurfView = surfView("Bau-Welt erstellen") {
                 val type = selectedTypeState[click]
                 val displayItem = displayItemState[click]
 
-                if (name == null || displayItem == null) {
+                if (name == null || displayItem == null || !click.player.canCreateBuildingWorld()) {
                     click.playLockedSound()
                     return@onClick
                 }

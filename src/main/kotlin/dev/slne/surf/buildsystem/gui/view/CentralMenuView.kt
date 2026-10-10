@@ -19,6 +19,7 @@ import dev.slne.surf.buildsystem.lobby.LobbyService
 import dev.slne.surf.buildsystem.plugin
 import dev.slne.surf.buildsystem.service.WorldManager
 import dev.slne.surf.buildsystem.util.buildPrimary
+import dev.slne.surf.buildsystem.util.canAccessBuildingWorld
 import dev.slne.surf.buildsystem.world.BuildingWorld
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -34,7 +35,7 @@ val centralMenu: AbstractSurfView = paginatedSurfView("Bau-Welten") {
     pagination<BuildingWorld> {
         lazySource { context ->
             val state = context.player.guiState()
-            getBuildingWorlds(state.currentSortOrDefault, state.currentSearch)
+            getBuildingWorlds(context.player, state.currentSortOrDefault, state.currentSearch)
         }
 
         itemFactory { world ->
@@ -89,7 +90,7 @@ val centralMenu: AbstractSurfView = paginatedSurfView("Bau-Welten") {
         slot(6, 9, createItem).onClick { context ->
             context.playGeneralClickSound()
 
-            if (!context.player.canModifyBuildingWorld()) {
+            if (!context.player.canCreateBuildingWorld()) {
                 context.playLockedSound()
                 return@onClick
             }
@@ -107,10 +108,12 @@ val centralMenu: AbstractSurfView = paginatedSurfView("Bau-Welten") {
 }
 
 private fun getBuildingWorlds(
+    player: Player,
     sortType: GuiState.Sorting,
     search: String?
 ): List<BuildingWorld> {
     val base = WorldManager.findBuildingWorlds()
+        .filter { player.canAccessBuildingWorld(it) }
 
     val filtered = if (search.isNullOrBlank()) {
         base

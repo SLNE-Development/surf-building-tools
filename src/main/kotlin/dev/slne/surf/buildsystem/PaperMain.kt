@@ -60,6 +60,8 @@ class PaperMain : SuspendingJavaPlugin() {
         PlayerMoveListener.register()
         PlayerWorldStatusListener.register()
         LobbyListener.register()
+        BuildingWorldAccessListener.register()
+        AxiomListener.registerIfPresent()
 
         buildingWorldCommand()
         lobbyCommand()
